@@ -1,7 +1,5 @@
-// Component Imports
 import Login from '@views/Login'
 
-// Server Action Imports
 import { getServerMode } from '@core/utils/serverHelpers'
 
 export const metadata = {
@@ -10,7 +8,6 @@ export const metadata = {
 }
 
 const LoginPage = () => {
-  // Vars
   const mode = getServerMode()
 
   return <Login mode={mode} />

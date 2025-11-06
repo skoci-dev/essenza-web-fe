@@ -128,27 +128,7 @@ const LoginV2 = ({ mode }) => {
             <Button fullWidth variant='contained' type='submit'>
               Log In
             </Button>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>New on our platform?</Typography>
-              <Typography component={Link} color='primary'>
-                Create an account
-              </Typography>
-            </div>
-            <Divider className='gap-3'>or</Divider>
-            <div className='flex justify-center items-center gap-2'>
-              <IconButton size='small' className='text-facebook'>
-                <i className='ri-facebook-fill' />
-              </IconButton>
-              <IconButton size='small' className='text-twitter'>
-                <i className='ri-twitter-fill' />
-              </IconButton>
-              <IconButton size='small' className='text-github'>
-                <i className='ri-github-fill' />
-              </IconButton>
-              <IconButton size='small' className='text-googlePlus'>
-                <i className='ri-google-fill' />
-              </IconButton>
-            </div>
+            <Divider className='gap-3'></Divider>
           </form>
         </div>
       </div>

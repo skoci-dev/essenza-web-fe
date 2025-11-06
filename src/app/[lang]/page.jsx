@@ -1,5 +1,6 @@
 import HeroSection from '@/components/section/home/HeroSection'
-import UsefulFeature from '@/components/section/home/UsefulFeature'
+
+// import UsefulFeature from '@/components/section/home/UsefulFeature'
 import CustomerReviews from '@/components/section/home/CustomerReviews'
 import OurTeam from '@/components/section/home/OurTeam'
 import PricingPlan from '@/components/section/home/Pricing'
@@ -10,20 +11,31 @@ import ContactUs from '@/components/section/home/ContactUs'
 
 import { getServerMode } from '@core/utils/serverHelpers'
 
+import { useSettings } from '@core/hooks/useSettings'
+
 const HomePage = () => {
-  const mode = getServerMode()
+  // Hooks
+  const { updatePageSettings } = useSettings()
+
+  // For Page specific settings
+  useEffect(() => {
+    return updatePageSettings({
+      skin: 'default'
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
-      <HeroSection mode={mode} />
-      <UsefulFeature />
+      <HeroSection />
+      {/* <UsefulFeature /> */}
       <CustomerReviews />
-      <OurTeam />
+      {/* <OurTeam /> */}
       <PricingPlan />
       <ProductStat />
-      <Faqs />
+      {/* <Faqs /> */}
       <GetStarted />
-      <ContactUs />
+      {/* <ContactUs /> */}
     </>
   )
 }

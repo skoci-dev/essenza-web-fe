@@ -16,9 +16,9 @@
  * Another way is to clear the cookie from the browser's Application/Storage tab and then reload the page.
  */
 const themeConfig = {
-  templateName: 'Materio',
+  templateName: 'Esse Panel',
   homePageUrl: '/',
-  settingsCookieName: 'materio-mui-next-demo',
+  settingsCookieName: 'esse-panel',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'
   semiDark: false, // true, false
