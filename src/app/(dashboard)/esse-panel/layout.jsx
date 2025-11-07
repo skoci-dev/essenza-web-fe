@@ -7,6 +7,7 @@ import VerticalLayout from '@layouts/VerticalLayout'
 import HorizontalLayout from '@layouts/HorizontalLayout'
 
 // Component Imports
+import Breadcrumbs from '@/components/Breadcrumbs'
 import Providers from '@components/Providers'
 import Navigation from '@components/layout/vertical/Navigation'
 import Header from '@components/layout/horizontal/Header'
@@ -35,6 +36,7 @@ const Layout = async ({ children, params }) => {
               navbar={<Navbar />}
               footer={<VerticalFooter />}
             >
+              <Breadcrumbs />
               {children}
             </VerticalLayout>
           }
