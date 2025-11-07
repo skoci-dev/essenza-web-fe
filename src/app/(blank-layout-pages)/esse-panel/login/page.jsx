@@ -13,6 +13,8 @@ const LoginPage = () => {
   // Vars
   const mode = getServerMode()
 
+  console.log('mode', mode)
+
   return <Login mode={mode} />
 }
 

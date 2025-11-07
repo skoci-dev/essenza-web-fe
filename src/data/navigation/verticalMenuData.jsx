@@ -1,7 +1,7 @@
 const verticalMenuData = () => [
   {
     label: 'Dashboard',
-    href: '/esse-panel/home',
+    href: '/esse-panel/dashboard',
     icon: 'ri-home-smile-line'
   },
   {

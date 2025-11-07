@@ -3,8 +3,11 @@
 // React Imports
 import { useRef, useState } from 'react'
 
-// Next Imports
 import { useRouter } from 'next/navigation'
+
+import { signOut } from 'next-auth/react'
+
+// Next Imports
 
 // MUI Imports
 import { styled } from '@mui/material/styles'
@@ -61,8 +64,10 @@ const UserDropdown = () => {
   }
 
   const handleUserLogout = async () => {
-    // Redirect to login page
-    router.push('/login')
+    await signOut({
+      redirect: false
+    })
+    router.push('/esse-panel/login')
   }
 
   return (

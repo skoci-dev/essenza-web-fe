@@ -36,7 +36,7 @@ const NotFound = ({ mode }) => {
           src='/images/illustrations/characters/5.png'
           className='object-cover bs-[400px] md:bs-[450px] lg:bs-[500px]'
         />
-        <Button href='/esse-panel/home' component={Link} variant='contained'>
+        <Button href='/esse-panel/dashboard' component={Link} variant='contained'>
           Back to Home
         </Button>
       </div>
