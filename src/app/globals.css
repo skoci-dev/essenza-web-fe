@@ -15,6 +15,9 @@
   --drawer-z-index: var(--mui-zIndex-drawer);
   --backdrop-color: rgb(var(--mui-mainColorChannels-light) / 0.5);
   --mui-mainColorChannels-shadow: var(--mui-mainColorChannels-lightShadow);
+  --mui-palette-primary-main: #BB8B05 !important;
+  --mui-palette-primary-light: #F2F2F2 !important;
+  --mui-palette-primary-dark: #1B1B1B !important;
 }
 
 [data-mui-color-scheme='dark'] {

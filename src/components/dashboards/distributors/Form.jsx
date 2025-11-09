@@ -55,15 +55,31 @@ const DistributorForm = ({ id }) => {
         <form onSubmit={handleSubmit} className='space-y-4'>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <TextField label='Name' name='name' fullWidth value={formData.name} onChange={handleChange} required />
+              <TextField
+                size='small'
+                label='Name'
+                name='name'
+                fullWidth
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <TextField label='Phone' name='phone' fullWidth value={formData.phone} onChange={handleChange} />
+              <TextField
+                size='small'
+                label='Phone'
+                name='phone'
+                fullWidth
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </Grid>
 
             <Grid item xs={12}>
               <TextField
+                size='small'
                 label='Address'
                 name='address'
                 fullWidth
@@ -76,6 +92,7 @@ const DistributorForm = ({ id }) => {
 
             <Grid item xs={12} sm={6}>
               <TextField
+                size='small'
                 label='Email'
                 name='email'
                 type='email'
@@ -86,15 +103,30 @@ const DistributorForm = ({ id }) => {
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <TextField label='Website' name='website' fullWidth value={formData.website} onChange={handleChange} />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField label='Latitude' name='latitude' fullWidth value={formData.latitude} onChange={handleChange} />
+              <TextField
+                size='small'
+                label='Website'
+                name='website'
+                fullWidth
+                value={formData.website}
+                onChange={handleChange}
+              />
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <TextField
+                size='small'
+                label='Latitude'
+                name='latitude'
+                fullWidth
+                value={formData.latitude}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                size='small'
                 label='Longitude'
                 name='longitude'
                 fullWidth

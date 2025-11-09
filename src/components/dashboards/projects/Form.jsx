@@ -52,9 +52,25 @@ const ProjectForm = ({ isEdit = false }) => {
     <Card className='shadow'>
       <CardContent>
         <form onSubmit={handleSubmit} className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <TextField name='title' label='Title' value={formData.title} onChange={handleChange} fullWidth required />
-          <TextField name='location' label='Location' value={formData.location} onChange={handleChange} fullWidth />
           <TextField
+            size='small'
+            name='title'
+            label='Title'
+            value={formData.title}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+          <TextField
+            size='small'
+            name='location'
+            label='Location'
+            value={formData.location}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            size='small'
             name='slug'
             label='Slug'
             value={formData.slug}
@@ -62,8 +78,16 @@ const ProjectForm = ({ isEdit = false }) => {
             fullWidth
             helperText='Unique slug for project URL'
           />
-          <TextField name='image' label='Main Image URL' value={formData.image} onChange={handleChange} fullWidth />
           <TextField
+            size='small'
+            name='image'
+            label='Main Image URL'
+            value={formData.image}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            size='small'
             name='description'
             label='Description'
             value={formData.description}
@@ -73,6 +97,7 @@ const ProjectForm = ({ isEdit = false }) => {
             rows={3}
           />
           <TextField
+            size='small'
             name='meta_title'
             label='Meta Title'
             value={formData.meta_title}
@@ -80,6 +105,7 @@ const ProjectForm = ({ isEdit = false }) => {
             fullWidth
           />
           <TextField
+            size='small'
             name='meta_description'
             label='Meta Description'
             value={formData.meta_description}
@@ -89,6 +115,7 @@ const ProjectForm = ({ isEdit = false }) => {
             rows={2}
           />
           <TextField
+            size='small'
             name='meta_keywords'
             label='Meta Keywords'
             value={formData.meta_keywords}

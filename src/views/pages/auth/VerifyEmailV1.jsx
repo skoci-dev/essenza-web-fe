@@ -34,7 +34,7 @@ const VerifyEmailV1 = ({ mode }) => {
       <Card className='flex flex-col sm:is-[450px]'>
         <CardContent className='p-6 sm:!p-12'>
           <Link href={getLocalizedUrl('/', locale)} className='flex justify-center items-center mbe-6'>
-            <Logo />
+            <img className='h-[22px]' src={'/images/essenza-logo.png'} />
           </Link>
           <Typography variant='h4'>Verify your email ✉️</Typography>
           <div className='flex flex-col gap-5'>

@@ -50,14 +50,14 @@ const Header = ({ mode }) => {
                 <i className='ri-menu-line text-textPrimary' />
               </IconButton>
               <Link href='/front-pages/landing-page'>
-                <Logo />
+                <img className='h-[22px]' src={'/images/essenza-logo.png'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>
           ) : (
             <div className='flex items-center gap-10'>
               <Link href='/front-pages/landing-page'>
-                <Logo />
+                <img className='h-[22px]' src={'/images/essenza-logo.png'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>

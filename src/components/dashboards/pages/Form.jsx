@@ -63,8 +63,17 @@ const PageForm = ({ isEdit = false }) => {
       <Divider />
       <CardContent>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <TextField label='Title' name='title' value={formData.title} onChange={handleChange} required fullWidth />
           <TextField
+            size='small'
+            label='Title'
+            name='title'
+            value={formData.title}
+            onChange={handleChange}
+            required
+            fullWidth
+          />
+          <TextField
+            size='small'
             label='Slug'
             name='slug'
             value={formData.slug}
@@ -73,6 +82,7 @@ const PageForm = ({ isEdit = false }) => {
             fullWidth
           />
           <TextField
+            size='small'
             label='Content'
             name='content'
             value={formData.content}
@@ -89,6 +99,7 @@ const PageForm = ({ isEdit = false }) => {
           <Divider textAlign='left'>SEO Meta</Divider>
 
           <TextField
+            size='small'
             label='Meta Title'
             name='meta_title'
             value={formData.meta_title}
@@ -96,6 +107,7 @@ const PageForm = ({ isEdit = false }) => {
             fullWidth
           />
           <TextField
+            size='small'
             label='Meta Description'
             name='meta_description'
             value={formData.meta_description}
@@ -105,6 +117,7 @@ const PageForm = ({ isEdit = false }) => {
             fullWidth
           />
           <TextField
+            size='small'
             label='Meta Keywords'
             name='meta_keywords'
             value={formData.meta_keywords}

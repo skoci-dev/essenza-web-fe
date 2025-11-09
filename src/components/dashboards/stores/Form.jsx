@@ -49,8 +49,16 @@ const StoreForm = ({ isEdit = false }) => {
       <Divider />
       <CardContent>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <TextField label='Store Name' name='name' value={formData.name} onChange={handleChange} required />
           <TextField
+            size='small'
+            label='Store Name'
+            name='name'
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            size='small'
             label='Address'
             name='address'
             value={formData.address}
@@ -58,11 +66,23 @@ const StoreForm = ({ isEdit = false }) => {
             multiline
             rows={3}
           />
-          <TextField label='Phone' name='phone' value={formData.phone} onChange={handleChange} />
-          <TextField label='Email' name='email' value={formData.email} onChange={handleChange} />
+          <TextField size='small' label='Phone' name='phone' value={formData.phone} onChange={handleChange} />
+          <TextField size='small' label='Email' name='email' value={formData.email} onChange={handleChange} />
           <div className='flex gap-4'>
-            <TextField label='Latitude' name='latitude' value={formData.latitude} onChange={handleChange} />
-            <TextField label='Longitude' name='longitude' value={formData.longitude} onChange={handleChange} />
+            <TextField
+              size='small'
+              label='Latitude'
+              name='latitude'
+              value={formData.latitude}
+              onChange={handleChange}
+            />
+            <TextField
+              size='small'
+              label='Longitude'
+              name='longitude'
+              value={formData.longitude}
+              onChange={handleChange}
+            />
           </div>
           <div className='col-span-2 flex justify-end gap-3 mt-4'>
             <Button type='button' variant='outlined' onClick={() => router.push('/esse-panel/projects')}>

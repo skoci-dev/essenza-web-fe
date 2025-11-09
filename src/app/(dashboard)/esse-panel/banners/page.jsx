@@ -185,7 +185,7 @@ const BannerPage = () => {
           </Button>
         </Link>
       </div>
-      <TableGeneric table={table} />
+      <TableGeneric table={table} columns={columns} />
 
       <TablePagination
         component='div'

@@ -2,7 +2,7 @@ import { flexRender } from '@tanstack/react-table'
 
 import tableStyles from '@core/styles/table.module.css'
 
-const TableGeneric = ({ table }) => {
+const TableGeneric = ({ table, columns }) => {
   return (
     <div className='overflow-x-auto'>
       <table className={tableStyles.table}>
@@ -20,7 +20,7 @@ const TableGeneric = ({ table }) => {
         <tbody>
           {table.getRowModel().rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className='text-center'>
+              <td colSpan={columns?.length ?? 1} className='text-center'>
                 No data available
               </td>
             </tr>

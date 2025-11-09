@@ -103,8 +103,9 @@ const Navigation = props => {
     >
       {/* Nav Header including Logo & nav toggle icons  */}
       <NavHeader>
-        <Link href='/'>
-          <Logo />
+        <Link href='/' className='flex items-center'>
+          <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+          <h2 className='ml-2'>Esse Panel</h2>
         </Link>
         {!(isCollapsed && !isHovered) && (
           <NavCollapseIcons

@@ -26,7 +26,8 @@ const VerticalNavContent = ({ children }) => {
     <>
       <NavHeader>
         <Link href='/'>
-          <Logo />
+          <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+          Esse Panel
         </Link>
         <NavCollapseIcons
           lockedIcon={<i className='ri-menu-fold-2-line text-xl' />}
