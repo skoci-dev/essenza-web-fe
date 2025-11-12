@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 
 // Next Imports
-import { usePathname } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
 import Link from 'next/link'
 
 // MUI Imports
@@ -60,6 +60,9 @@ const FrontMenu = props => {
   const pathname = usePathname()
   const isBelowLgScreen = useMediaQuery(theme => theme.breakpoints.down('lg'))
   const { intersections } = useIntersection()
+  const { lang: locale } = useParams()
+
+  console.log('locale', locale)
 
   useEffect(() => {
     if (!isBelowLgScreen && isDrawerOpen) {
@@ -72,7 +75,7 @@ const FrontMenu = props => {
     <Wrapper isBelowLgScreen={isBelowLgScreen} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen}>
       <Typography
         component={Link}
-        href='/front-pages/landing-page'
+        href={`/${locale}`}
         className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
           'text-primary':
             !intersections.features &&
@@ -87,37 +90,37 @@ const FrontMenu = props => {
       </Typography>
       <Typography
         component={Link}
-        href='/front-pages/landing-page#features'
+        href={`/${locale}/products`}
         className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
           'text-primary': intersections.features
         })}
         color='text.primary'
       >
-        Features
+        Products
       </Typography>
       <Typography
         component={Link}
-        href='/front-pages/landing-page#team'
+        href={`/${locale}/about-us`}
         className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
           'text-primary': intersections.team
         })}
         color='text.primary'
       >
-        Team
+        About Us
       </Typography>
       <Typography
         component={Link}
-        href='/front-pages/landing-page#faq'
+        href={`/${locale}/info`}
         className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
           'text-primary': intersections.faq
         })}
         color='text.primary'
       >
-        FAQ
+        Info
       </Typography>
       <Typography
         component={Link}
-        href='/front-pages/landing-page#contact-us'
+        href={`/${locale}/contact-us`}
         className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
           'text-primary': intersections['contact-us']
         })}
@@ -131,15 +134,6 @@ const FrontMenu = props => {
         isDrawerOpen={isDrawerOpen}
         setIsDrawerOpen={setIsDrawerOpen}
       />
-      <Typography
-        component={Link}
-        href='/'
-        target='_blank'
-        className='font-medium plb-3 pli-1.5 hover:text-primary'
-        color='text.primary'
-      >
-        Admin
-      </Typography>
     </Wrapper>
   )
 }

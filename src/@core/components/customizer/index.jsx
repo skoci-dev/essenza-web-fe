@@ -156,9 +156,10 @@ const Customizer = ({ breakpoint = 'lg', dir = 'ltr', disableDirection = false }
           [styles.smallScreen]: isMobileScreen
         })}
       >
-        <div className={styles.toggler} onClick={handleToggle}>
+        {/* Hide Setting Theme */}
+        {/* <div className={styles.toggler} onClick={handleToggle}>
           <i className='ri-settings-5-line text-[22px]' />
-        </div>
+        </div> */}
         <div className={styles.header}>
           <div className='flex flex-col'>
             <h6 className={styles.customizerTitle}>Theme Customizer</h6>

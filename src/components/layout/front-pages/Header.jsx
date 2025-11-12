@@ -49,44 +49,19 @@ const Header = ({ mode }) => {
               <IconButton onClick={() => setIsDrawerOpen(true)} className='-mis-2'>
                 <i className='ri-menu-line text-textPrimary' />
               </IconButton>
-              <Link href='/front-pages/landing-page'>
+              <Link href='/'>
                 <img className='h-[22px]' src={'/images/essenza-logo.png'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>
           ) : (
             <div className='flex items-center gap-10'>
-              <Link href='/front-pages/landing-page'>
+              <Link href='/'>
                 <img className='h-[22px]' src={'/images/essenza-logo.png'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>
           )}
-          <div className='flex items-center gap-2 sm:gap-4'>
-            <ModeDropdown />
-            {isBelowLgScreen ? (
-              <CustomIconButton
-                component={Link}
-                variant='contained'
-                href='https://themeselection.com/item/Essenza-mui-nextjs-admin-template/'
-                color='primary'
-                target='_blank'
-              >
-                <i className='ri-shopping-cart-line text-xl' />
-              </CustomIconButton>
-            ) : (
-              <Button
-                component={Link}
-                variant='contained'
-                href='https://themeselection.com/item/Essenza-mui-nextjs-admin-template/'
-                startIcon={<i className='ri-shopping-cart-line text-xl' />}
-                className='whitespace-nowrap'
-                target='_blank'
-              >
-                Purchase Now
-              </Button>
-            )}
-          </div>
         </div>
       </div>
     </header>
