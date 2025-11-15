@@ -173,7 +173,7 @@ const DistributorsPage = () => {
           placeholder='Search Distributor'
         />
         <Link href='/esse-panel/distributors/add'>
-          <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
+          <Button variant='contained' color='success' startIcon={<i className='ri-add-line' />}>
             Add Distributor
           </Button>
         </Link>
