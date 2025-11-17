@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation'
 
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import TablePagination from '@mui/material/TablePagination'
 import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
 
 import { rankItem } from '@tanstack/match-sorter-utils'
 import {
@@ -20,10 +20,9 @@ import {
   getSortedRowModel
 } from '@tanstack/react-table'
 
-import Link from '@/components/Link'
 import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
-import CustomInputsDebounced from '@/@core/components/custom-inputs/Debounced'
+import TableHeaderActions from '@/@core/components/table/HeaderActions'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -115,7 +114,11 @@ const DistributorsPage = () => {
       }),
       columnHelper.accessor('address', {
         header: 'Address',
-        cell: info => <Typography className='truncate w-48'>{info.getValue()}</Typography>
+        cell: info => (
+          <Tooltip title={info.getValue()}>
+            <Typography className='truncate w-24'>{info.getValue()}</Typography>
+          </Tooltip>
+        )
       }),
       columnHelper.accessor('phone', {
         header: 'Phone',
@@ -132,10 +135,6 @@ const DistributorsPage = () => {
             {info.getValue().replace('https://', '')}
           </a>
         )
-      }),
-      columnHelper.accessor('created_at', {
-        header: 'Created At',
-        cell: info => <Typography>{info.getValue()}</Typography>
       }),
       columnHelper.accessor('actions', {
         header: 'Actions',
@@ -165,22 +164,15 @@ const DistributorsPage = () => {
     <Card>
       <CardHeader title='Distributor Management' className='p-4' />
       <Divider />
-
-      <div className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
-        <CustomInputsDebounced
-          value={globalFilter ?? ''}
-          onChange={value => setGlobalFilter(String(value))}
-          placeholder='Search Distributor'
-        />
-        <Link href='/esse-panel/distributors/add'>
-          <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
-            Add Distributor
-          </Button>
-        </Link>
-      </div>
-
+      <TableHeaderActions
+        searchPlaceholder='Search Distributor'
+        searchValue={globalFilter ?? ''}
+        onSearchChange={setGlobalFilter}
+        addLabel='Add Distributor'
+        addHref='/esse-panel/distributors/add'
+        addColor='success'
+      />
       <TableGeneric table={table} />
-
       <TablePagination
         component='div'
         count={table.getFilteredRowModel().rows.length}

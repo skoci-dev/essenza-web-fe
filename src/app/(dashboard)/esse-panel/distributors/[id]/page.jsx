@@ -54,33 +54,31 @@ const DistributorDetailPage = () => {
           <Button
             variant='outlined'
             color='secondary'
-            className='w-1/4'
+            className='w-1/6'
             startIcon={<i className='ri-arrow-left-line' />}
             onClick={() => router.push('/esse-panel/distributors')}
           >
             Back
           </Button>
-
-          <Box className='flex gap-3 w-1/2 justify-end'>
-            <Button
-              variant='contained'
-              color='error'
-              className='w-1/2'
-              startIcon={<i className='ri-delete-bin-line' />}
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
-            <Button
-              variant='contained'
-              color='primary'
-              className='w-1/2'
-              startIcon={<i className='ri-pencil-line' />}
-              onClick={() => router.push(`/esse-panel/distributors/${id}/edit`)}
-            >
-              Edit
-            </Button>
-          </Box>
+          <Box className='w-1/2' />
+          <Button
+            variant='contained'
+            color='error'
+            className='w-1/6'
+            startIcon={<i className='ri-delete-bin-line' />}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+          <Button
+            variant='contained'
+            color='warning'
+            className='w-1/6'
+            startIcon={<i className='ri-pencil-line' />}
+            onClick={() => router.push(`/esse-panel/distributors/${id}/edit`)}
+          >
+            Edit
+          </Button>
         </Box>
       </Card>
     </div>

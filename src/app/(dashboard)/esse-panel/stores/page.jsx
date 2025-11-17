@@ -1,13 +1,17 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import TablePagination from '@mui/material/TablePagination'
 import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
+
 import { rankItem } from '@tanstack/match-sorter-utils'
 import {
   createColumnHelper,
@@ -17,11 +21,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel
 } from '@tanstack/react-table'
+
 import Link from '@/components/Link'
 import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
 import CustomInputsDebounced from '@/@core/components/custom-inputs/Debounced'
-import { getStores } from '@/services/stores'
+import TableHeaderActions from '@/@core/components/table/HeaderActions'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -103,7 +108,11 @@ const StorePage = () => {
       }),
       columnHelper.accessor('address', {
         header: 'Address',
-        cell: info => <Typography className='truncate max-w-[200px]'>{info.getValue()}</Typography>
+        cell: info => (
+          <Tooltip title={info.getValue()}>
+            <Typography className='truncate w-48'>{info.getValue()}</Typography>
+          </Tooltip>
+        )
       }),
       columnHelper.accessor('actions', {
         header: 'Actions',
@@ -138,22 +147,15 @@ const StorePage = () => {
     <Card>
       <CardHeader title='Store Management' className='p-4' />
       <Divider />
-
-      <div className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
-        <CustomInputsDebounced
-          value={globalFilter ?? ''}
-          onChange={value => setGlobalFilter(String(value))}
-          placeholder='Search Store'
-        />
-        <Link href='/esse-panel/stores/add'>
-          <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
-            Add Store
-          </Button>
-        </Link>
-      </div>
-
+      <TableHeaderActions
+        searchPlaceholder='Search Store'
+        searchValue={globalFilter ?? ''}
+        onSearchChange={setGlobalFilter}
+        addLabel='Add Store'
+        addHref='/esse-panel/stores/add'
+        addColor='success'
+      />
       <TableGeneric table={table} />
-
       <TablePagination
         component='div'
         count={table.getFilteredRowModel().rows.length}

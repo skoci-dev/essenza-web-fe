@@ -1,15 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-
 import StoresForm from '@/components/dashboards/stores/Form'
 
-const StoresEditPage = () => {
-  const router = useRouter()
+const StoresEditPage = ({ params }) => {
+  const id = params?.id
 
-  const handleSubmit = e => {}
-
-  return <StoresForm onCancel={() => router.push('/esse-panel/stores')} onSubmit={handleSubmit} />
+  return <StoresForm id={id} />
 }
 
 export default StoresEditPage
