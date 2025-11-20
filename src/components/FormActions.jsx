@@ -7,6 +7,7 @@ const FormActions = ({ onCancel, isEdit = false, cancelText = 'Cancel', saveText
     <Box className={`flex justify-between p-4 ${className}`}>
       <Button
         variant='contained'
+        size='small'
         className='w-1/6'
         color='warning'
         startIcon={<i className='ri-close-line text-lg' />}
@@ -18,6 +19,7 @@ const FormActions = ({ onCancel, isEdit = false, cancelText = 'Cancel', saveText
       <Button
         type='submit'
         variant='contained'
+        size='small'
         className='w-1/6'
         color='success'
         startIcon={<i className='ri-save-3-line text-lg' />}

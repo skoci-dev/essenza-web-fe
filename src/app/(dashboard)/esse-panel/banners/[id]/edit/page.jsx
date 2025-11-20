@@ -2,8 +2,10 @@
 
 import BannersForm from '@/components/dashboards/banners/Form'
 
-const BannersEditPage = () => {
-  return <BannersForm isEdit={true} />
+const BannersEditPage = ({ params }) => {
+  const id = params?.id
+
+  return <BannersForm id={id} />
 }
 
 export default BannersEditPage

@@ -24,8 +24,8 @@ import useSnackbar from '@/@core/hooks/useSnackbar'
 import { createBanner, updateBanner } from '@/services/banner'
 
 import { handleApiResponse } from '@/utils/handleApiResponse'
+import FormActions from '@/components/FormActions'
 
-// Default blank banner
 const defaultData = {
   title: '',
   subtitle: '',
@@ -35,12 +35,11 @@ const defaultData = {
   is_active: true
 }
 
-const BannersForm = ({ isEdit = false }) => {
+const BannersForm = ({ id }) => {
   const [data, setData] = useState(defaultData)
   const [preview, setPreview] = useState(defaultData.image || '')
 
   const router = useRouter()
-  const { id } = router.query
 
   const fields = useMemo(
     () => [
@@ -57,7 +56,7 @@ const BannersForm = ({ isEdit = false }) => {
   const handleSubmit = async e => {
     e.preventDefault()
 
-    await handleApiResponse(() => (isEdit ? updateBanner(id, data) : createBanner(data)), {
+    await handleApiResponse(() => (id ? updateBanner(id, data) : createBanner(data)), {
       success: msg => success(msg),
       error: msg => error(msg),
       onSuccess: () =>
@@ -92,10 +91,7 @@ const BannersForm = ({ isEdit = false }) => {
   return (
     <>
       <Card className='shadow'>
-        <CardHeader
-          title={defaultData.id ? 'Edit Banner' : 'Add New Banner'}
-          subheader='Isi semua informasi banner di bawah ini.'
-        />
+        <CardHeader title={id ? 'Edit Banner' : 'Add Banner'} subheader='Isi semua informasi banner di bawah ini.' />
         <Divider />
 
         <form onSubmit={handleSubmit}>
@@ -143,6 +139,8 @@ const BannersForm = ({ isEdit = false }) => {
                   <Button
                     variant='outlined'
                     component='label'
+                    className='w-1/6'
+                    size='small'
                     startIcon={<i className='ri-upload-2-line text-lg' />}
                     color='primary'
                   >
@@ -153,29 +151,8 @@ const BannersForm = ({ isEdit = false }) => {
               </Grid>
             </Grid>
           </CardContent>
-
           <Divider />
-
-          <Box className='flex justify-between gap-3 p-4'>
-            <Button
-              variant='contained'
-              className='w-1/4'
-              color='warning'
-              startIcon={<i className='ri-close-line text-lg' />}
-              onClick={() => router.push('/esse-panel/banners')}
-            >
-              Cancel
-            </Button>
-            <Button
-              type='submit'
-              variant='contained'
-              className='w-1/4'
-              color='success'
-              startIcon={<i className='ri-save-3-line text-lg' />}
-            >
-              {defaultData.id ? 'Update' : 'Save'}
-            </Button>
-          </Box>
+          <FormActions onCancel={() => router.push('/esse-panel/banners')} isEdit={id} />
         </form>
       </Card>
       {SnackbarComponent}

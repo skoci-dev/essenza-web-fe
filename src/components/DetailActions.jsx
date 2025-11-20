@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
@@ -9,6 +11,7 @@ import DialogBasic from './DialogBasic'
 
 const DetailActions = ({ id, href }) => {
   const [openDelete, setOpenDelete] = useState(false)
+  const router = useRouter()
 
   return (
     <>

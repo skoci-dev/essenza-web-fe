@@ -1,9 +1,12 @@
 'use client'
 
 import React from 'react'
+
+import Link from 'next/link'
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Link from 'next/link'
+
 import CustomInputsDebounced from '../custom-inputs/Debounced'
 
 const TableHeaderActions = ({
@@ -18,7 +21,7 @@ const TableHeaderActions = ({
   buttonWidth = 'w-1/6'
 }) => {
   return (
-    <Box className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
+    <Box className='flex justify-between flex-col sm:flex-row items-center p-4 gap-4'>
       <Box className={searchWidth}>
         <CustomInputsDebounced
           value={searchValue}
@@ -29,7 +32,7 @@ const TableHeaderActions = ({
 
       <Box className={buttonWidth}>
         <Link href={addHref}>
-          <Button variant='contained' className='w-full' color={addColor} startIcon={addIcon}>
+          <Button variant='contained' size='small' className='w-full' color={addColor} startIcon={addIcon}>
             {addLabel}
           </Button>
         </Link>

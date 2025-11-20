@@ -55,7 +55,7 @@ const BannerDetailPage = () => {
   return (
     <div className='p-6'>
       <Card className='w-full mx-auto shadow'>
-        <CardHeader titl='Banner Detail' />
+        <CardHeader title={`Banner Detail - ${id}`} />
         <Divider />
         <CardContent>
           <Grid container spacing={4}>
