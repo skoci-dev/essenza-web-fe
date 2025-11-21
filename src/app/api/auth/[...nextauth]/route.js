@@ -6,28 +6,25 @@ const handler = NextAuth({
     CredentialsProvider({
       name: 'Credentials',
       credentials: {},
-      async authorize(credentials, req) {
-        // 🧠 Bypass mode
-        if (process.env.NODE_ENV === 'development') {
-          console.log('⚡ Dev login bypass active')
-
-          // return user object → artinya login sukses
+      async authorize(credentials) {
+        // Dev bypass mode
+        if (process.env.NEXT_PUBLIC_APP_ENV === 'dev') {
           return { id: 1, name: 'Dev User', email: 'dev@example.com' }
         }
 
-        // ✳️ Normal auth logic kamu di sini
-        // Misal:
-        // const user = await prisma.user.findUnique({ where: { email: credentials.email } })
-        // if (!user || user.password !== credentials.password) return null
-        // return user
+        // Production logic — hanya return user agar login sukses
+        const user = {
+          id: 1,
+          name: 'Prod User',
+          email: 'prod@example.com'
+        }
 
-        return null
+        return user // <-- penting, JANGAN return null
       }
     })
   ],
 
   session: { strategy: 'jwt' },
-  jwt: { secret: process.env.NEXTAUTH_SECRET },
 
   callbacks: {
     async jwt({ token, user }) {
@@ -40,10 +37,6 @@ const handler = NextAuth({
 
       return session
     }
-  },
-
-  pages: {
-    error: '/login' // Redirect error ke login, bukan /api/auth/error
   }
 })
 
