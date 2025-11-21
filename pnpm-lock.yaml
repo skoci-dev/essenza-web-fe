@@ -129,14 +129,17 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.4.5)
     devDependencies:
+      '@iconify/iconify':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@iconify/json':
-        specifier: 2.2.218
+        specifier: ^2.2.218
         version: 2.2.218
       '@iconify/tools':
-        specifier: 4.0.4
+        specifier: ^4.0.4
         version: 4.0.4
       '@iconify/utils':
-        specifier: 2.1.24
+        specifier: ^2.1.24
         version: 2.1.24
       autoprefixer:
         specifier: 10.4.19
@@ -571,6 +574,10 @@ packages:
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
+
+  '@iconify/iconify@3.1.1':
+    resolution: {integrity: sha512-1nemfyD/OJzh9ALepH7YfuuP8BdEB24Skhd8DXWh0hzcOxImbb1ZizSZkpCzAwSZSGcJFmscIBaBQu+yLyWaxQ==}
+    deprecated: no longer maintained, switch to modern iconify-icon web component
 
   '@iconify/json@2.2.218':
     resolution: {integrity: sha512-CawiYMzJPULh3muZQCnr8t92rDNoUGRbJTBCYeQQm5E3eZGkMEeHp8DtGO/XkM0lbTL6+sAWROy+XrCl4q6ViQ==}
@@ -4038,6 +4045,10 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/object-schema@2.0.3': {}
+
+  '@iconify/iconify@3.1.1':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/json@2.2.218':
     dependencies:

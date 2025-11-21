@@ -12,6 +12,10 @@
  */
 import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { createRequire } from 'module'
+import { fileURLToPath } from 'node:url'
+
+const require = createRequire(import.meta.url)
 
 // Installation: npm install --save-dev @iconify/tools @iconify/utils @iconify/json @iconify/iconify
 import { cleanupSVG, importDirectory, isEmptyColor, parseColors, runSVGO } from '@iconify/tools'
@@ -56,6 +60,10 @@ const sources = {
 }
 
 // File to save bundle to
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 const target = join(__dirname, 'generated-icons.css')
 
 ;(async function () {
