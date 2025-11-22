@@ -26,7 +26,7 @@ const NavbarContent = () => {
       <div className='flex items-center gap-4'>
         <NavToggle />
         {/* Hide Logo on Smaller screens */}
-        {!isBreakpointReached && <img className='h-[22px]' src={'/images/essenza-logo.png'} />}
+        {!isBreakpointReached && <img className='h-[22px]' src={'/logo.svg'} />}
       </div>
       <div className='flex items-center'>
         <ModeDropdown />

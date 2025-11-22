@@ -15,9 +15,9 @@
   --drawer-z-index: var(--mui-zIndex-drawer);
   --backdrop-color: rgb(var(--mui-mainColorChannels-light) / 0.5);
   --mui-mainColorChannels-shadow: var(--mui-mainColorChannels-lightShadow);
-  --mui-palette-primary-main: #BB8B05 !important;
-  --mui-palette-primary-light: #F2F2F2 !important;
-  --mui-palette-primary-dark: #1B1B1B !important;
+  --mui-palette-primary-main: #bb8b05 !important;
+  --mui-palette-primary-light: #f2f2f2 !important;
+  --mui-palette-primary-dark: #1b1b1b !important;
 }
 
 [data-mui-color-scheme='dark'] {
@@ -50,6 +50,10 @@ a {
 ul:not([class]) {
   margin-block: 1rem;
   padding-inline-start: 40px;
+}
+
+p {
+  font-size: 18px;
 }
 
 /*! Do not remove the following styles */

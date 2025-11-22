@@ -49,7 +49,7 @@ const Logo = ({ color }) => {
 
   return (
     <div className='flex items-center min-bs-[24px]'>
-      <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+      <img className='h-[22px]' src={'/logo.svg'} />
       <LogoText
         color={color}
         ref={logoTextRef}

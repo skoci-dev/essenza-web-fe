@@ -74,7 +74,7 @@ const ForgotPasswordV2 = ({ mode }) => {
           href={getLocalizedUrl('/', locale)}
           className='absolute block-start-5 sm:block-start-[38px] inline-start-6 sm:inline-start-[38px]'
         >
-          <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+          <img className='h-[22px]' src={'/logo.svg'} />
         </Link>
         <div className='flex flex-col gap-5 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset]'>
           <div>

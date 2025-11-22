@@ -22,6 +22,44 @@ import { useIntersection } from '@/hooks/useIntersection'
 // Component Imports
 import DropdownMenu from './DropdownMenu'
 
+const staticMenu = [
+  {
+    id: 1,
+    label: 'About Us',
+    href: '/about-us'
+  },
+  {
+    id: 1,
+    label: 'Product',
+    href: '/product'
+  },
+  {
+    id: 1,
+    label: 'Download',
+    href: '/download'
+  },
+  {
+    id: 1,
+    label: 'News',
+    href: '/news'
+  },
+  {
+    id: 1,
+    label: 'Project',
+    href: '/project'
+  },
+  {
+    id: 1,
+    label: 'Contact Us',
+    href: '/contact-us'
+  },
+  {
+    id: 1,
+    label: 'Info',
+    href: '/info'
+  }
+]
+
 const Wrapper = props => {
   // Props
   const { children, isBelowLgScreen, className, isDrawerOpen, setIsDrawerOpen } = props
@@ -73,67 +111,20 @@ const FrontMenu = props => {
 
   return (
     <Wrapper isBelowLgScreen={isBelowLgScreen} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen}>
+      {staticMenu.map((menu, i) => (
+        <Typography key={menu.id} component={Link} href={`/${locale}/${menu.href}`} className={'text-[#212121]'}>
+          {menu.label}
+        </Typography>
+      ))}
       <Typography
         component={Link}
         href={`/${locale}`}
-        className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
-          'text-primary':
-            !intersections.features &&
-            !intersections.team &&
-            !intersections.faq &&
-            !intersections['contact-us'] &&
-            pathname === '/front-pages/landing-page'
-        })}
+        className={'bg-[#C1A658] px-[40px] text-[#ffffff] py-[9px] rounded-[6px]'}
         color='text.primary'
       >
-        Home
+        Esperianza
       </Typography>
-      <Typography
-        component={Link}
-        href={`/${locale}/products`}
-        className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
-          'text-primary': intersections.features
-        })}
-        color='text.primary'
-      >
-        Products
-      </Typography>
-      <Typography
-        component={Link}
-        href={`/${locale}/about-us`}
-        className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
-          'text-primary': intersections.team
-        })}
-        color='text.primary'
-      >
-        About Us
-      </Typography>
-      <Typography
-        component={Link}
-        href={`/${locale}/info`}
-        className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
-          'text-primary': intersections.faq
-        })}
-        color='text.primary'
-      >
-        Info
-      </Typography>
-      <Typography
-        component={Link}
-        href={`/${locale}/contact-us`}
-        className={classnames('font-medium plb-3 pli-1.5 hover:text-primary', {
-          'text-primary': intersections['contact-us']
-        })}
-        color='text.primary'
-      >
-        Contact us
-      </Typography>
-      <DropdownMenu
-        mode={mode}
-        isBelowLgScreen={isBelowLgScreen}
-        isDrawerOpen={isDrawerOpen}
-        setIsDrawerOpen={setIsDrawerOpen}
-      />
+      <img src='/icons/search.svg' alt='search' />
     </Wrapper>
   )
 }

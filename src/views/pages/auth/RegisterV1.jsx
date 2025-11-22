@@ -47,7 +47,7 @@ const RegisterV1 = ({ mode }) => {
       <Card className='flex flex-col sm:is-[450px]'>
         <CardContent className='p-6 sm:!p-12'>
           <Link href={getLocalizedUrl('/', locale)} className='flex justify-center items-start mbe-6'>
-            <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+            <img className='h-[22px]' src={'/logo.svg'} />
           </Link>
           <Typography variant='h4'>Adventure starts here 🚀</Typography>
           <div className='flex flex-col gap-5'>

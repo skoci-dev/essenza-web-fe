@@ -100,7 +100,7 @@ const RegisterMultiSteps = () => {
           href={getLocalizedUrl('/', locale)}
           className='absolute block-start-5 sm:block-start-[25px] inline-start-6 sm:inline-start-[25px]'
         >
-          <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+          <img className='h-[22px]' src={'/logo.svg'} />
         </Link>
         <StepperWrapper className='p-5 sm:p-8 is-[700px]'>
           <Stepper className='mbe-12 mbs-16 sm:mbs-0' activeStep={activeStep}>

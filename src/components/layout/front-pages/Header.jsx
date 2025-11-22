@@ -7,7 +7,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 // MUI Imports
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
@@ -16,10 +15,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import classnames from 'classnames'
 
 // Component Imports
-import Logo from '@components/layout/shared/Logo'
-import ModeDropdown from '@components/layout/shared/ModeDropdown'
 import FrontMenu from './FrontMenu'
-import CustomIconButton from '@core/components/mui/IconButton'
 
 // Util Imports
 import { frontLayoutClasses } from '@layouts/utils/layoutClasses'
@@ -42,22 +38,29 @@ const Header = ({ mode }) => {
 
   return (
     <header className={classnames(frontLayoutClasses.header, styles.header)}>
-      <div className={classnames(frontLayoutClasses.navbar, styles.navbar, { [styles.headerScrolled]: trigger })}>
+      <div
+        className={classnames(
+          frontLayoutClasses.navbar,
+          styles.navbar,
+          { [styles.headerScrolled]: trigger },
+          'bg-white mt-[40px] rounded-[10px] py-0'
+        )}
+      >
         <div className={classnames(frontLayoutClasses.navbarContent, styles.navbarContent)}>
           {isBelowLgScreen ? (
-            <div className='flex items-center gap-2 sm:gap-4'>
+            <div className='contents items-center gap-2 sm:gap-4'>
               <IconButton onClick={() => setIsDrawerOpen(true)} className='-mis-2'>
                 <i className='ri-menu-line text-textPrimary' />
               </IconButton>
               <Link href='/'>
-                <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+                <img className='h-[74px] flex' src={'/logo.svg'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>
           ) : (
-            <div className='flex items-center gap-10'>
+            <div className='contents items-center gap-10'>
               <Link href='/'>
-                <img className='h-[22px]' src={'/images/essenza-logo.png'} />
+                <img className='h-[74px] flex' src={'/logo.svg'} />
               </Link>
               <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
             </div>
