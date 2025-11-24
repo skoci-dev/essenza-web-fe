@@ -29,7 +29,7 @@ const NavbarContent = () => {
         {!isBreakpointReached && <img className='h-[22px]' src={'/logo.svg'} />}
       </div>
       <div className='flex items-center'>
-        <ModeDropdown />
+        {/* <ModeDropdown /> */}
         <UserDropdown />
       </div>
     </div>
