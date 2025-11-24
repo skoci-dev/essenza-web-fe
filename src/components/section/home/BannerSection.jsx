@@ -18,33 +18,27 @@ const styles = {
       width: '100vw',
       height: '100vh'
     },
-
     '& .banner-swiper .swiper-pagination': {
       bottom: '18px !important',
       left: '24px !important',
       textAlign: 'left !important',
       width: 'auto !important'
     },
-
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet': {
       backgroundColor: 'black',
       border: '1px solid white'
     },
-
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet-active': {
       backgroundColor: 'white'
     },
-
     '& .banner-swiper .swiper-button-next, & .banner-swiper .swiper-button-prev': {
       bottom: '20px !important',
       top: 'auto !important',
       width: '35px',
       height: '35px',
       background: 'rgba(0,0,0,0.3)',
-      borderRadius: '8px',
       color: '#fff'
     },
-
     '& .banner-swiper .swiper-button-next': {
       borderTop: '1px solid #ffffff',
       borderBottom: '1px solid #ffffff',
@@ -53,7 +47,6 @@ const styles = {
       borderRadius: '0 6px 6px 0',
       right: '25px'
     },
-
     '& .banner-swiper .swiper-button-next::before': {
       content: '""',
       position: 'absolute',
@@ -64,7 +57,6 @@ const styles = {
       height: '70%',
       background: 'rgba(255, 255, 255, 1)'
     },
-
     '& .banner-swiper .swiper-button-prev': {
       borderTop: '1px solid #ffffff',
       borderBottom: '1px solid #ffffff',
@@ -73,7 +65,6 @@ const styles = {
       borderRadius: '6px 0 0 6px',
       left: 'calc(100vw - 95px)'
     },
-
     '& .banner-swiper .swiper-button-next::after, & .banner-swiper .swiper-button-prev::after': {
       fontSize: '16px'
     }
