@@ -34,6 +34,7 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
 import { createAuthToken } from '@/services/auth'
+import { useRecaptcha } from '@/hooks/useRecaptcha'
 
 const schema = object({
   username: pipe(string(), minLength(1, 'This field is required')),
@@ -61,6 +62,7 @@ const Login = ({ mode }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { settings } = useSettings()
+  const { loaded: recaptchaLoaded, recaptchaData } = useRecaptcha('recaptcha-container')
 
   const {
     control,
@@ -85,9 +87,17 @@ const Login = ({ mode }) => {
   const onSubmit = async data => {
     setErrorState(null)
 
+    // Check if reCAPTCHA token is available
+    if (!recaptchaData.captcha_token) {
+      setErrorState({ message: ['Please complete the reCAPTCHA verification'] })
+
+      return
+    }
+
     const res = await createAuthToken({
       username: data.username,
-      password: data.password
+      password: data.password,
+      ...recaptchaData
     })
 
     if (!res.success) {
@@ -142,7 +152,7 @@ const Login = ({ mode }) => {
             noValidate
             action={() => {}}
             autoComplete='off'
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={recaptchaLoaded ? handleSubmit(onSubmit) : undefined}
             className='flex flex-col gap-5'
           >
             <Controller
@@ -207,7 +217,13 @@ const Login = ({ mode }) => {
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit'>
+            <div id='recaptcha-container'></div>
+            <Button
+              fullWidth
+              variant='contained'
+              type='submit'
+              disabled={!recaptchaLoaded || !recaptchaData.captcha_token}
+            >
               Log In
             </Button>
           </form>
