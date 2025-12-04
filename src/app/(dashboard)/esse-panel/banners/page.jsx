@@ -1,11 +1,12 @@
 'use client'
 
 // React Imports
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
 // MUI Imports
+import Chip from '@mui/material/Chip'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
@@ -24,9 +25,14 @@ import {
   getSortedRowModel
 } from '@tanstack/react-table'
 
+import { getBanners, deleteBanner } from '@/services/banner'
+
+import useSnackbar from '@/@core/hooks/useSnackbar'
+
 import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
 import TableHeaderActions from '@/@core/components/table/HeaderActions'
+import DialogBasic from '@/components/DialogBasic'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -36,41 +42,18 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-// Dummy banner data
-const defaultBannerData = [
-  {
-    id: 1,
-    title: 'Promo Keramik 50%',
-    subtitle: 'Diskon besar untuk semua produk',
-    image: '/images/banner1.jpg',
-    link_url: '/promo',
-    order_no: 1,
-    is_active: true,
-    created_at: '2025-01-01 10:00',
-    updated_at: '2025-01-02 12:00'
-  },
-  {
-    id: 2,
-    title: 'Produk Baru',
-    subtitle: 'Lihat koleksi terbaru kami',
-    image: '/images/banner2.jpg',
-    link_url: '/produk-baru',
-    order_no: 2,
-    is_active: false,
-    created_at: '2025-01-05 09:00',
-    updated_at: '2025-01-06 11:00'
-  }
-]
-
 // Column helper
 const columnHelper = createColumnHelper()
 
 const BannerPage = () => {
-  const [data, setData] = useState(defaultBannerData)
+  const [data, setData] = useState([])
+  const [pagination, setPagination] = useState({ page: 0, page_size: 10 })
   const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
+  const [deleteIndex, setDeleteIndex] = useState(null)
 
   const router = useRouter()
+  const { success, error, SnackbarComponent } = useSnackbar()
 
   const actionsData = row => {
     return [
@@ -95,7 +78,7 @@ const BannerPage = () => {
         icon: <i className='ri-delete-bin-line text-red-500' />, // merah
         menuItemProps: {
           className: 'gap-2',
-          onClick: () => deleteBanner(row.original.id)
+          onClick: () => setDeleteIndex(row.original.id)
         }
       }
     ]
@@ -125,8 +108,17 @@ const BannerPage = () => {
       }),
       columnHelper.accessor('is_active', {
         header: 'Active',
-        cell: info => <Switch checked={info.getValue()} onChange={() => toggleActive(info.row.original.id)} />
+        cell: info => {
+          const isActive = info.getValue()
+
+          return isActive ? (
+            <Chip label='Active' size='small' color='success' variant='tonal' className='self-start rounded' />
+          ) : (
+            <Chip label='Inactive' size='small' color='error' variant='tonal' className='self-start rounded' />
+          )
+        }
       }),
+
       columnHelper.accessor('actions', {
         header: 'Actions',
         cell: ({ row }) => (
@@ -151,39 +143,80 @@ const BannerPage = () => {
     getPaginationRowModel: getPaginationRowModel()
   })
 
-  const toggleActive = id => {
-    setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
-    setFilteredData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
+  const fetchBanner = async () => {
+    const res = await getBanners(pagination)
+
+    if (res?.data) {
+      setData(res.data)
+      setFilteredData(res.data)
+    }
   }
 
-  const deleteBanner = id => {
-    setData(prev => prev.filter(item => item.id !== id))
-    setFilteredData(prev => prev.filter(item => item.id !== id))
+  const confirmDelete = async () => {
+    try {
+      const res = await deleteBanner(deleteIndex)
+
+      console.success('Deleted successfully!')
+    } catch {
+      error('Delete failed!')
+    }
+
+    setDeleteIndex(null)
   }
+
+  useEffect(() => {
+    fetchBanner()
+  }, [])
+
+  useEffect(() => {
+    fetchBanner()
+  }, [pagination])
 
   return (
-    <Card>
-      <CardHeader title='Banner Management' className='p-4' />
-      <Divider />
-      <TableHeaderActions
-        searchPlaceholder='Search Banner'
-        searchValue={globalFilter ?? ''}
-        onSearchChange={setGlobalFilter}
-        addLabel='Add Banner'
-        addHref='/esse-panel/banners/add'
-        addColor='success'
+    <>
+      <Card>
+        <CardHeader title='Banner Management' className='p-4' />
+        <Divider />
+        <TableHeaderActions
+          searchPlaceholder='Search Banner'
+          searchValue={globalFilter ?? ''}
+          onSearchChange={setGlobalFilter}
+          addLabel='Add Banner'
+          addHref='/esse-panel/banners/add'
+          addColor='success'
+        />
+        <TableGeneric table={table} columns={columns} />
+        <TablePagination
+          component='div'
+          count={table.getFilteredRowModel().rows.length}
+          rowsPerPage={table.getState().pagination.pageSize || 10}
+          page={table.getState().pagination.pageIndex || 0}
+          onPageChange={(_, page) => {
+            table.setPageIndex(page)
+            setPagination(prev => ({ ...prev, page }))
+          }}
+          onRowsPerPageChange={e => {
+            const newSize = Number(e.target.value)
+
+            table.setPageSize(newSize)
+            setPagination(prev => ({
+              ...prev,
+              page_size: newSize,
+              page: 0 // reset ke page awal saat ganti rowsPerPage
+            }))
+          }}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
+      </Card>
+      <DialogBasic
+        open={deleteIndex !== null}
+        onClose={() => setDeleteIndex(null)}
+        onSubmit={confirmDelete}
+        title='Delete Banner'
+        description='Are you sure to delete this banner?'
       />
-      <TableGeneric table={table} columns={columns} />
-      <TablePagination
-        component='div'
-        count={table.getFilteredRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize || 10}
-        page={table.getState().pagination.pageIndex || 0}
-        onPageChange={(_, page) => table.setPageIndex(page)}
-        onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
-    </Card>
+      {SnackbarComponent}
+    </>
   )
 }
 

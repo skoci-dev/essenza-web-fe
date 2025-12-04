@@ -21,6 +21,7 @@ apiClient.interceptors.response.use(
       success: true,
       status: response.status,
       data: response.data.data,
+      meta: response.data.meta,
       message: response.data.message || 'Berhasil'
     }
   },

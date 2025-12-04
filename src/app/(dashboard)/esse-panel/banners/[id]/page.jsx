@@ -24,9 +24,11 @@ const BannerDetailPage = () => {
   useEffect(() => {
     const fetchBanner = async () => {
       try {
-        const data = await getBannerById(id)
+        const res = await getBannerById(id)
 
-        setBanner(data)
+        if (res?.data) {
+          setBanner(res.data)
+        }
       } catch (err) {
         console.error('Failed to fetch banner:', err)
       } finally {

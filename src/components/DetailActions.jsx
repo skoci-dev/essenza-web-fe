@@ -9,7 +9,7 @@ import Button from '@mui/material/Button'
 
 import DialogBasic from './DialogBasic'
 
-const DetailActions = ({ id, href }) => {
+const DetailActions = ({ id, href, onConfirm }) => {
   const [openDelete, setOpenDelete] = useState(false)
   const router = useRouter()
 
@@ -48,7 +48,7 @@ const DetailActions = ({ id, href }) => {
       <DialogBasic
         open={openDelete}
         onClose={() => setOpenDelete(false)}
-        omSubmit={() => setOpenDelete(false)}
+        omSubmit={() => onConfirm()}
         title={`Delete ${href}`}
         description={`Are you sure you want to delete this ${href}? This action is permanent and cannot be undone.`}
         colorConfirm='error'
