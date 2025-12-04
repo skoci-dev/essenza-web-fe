@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -21,7 +21,7 @@ import CustomTextField from '@/@core/components/custom-inputs/TextField'
 
 import useSnackbar from '@/@core/hooks/useSnackbar'
 
-import { createBanner, updateBanner } from '@/services/banner'
+import { createBanner, updateBanner, getBannerById } from '@/services/banner'
 
 import { handleApiResponse } from '@/utils/handleApiResponse'
 import FormActions from '@/components/FormActions'
@@ -88,6 +88,25 @@ const BannersForm = ({ id }) => {
     }
   }
 
+  const fetchBanner = async id => {
+    try {
+      const res = await getBannerById(id)
+
+      setData(res.data)
+
+      if (res.data?.image) {
+        setPreview(res.data.image)
+      }
+    } catch {
+      error('Failed to load social media')
+    }
+  }
+
+  useEffect(() => {
+    setPreview('')
+    if (id) fetchBanner(id)
+  }, [id])
+
   return (
     <>
       <Card className='shadow'>
@@ -111,7 +130,7 @@ const BannersForm = ({ id }) => {
               <Grid item xs={12} sm={2}>
                 <FormControlLabel
                   control={<Switch checked={data.is_active} onChange={handleSwitchChange} />}
-                  label='Active'
+                  label={data?.is_active ? 'Active' : 'Inactive'}
                 />
               </Grid>
 

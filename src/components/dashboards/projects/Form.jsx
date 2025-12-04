@@ -1,46 +1,94 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 
+import { CardHeader, Divider } from '@mui/material'
+
 import { createProject, getProjectById, updateProject } from '@/services/projects'
 
-const ProjectForm = ({ isEdit = false }) => {
-  const router = useRouter()
-  const { id } = useParams()
-  const [loading, setLoading] = useState(false)
+import useSnackbar from '@/@core/hooks/useSnackbar'
+import CustomTextField from '@/@core/components/custom-inputs/TextField'
+import FormActions from '@/components/FormActions'
 
-  const [formData, setFormData] = useState({
-    title: '',
-    location: '',
-    description: '',
-    image: '',
-    gallery: [],
-    meta_title: '',
-    meta_description: '',
-    meta_keywords: '',
-    slug: '',
-    is_active: true
-  })
+const defaultData = {
+  title: '',
+  location: '',
+  description: '',
+  image: '',
+  gallery: [],
+  meta_title: '',
+  meta_description: '',
+  meta_keywords: '',
+  slug: '',
+  is_active: true
+}
+
+const ProjectForm = ({ id }) => {
+  const router = useRouter()
+  const { success, error, SnackbarComponent } = useSnackbar()
+
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(defaultData)
+  const [preview, setPreview] = useState(defaultData.image || '')
+
+  const fields = useMemo(
+    () => [
+      { name: 'title', label: 'Title', placeholder: 'Judul', size: 6, required: true },
+      { name: 'slug', label: 'Slug', placeholder: 'slug-url-anda', size: 6 },
+      { name: 'location', label: 'Location', placeholder: 'Lokasi', size: 6 },
+      { name: 'description', label: 'Description', placeholder: 'Deskripsi', size: 12, multiline: true, rows: 4 },
+      { name: 'meta_title', label: 'Meta Title', placeholder: 'Meta Title', size: 6 },
+      { name: 'meta_keywords', label: 'Meta Keywords', placeholder: 'keyword1, keyword2, keyword3', size: 6 },
+      {
+        name: 'meta_description',
+        label: 'Meta Description',
+        placeholder: 'Meta Description',
+        size: 12,
+        multiline: true,
+        rows: 3
+      }
+    ],
+    []
+  )
 
   useEffect(() => {
-    if (isEdit && id) {
-      getProjectById(id).then(data => setFormData(data))
+    if (id) {
+      getProjectById(id).then(e => setData(e))
     }
-  }, [isEdit, id])
+  }, [id])
 
   const handleChange = e => {
     const { name, value } = e.target
 
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSwitchChange = e => {
+    setData(prev => ({ ...prev, is_active: e.target.checked }))
+  }
+
+  const handleImageChange = e => {
+    const file = e.target.files[0]
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file)
+
+      setPreview(imageUrl)
+      setData(prev => ({ ...prev, image: file }))
+    }
   }
 
   const handleSubmit = async e => {
@@ -48,8 +96,8 @@ const ProjectForm = ({ isEdit = false }) => {
     setLoading(true)
 
     try {
-      if (isEdit) await updateProject(id, formData)
-      else await createProject(formData)
+      if (id) await updateProject(id, data)
+      else await createProject(data)
       alert('Saved successfully!')
       router.push('/esse-panel/projects')
     } catch (err) {
@@ -60,101 +108,71 @@ const ProjectForm = ({ isEdit = false }) => {
   }
 
   return (
-    <Card className='shadow'>
-      <CardContent>
-        <form onSubmit={handleSubmit} className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <TextField
-            size='small'
-            name='title'
-            label='Title'
-            value={formData.title}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            size='small'
-            name='location'
-            label='Location'
-            value={formData.location}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            size='small'
-            name='slug'
-            label='Slug'
-            value={formData.slug}
-            onChange={handleChange}
-            fullWidth
-            helperText='Unique slug for project URL'
-          />
-          <TextField
-            size='small'
-            name='image'
-            label='Main Image URL'
-            value={formData.image}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            size='small'
-            name='description'
-            label='Description'
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={3}
-          />
-          <TextField
-            size='small'
-            name='meta_title'
-            label='Meta Title'
-            value={formData.meta_title}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            size='small'
-            name='meta_description'
-            label='Meta Description'
-            value={formData.meta_description}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={2}
-          />
-          <TextField
-            size='small'
-            name='meta_keywords'
-            label='Meta Keywords'
-            value={formData.meta_keywords}
-            onChange={handleChange}
-            fullWidth
-          />
+    <>
+      <form onSubmit={handleSubmit}>
+        <Card className='shadow'>
+          <CardHeader title={id ? 'Edit Project' : 'Add Project'} subheader='' />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={5} className='mbe-5'>
+              {fields.map(field => (
+                <CustomTextField
+                  key={field.name}
+                  {...field}
+                  type={field.type || 'text'}
+                  value={data[field.name] || ''}
+                  onChange={handleChange}
+                  inputProps={field.type === 'number' ? { min: 1 } : {}}
+                />
+              ))}
+              <Grid item xs={6} sm={2}>
+                <FormControlLabel
+                  control={<Switch checked={data.is_active} onChange={handleSwitchChange} />}
+                  label={data?.is_active ? 'Active' : 'Inactive'}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant='subtitle2' className='mb-2'>
+                  Project Image
+                </Typography>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.is_active}
-                onChange={e => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-              />
-            }
-            label='Active'
-          />
-
-          <div className='col-span-2 flex justify-end gap-3 mt-4'>
-            <Button type='button' variant='outlined' onClick={() => router.push('/esse-panel/projects')}>
-              Cancel
-            </Button>
-            <Button type='submit' variant='contained' disabled={loading}>
-              {isEdit ? 'Update' : 'Save'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+                {preview ? (
+                  <Box className='relative inline-block'>
+                    <img src={preview} alt='Preview' className='w-[220px] h-[120px] object-cover rounded border' />
+                    <IconButton
+                      color='error'
+                      size='small'
+                      className='absolute top-1 right-1 bg-white shadow'
+                      onClick={() => {
+                        setPreview('')
+                        setData(prev => ({ ...prev, image: '' }))
+                      }}
+                    >
+                      <i className='ri-delete-bin-line text-red-500 text-lg' />
+                    </IconButton>
+                  </Box>
+                ) : (
+                  <Button
+                    variant='outlined'
+                    component='label'
+                    className='w-1/6'
+                    size='small'
+                    startIcon={<i className='ri-upload-2-line text-lg' />}
+                    color='primary'
+                  >
+                    Upload Image
+                    <input type='file' hidden accept='image/*' onChange={handleImageChange} />
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
+          </CardContent>
+          <Divider />
+          <FormActions onCancel={() => router.push('/esse-panel/banners')} isEdit={id} />
+        </Card>
+      </form>
+      {SnackbarComponent}
+    </>
   )
 }
 

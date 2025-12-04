@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -25,6 +25,7 @@ import Link from '@/components/Link'
 import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
 import CustomInputsDebounced from '@/@core/components/custom-inputs/Debounced'
+import { getProjects } from '@/services/projects'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -34,55 +35,10 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const defaultProjectData = [
-  {
-    id: 1,
-    title: 'Renovasi Gedung Sekolah',
-    location: 'Jakarta Barat',
-    description: 'Proyek renovasi gedung sekolah dengan fasilitas modern dan ramah lingkungan.',
-    image: '/images/projects/project1.jpg',
-    gallery: ['/images/projects/project1a.jpg', '/images/projects/project1b.jpg'],
-    meta_title: 'Renovasi Gedung Sekolah - Global Nusantara',
-    meta_description: 'Renovasi gedung sekolah dengan desain modern dan aman.',
-    meta_keywords: 'renovasi sekolah, proyek pendidikan, gedung sekolah',
-    slug: 'renovasi-gedung-sekolah',
-    is_active: true,
-    created_at: '2025-01-12 10:00'
-  },
-  {
-    id: 2,
-    title: 'Pembangunan Mall Hijau',
-    location: 'BSD City',
-    description: 'Mall dengan konsep eco-friendly dan penggunaan energi terbarukan.',
-    image: '/images/projects/project2.jpg',
-    gallery: ['/images/projects/project2a.jpg', '/images/projects/project2b.jpg'],
-    meta_title: 'Pembangunan Mall Hijau - Global Nusantara',
-    meta_description: 'Mall modern dengan konsep ramah lingkungan.',
-    meta_keywords: 'mall hijau, proyek komersial, energi terbarukan',
-    slug: 'pembangunan-mall-hijau',
-    is_active: false,
-    created_at: '2025-02-05 14:30'
-  },
-  {
-    id: 3,
-    title: 'Apartemen Skyline Residence',
-    location: 'Jakarta Selatan',
-    description: 'Pembangunan apartemen premium dengan fasilitas lengkap.',
-    image: '/images/projects/project3.jpg',
-    gallery: ['/images/projects/project3a.jpg'],
-    meta_title: 'Apartemen Skyline Residence - Global Nusantara',
-    meta_description: 'Apartemen premium di pusat kota dengan fasilitas lengkap.',
-    meta_keywords: 'apartemen, skyline, hunian modern',
-    slug: 'apartemen-skyline-residence',
-    is_active: true,
-    created_at: '2025-03-01 09:00'
-  }
-]
-
 const columnHelper = createColumnHelper()
 
 const ProjectsPage = () => {
-  const [data, setData] = useState(defaultProjectData)
+  const [data, setData] = useState([])
   const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
   const router = useRouter()
@@ -169,6 +125,16 @@ const ProjectsPage = () => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel()
   })
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      const res = await getProjects()
+
+      if (res?.data) setData(res.data)
+    }
+
+    fetchProject()
+  }, [])
 
   return (
     <Card>
