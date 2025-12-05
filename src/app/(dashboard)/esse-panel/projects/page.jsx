@@ -1,15 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import TablePagination from '@mui/material/TablePagination'
-import Typography from '@mui/material/Typography'
+import { Box, Chip, Card, CardHeader, Divider, TablePagination, Typography, Tooltip, Button } from '@mui/material'
 
 import { rankItem } from '@tanstack/match-sorter-utils'
 import {
@@ -21,11 +16,14 @@ import {
   getSortedRowModel
 } from '@tanstack/react-table'
 
-import Link from '@/components/Link'
+import useSnackbar from '@/@core/hooks/useSnackbar'
 import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
-import CustomInputsDebounced from '@/@core/components/custom-inputs/Debounced'
-import { getProjects } from '@/services/projects'
+import { deleteProject, getProjects } from '@/services/projects'
+import TableHeaderActions from '@/@core/components/table/HeaderActions'
+import { getTruncateText } from '@/utils/string'
+import DialogBasic from '@/components/DialogBasic'
+import BackdropLoading from '@/components/BackdropLoading'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -38,84 +36,172 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
 const columnHelper = createColumnHelper()
 
 const ProjectsPage = () => {
-  const [data, setData] = useState([])
-  const [filteredData, setFilteredData] = useState(data)
-  const [globalFilter, setGlobalFilter] = useState('')
   const router = useRouter()
+  const { success, error, SnackbarComponent } = useSnackbar()
 
-  const toggleActive = id => {
-    setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
-    setFilteredData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
-  }
+  const [data, setData] = useState([])
 
-  const deleteProject = id => {
-    setData(prev => prev.filter(item => item.id !== id))
-    setFilteredData(prev => prev.filter(item => item.id !== id))
-  }
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [deleteId, setDeleteId] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [isDataLoading, setIsDataLoading] = useState(true)
 
-  const actionsData = row => [
-    {
-      text: 'View',
-      icon: <i className='ri-eye-line text-blue-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => router.push(`/esse-panel/projects/${row.original.id}`)
+  const fetchProjects = useCallback(async () => {
+    setIsDataLoading(true)
+
+    try {
+      const res = await getProjects()
+
+      if (res?.data) {
+        setData(res.data)
       }
-    },
-    {
-      text: 'Edit',
-      icon: <i className='ri-edit-box-line text-yellow-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => router.push(`/esse-panel/projects/${row.original.id}/edit`)
-      }
-    },
-    {
-      text: 'Delete',
-      icon: <i className='ri-delete-bin-line text-red-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => deleteProject(row.original.id)
-      }
+    } catch (err) {
+      error('Gagal memuat data proyek.')
+      console.error(err)
+    } finally {
+      setIsDataLoading(false)
     }
-  ]
+  }, [error])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteId) return
+
+    setLoading(true)
+
+    try {
+      const res = await deleteProject(deleteId)
+
+      if (res?.success) {
+        success('Proyek berhasil dihapus!')
+
+        fetchProjects()
+      } else {
+        error(res?.message || 'Gagal menghapus proyek!')
+      }
+    } catch (err) {
+      error(err.message || 'Terjadi kesalahan saat menghapus.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+      setDeleteId(null)
+    }
+  }, [deleteId, fetchProjects, success, error])
+
+  const actionsData = useCallback(
+    row => [
+      {
+        text: 'View',
+        icon: <i className='ri-eye-line text-blue-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+          onClick: () => router.push(`/esse-panel/projects/${row.original.id}`)
+        }
+      },
+      {
+        text: 'Edit',
+        icon: <i className='ri-edit-box-line text-yellow-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+          onClick: () => router.push(`/esse-panel/projects/${row.original.id}/edit`)
+        }
+      },
+      {
+        text: 'Delete',
+        icon: <i className='ri-delete-bin-line text-red-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+
+          onClick: () => setDeleteId(row.original.id)
+        }
+      }
+    ],
+    [router]
+  )
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('image', {
         header: 'Image',
-        cell: info => <img src={info.getValue()} alt='Project' className='w-24 h-12 object-cover rounded' />
+        cell: info => (
+          <Box sx={{ display: 'flex' }}>
+            <Box
+              component='img'
+              src={info.getValue()}
+              alt='Project'
+              sx={{ width: 96, height: 48, objectFit: 'cover', borderRadius: 1 }}
+            />
+          </Box>
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('title', {
         header: 'Title',
-        cell: info => <Typography>{info.getValue()}</Typography>
+        cell: info => (
+          <Typography variant='body2' fontWeight={600}>
+            {info.getValue()}
+          </Typography>
+        )
+      }),
+      columnHelper.accessor('description', {
+        header: 'Description',
+        cell: info => {
+          const fullText = info.getValue()
+
+          return (
+            <Tooltip title={fullText} arrow>
+              <Box sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <Typography variant='body2' sx={{ fontSize: '0.875rem' }}>
+                  {getTruncateText(fullText, 30)}
+                </Typography>
+              </Box>
+            </Tooltip>
+          )
+        }
       }),
       columnHelper.accessor('location', {
         header: 'Location',
-        cell: info => <Typography>{info.getValue()}</Typography>
+        cell: info => <Typography variant='body2'>{info.getValue()}</Typography>
       }),
       columnHelper.accessor('slug', {
         header: 'Slug',
-        cell: info => <Typography className='text-gray-500 text-sm'>{info.getValue()}</Typography>
+        cell: info => (
+          <Typography color='text.secondary' variant='caption'>
+            {info.getValue()}
+          </Typography>
+        )
       }),
-      columnHelper.accessor('created_at', {
-        header: 'Created At',
-        cell: info => <Typography>{info.getValue()}</Typography>
+      columnHelper.accessor('is_active', {
+        header: 'Status',
+        cell: info => {
+          const isActive = info.getValue()
+
+          return isActive ? (
+            <Chip label='Active' size='small' color='success' variant='outlined' sx={{ borderRadius: 1 }} />
+          ) : (
+            <Chip label='Inactive' size='small' color='error' variant='outlined' sx={{ borderRadius: 1 }} />
+          )
+        }
       }),
       columnHelper.accessor('actions', {
         header: 'Actions',
+        enableSorting: false,
+        enableColumnFilter: false,
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
+          <Box className='flex items-center gap-2'>
             <ActionMenu actions={actionsData(row)} />
-          </div>
+          </Box>
         )
       })
     ],
-    []
+    [actionsData]
   )
 
   const table = useReactTable({
-    data: filteredData,
+    data,
     columns,
     filterFns: { fuzzy: fuzzyFilter },
     state: { globalFilter },
@@ -123,49 +209,55 @@ const ProjectsPage = () => {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageSize: 10 }
+    }
   })
 
-  useEffect(() => {
-    const fetchProject = async () => {
-      const res = await getProjects()
-
-      if (res?.data) setData(res.data)
-    }
-
-    fetchProject()
-  }, [])
-
   return (
-    <Card>
-      <CardHeader title='Project Management' className='p-4' />
-      <Divider />
-
-      <div className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
-        <CustomInputsDebounced
-          value={globalFilter ?? ''}
-          onChange={value => setGlobalFilter(String(value))}
-          placeholder='Search Project'
+    <>
+      <Card sx={{ boxShadow: 3 }}>
+        <CardHeader title='Project Management' sx={{ p: 4 }} />
+        <Divider />
+        <TableHeaderActions
+          searchPlaceholder='Search Project'
+          searchValue={globalFilter ?? ''}
+          onSearchChange={setGlobalFilter}
+          addLabel='Add Project'
+          addHref='/esse-panel/projects/add'
+          addColor='success'
         />
-        <Link href='/esse-panel/projects/add'>
-          <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
-            Add Project
-          </Button>
-        </Link>
-      </div>
 
-      <TableGeneric table={table} />
+        <BackdropLoading open={isDataLoading} />
+        <TableGeneric table={table} />
+        <TablePagination
+          component='div'
+          count={table.getFilteredRowModel().rows.length}
+          rowsPerPage={table.getState().pagination.pageSize}
+          page={table.getState().pagination.pageIndex}
+          onPageChange={(_, page) => {
+            table.setPageIndex(page)
+          }}
+          onRowsPerPageChange={e => {
+            const newSize = Number(e.target.value)
 
-      <TablePagination
-        component='div'
-        count={table.getFilteredRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize || 10}
-        page={table.getState().pagination.pageIndex || 0}
-        onPageChange={(_, page) => table.setPageIndex(page)}
-        onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
-        rowsPerPageOptions={[5, 10, 25]}
+            table.setPageSize(newSize)
+          }}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
+      </Card>
+
+      <DialogBasic
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        onSubmit={handleConfirmDelete}
+        title='Delete Project'
+        description='Apakah Anda yakin ingin menghapus proyek ini?'
       />
-    </Card>
+      {SnackbarComponent}
+      <BackdropLoading open={loading} />
+    </>
   )
 }
 

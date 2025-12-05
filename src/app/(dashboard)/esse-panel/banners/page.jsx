@@ -10,7 +10,6 @@ import Chip from '@mui/material/Chip'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
-import Switch from '@mui/material/Switch'
 import TablePagination from '@mui/material/TablePagination'
 import Typography from '@mui/material/Typography'
 
@@ -33,6 +32,7 @@ import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
 import TableHeaderActions from '@/@core/components/table/HeaderActions'
 import DialogBasic from '@/components/DialogBasic'
+import BackdropLoading from '@/components/BackdropLoading'
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -51,6 +51,7 @@ const BannerPage = () => {
   const [filteredData, setFilteredData] = useState(data)
   const [globalFilter, setGlobalFilter] = useState('')
   const [deleteIndex, setDeleteIndex] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
   const { success, error, SnackbarComponent } = useSnackbar()
@@ -107,7 +108,7 @@ const BannerPage = () => {
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
       columnHelper.accessor('is_active', {
-        header: 'Active',
+        header: 'Status',
         cell: info => {
           const isActive = info.getValue()
 
@@ -118,7 +119,6 @@ const BannerPage = () => {
           )
         }
       }),
-
       columnHelper.accessor('actions', {
         header: 'Actions',
         cell: ({ row }) => (
@@ -153,12 +153,21 @@ const BannerPage = () => {
   }
 
   const confirmDelete = async () => {
+    setLoading(true)
+
     try {
       const res = await deleteBanner(deleteIndex)
 
-      console.success('Deleted successfully!')
+      if (res?.success) {
+        success('Deleted successfully!')
+        fetchBanner()
+      }
     } catch {
       error('Delete failed!')
+    } finally {
+      setDeleteIndex(null)
+
+      setLoading(false)
     }
 
     setDeleteIndex(null)
@@ -202,7 +211,7 @@ const BannerPage = () => {
             setPagination(prev => ({
               ...prev,
               page_size: newSize,
-              page: 0 // reset ke page awal saat ganti rowsPerPage
+              page: 0
             }))
           }}
           rowsPerPageOptions={[5, 10, 25]}
@@ -216,6 +225,7 @@ const BannerPage = () => {
         description='Are you sure to delete this banner?'
       />
       {SnackbarComponent}
+      <BackdropLoading open={loading} />
     </>
   )
 }

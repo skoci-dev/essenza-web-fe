@@ -1,48 +1,74 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 
 import Card from '@mui/material/Card'
+import Chip from '@mui/material/Chip'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 
+import useSnackbar from '@/@core/hooks/useSnackbar'
 import { getProjectById, deleteProject } from '@/services/projects'
 import DetailField from '@/components/DetailField'
+import BackdropLoading from '@/components/BackdropLoading'
 import DetailActions from '@/components/DetailActions'
 
 const ProjectDetailPage = () => {
   const { id } = useParams()
   const router = useRouter()
+  const { success, error, SnackbarComponent } = useSnackbar()
+
   const [project, setProject] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (id) {
-      getProjectById(id)
-        .then(data => setProject(data))
-        .finally(() => setLoading(false))
-    }
-  }, [id])
+    const fetchProject = async () => {
+      try {
+        const res = await getProjectById(id)
 
-  const handleDelete = async () => {
-    if (confirm('Delete this project?')) {
+        if (res?.data) {
+          setProject(res.data)
+        } else {
+          setProject(null)
+        }
+      } catch (err) {
+        console.error('Failed to fetch project:', err)
+        error('Gagal memuat detail proyek.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) fetchProject()
+  }, [id, error])
+
+  const handleDelete = useCallback(async () => {
+    setLoading(true)
+
+    try {
       await deleteProject(id)
-      alert('Deleted successfully!')
-      router.push('/esse-panel/projects')
-    }
-  }
 
-  if (loading) return <p className='p-6'>Loading...</p>
-  if (!project) return <p className='p-6'>Project not found</p>
+      success('Berhasil dihapus!')
+      router.push('/esse-panel/projects')
+    } catch (err) {
+      console.error('Delete failed:', err)
+      error('Gagal menghapus: ' + (err.message || 'Terjadi kesalahan server.'))
+      setLoading(false)
+    }
+  }, [id, success, error, router])
+
+  if (loading) return <BackdropLoading open={loading} />
+  if (!project) return <Typography sx={{ p: 3 }}>Project tidak ditemukan</Typography>
 
   return (
-    <div className='p-6'>
-      <Card className='shadow'>
+    <Box sx={{ p: 3 }}>
+      <Card sx={{ boxShadow: 3 }}>
         <CardHeader title='Project Detail' />
         <Divider />
         <CardContent>
@@ -50,20 +76,38 @@ const ProjectDetailPage = () => {
             <DetailField label='Title' value={project.title} />
             <DetailField label='Location' value={project.location} />
             <DetailField label='Slug' value={project.slug} />
-            <DetailField label='Status' value={project.is_active ? 'Active' : 'Inactive'} />
+
+            <DetailField
+              label={'Status'}
+              value={
+                project.is_active ? (
+                  <Chip label='Active' size='small' color='success' variant='outlined' sx={{ borderRadius: 1 }} />
+                ) : (
+                  <Chip label='Inactive' size='small' color='error' variant='outlined' sx={{ borderRadius: 1 }} />
+                )
+              }
+            />
             <DetailField label='Description' value={project.description} xs={12} />
             <DetailField label='Meta Title' value={project.meta_title} />
             <DetailField label='Meta Description' value={project.meta_description} xs={12} />
             <DetailField label='Meta Keywords' value={project.meta_keywords} xs={12} />
+
             <Grid item xs={12}>
-              <Typography variant='subtitle2' className='mb-2'>
+              <Typography variant='subtitle2' sx={{ mb: 1.5 }}>
                 Main Image
               </Typography>
               {project.image ? (
-                <img
+                <Box
+                  component='img'
                   src={project.image}
                   alt={project.title}
-                  className='w-[240px] h-[140px] object-cover rounded border'
+                  sx={{
+                    width: 240,
+                    height: 140,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                    border: '1px solid #ccc'
+                  }}
                 />
               ) : (
                 <Typography variant='body2' color='textSecondary'>
@@ -71,29 +115,46 @@ const ProjectDetailPage = () => {
                 </Typography>
               )}
             </Grid>
+
             {project.gallery?.length > 0 && (
               <Grid item xs={12}>
-                <Typography variant='subtitle2' className='mb-2'>
+                <Typography variant='subtitle2' sx={{ mb: 1.5 }}>
                   Gallery
                 </Typography>
-                <div className='flex gap-3 flex-wrap'>
+                <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                   {project.gallery.map((img, i) => (
-                    <img
+                    <Box
                       key={i}
+                      component='img'
                       src={img}
                       alt={`Gallery ${i}`}
-                      className='w-[120px] h-[80px] object-cover rounded border'
+                      sx={{
+                        width: 120,
+                        height: 80,
+                        objectFit: 'cover',
+                        borderRadius: 1,
+                        border: '1px solid #ccc'
+                      }}
                     />
                   ))}
-                </div>
+                </Box>
               </Grid>
             )}
           </Grid>
         </CardContent>
         <Divider />
-        <DetailActions id={id} href='projects' />
+
+        <DetailActions
+          id={id}
+          href='projects'
+          onDelete={handleDelete}
+          onConfirm={() => {
+            handleDelete()
+          }}
+        />
       </Card>
-    </div>
+      {SnackbarComponent}
+    </Box>
   )
 }
 

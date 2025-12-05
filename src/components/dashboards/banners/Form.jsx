@@ -25,6 +25,7 @@ import { createBanner, updateBanner, getBannerById } from '@/services/banner'
 
 import { handleApiResponse } from '@/utils/handleApiResponse'
 import FormActions from '@/components/FormActions'
+import BackdropLoading from '@/components/BackdropLoading'
 
 const defaultData = {
   title: '',
@@ -37,6 +38,7 @@ const defaultData = {
 
 const BannersForm = ({ id }) => {
   const [data, setData] = useState(defaultData)
+  const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState(defaultData.image || '')
 
   const router = useRouter()
@@ -54,6 +56,7 @@ const BannersForm = ({ id }) => {
   const { success, error, SnackbarComponent } = useSnackbar()
 
   const handleSubmit = async e => {
+    setLoading(true)
     e.preventDefault()
 
     await handleApiResponse(() => (id ? updateBanner(id, data) : createBanner(data)), {
@@ -63,7 +66,9 @@ const BannersForm = ({ id }) => {
         setTimeout(() => {
           router.push('/esse-panel/banners')
         }, 2000),
-      onError: () => {}
+      onError: () => {
+        setLoading(false)
+      }
     })
   }
 
@@ -175,6 +180,7 @@ const BannersForm = ({ id }) => {
         </form>
       </Card>
       {SnackbarComponent}
+      <BackdropLoading open={loading} />
     </>
   )
 }

@@ -1,15 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import ProjectForm from '@/components/dashboards/projects/Form'
 
-import BannersForm from '@/components/dashboards/banners/Form'
+const BannersEditPage = ({ params }) => {
+  const id = params?.id
 
-const BannersEditPage = () => {
-  const router = useRouter()
-
-  const handleSubmit = e => {}
-
-  return <BannersForm onCancel={() => router.push('/esse-panel/banners')} onSubmit={handleSubmit} />
+  return <ProjectForm id={id} />
 }
 
 export default BannersEditPage

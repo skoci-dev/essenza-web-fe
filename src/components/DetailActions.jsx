@@ -48,7 +48,9 @@ const DetailActions = ({ id, href, onConfirm }) => {
       <DialogBasic
         open={openDelete}
         onClose={() => setOpenDelete(false)}
-        omSubmit={() => onConfirm()}
+        onSubmit={() => {
+          onConfirm()
+        }}
         title={`Delete ${href}`}
         description={`Are you sure you want to delete this ${href}? This action is permanent and cannot be undone.`}
         colorConfirm='error'

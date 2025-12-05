@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 import Card from '@mui/material/Card'
+import Chip from '@mui/material/Chip'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
@@ -17,7 +18,7 @@ import DetailActions from '@/components/DetailActions'
 
 const BannerDetailPage = () => {
   const { id } = useParams()
-  const router = useRouter()
+
   const [banner, setBanner] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -39,18 +40,6 @@ const BannerDetailPage = () => {
     if (id) fetchBanner()
   }, [id])
 
-  const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this banner?')) {
-      try {
-        await deleteBanner(id)
-        alert('Banner deleted successfully!')
-        router.push('/esse-panel/banner')
-      } catch (err) {
-        console.error('Delete failed:', err)
-      }
-    }
-  }
-
   if (loading) return <p className='p-6'>Loading...</p>
   if (!banner) return <p className='p-6'>Banner not found.</p>
 
@@ -65,7 +54,16 @@ const BannerDetailPage = () => {
             <DetailField label={'Subtitle'} value={banner?.subtitle} />
             <DetailField label={'Link URL'} value={banner?.link_url} />
             <DetailField label={'Order No'} value={banner?.title} />
-            <DetailField label={'Active'} value={banner.is_active ? 'Yes' : 'No'} />
+            <DetailField
+              label={'Status'}
+              value={
+                banner.is_active ? (
+                  <Chip label='Active' size='small' color='success' variant='tonal' className='self-start rounded' />
+                ) : (
+                  <Chip label='Inactive' size='small' color='error' variant='tonal' className='self-start rounded' />
+                )
+              }
+            />
             <Grid item xs={12}>
               <Typography variant='subtitle2' className='mb-2'>
                 Banner Image

@@ -15,13 +15,13 @@ const createProject = async data => {
 }
 
 const updateProject = async (id, data) => {
-  return await apiClient.post(`/int/v1/projects/${id}?_method=PUT`, data, {
+  return await apiClient.put(`/int/v1/projects/${id}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
 
 const deleteProject = async id => {
-  return await apiClient.delete(`/projects/${id}`)
+  return await apiClient.delete(`/int/v1/projects/${id}`)
 }
 
 export { getProjects, getProjectById, createProject, updateProject, deleteProject }
