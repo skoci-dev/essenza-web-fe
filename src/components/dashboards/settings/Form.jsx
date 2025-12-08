@@ -1,106 +1,127 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-
-import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardHeader from '@mui/material/CardHeader'
-import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/Grid'
-
-import CustomTextField from '@/@core/components/custom-inputs/TextField'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 
 import useSnackbar from '@/@core/hooks/useSnackbar'
-
 import { updateSetting, getSettingBySlug } from '@/services/setting'
 import { handleApiResponse } from '@/utils/handleApiResponse'
 import BackdropLoading from '@/components/BackdropLoading'
-import FormActions from '@/components/FormActions'
+import RenderFormSection from './RenderFormSection'
 
-const defaultData = {
-  site_name: '',
-  site_description: '',
-  site_logo_url: '',
-  favicon_url: '',
-  meta_keywords: '',
-  meta_description: ''
-}
+const GENERAL_SLUGS = [
+  'site_name',
+  'site_description',
+  'site_logo_url',
+  'favicon_url',
+  'meta_keywords',
+  'meta_description'
+]
+
+const WA_SLUGS = ['wa_number', 'wa_message']
+const ALL_SLUGS = [...GENERAL_SLUGS, ...WA_SLUGS]
+
+const initialSettingsState = ALL_SLUGS.reduce((acc, slug) => {
+  acc[slug] = ''
+
+  return acc
+}, {})
 
 const SettingsForm = () => {
-  const [data, setData] = useState(defaultData)
-  const [isEdit, setIsEdit] = useState(false)
+  const [settings, setSettings] = useState(initialSettingsState)
   const [loading, setLoading] = useState(false)
+  const [isGeneralEditing, setIsGeneralEditing] = useState(false)
+  const [isWaEditing, setIsWaEditing] = useState(false)
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
   const fields = useMemo(
-    () => [
-      { name: 'site_name', label: 'Site Name', placeholder: 'Masukkan nama situs', size: 6, required: true },
-      { name: 'favicon_url', label: 'Favicon URL', placeholder: '/favicon.ico', size: 6, required: true },
-      { name: 'site_logo_url', label: 'Site Logo URL', placeholder: '/images/logo.png', size: 6, required: true },
-      {
-        name: 'meta_keywords',
-        label: 'Meta Keywords',
-        placeholder: 'kata kunci SEO dipisahkan koma',
-        size: 6,
-        required: true
-      },
-      {
-        name: 'site_description',
-        label: 'Site Description',
-        placeholder: 'Deskripsi singkat tentang situs atau perusahaan',
-        multiline: true,
-        rows: 3,
-        required: true
-      },
-      {
-        name: 'meta_description',
-        label: 'Meta Description',
-        placeholder: 'Deskripsi untuk meta tag SEO',
-        multiline: true,
-        rows: 3
-      }
-    ],
+    () => ({
+      general: [
+        { name: 'site_name', label: 'Site Name', placeholder: 'Masukkan nama situs', size: 6, required: true },
+        { name: 'favicon_url', label: 'Favicon URL', placeholder: '/favicon.ico', size: 6, required: true },
+        { name: 'site_logo_url', label: 'Site Logo URL', placeholder: '/images/logo.png', size: 6, required: true },
+        {
+          name: 'meta_keywords',
+          label: 'Meta Keywords',
+          placeholder: 'kata kunci SEO dipisahkan koma',
+          size: 6,
+          required: true
+        },
+        {
+          name: 'site_description',
+          label: 'Site Description',
+          placeholder: 'Deskripsi singkat tentang situs atau perusahaan',
+          multiline: true,
+          rows: 3,
+          size: 12,
+          required: true
+        },
+        {
+          name: 'meta_description',
+          label: 'Meta Description',
+          placeholder: 'Deskripsi untuk meta tag SEO',
+          multiline: true,
+          rows: 3,
+          size: 12
+        }
+      ],
+      wa: [
+        { name: 'wa_number', label: 'WA / Phone Number', placeholder: '+628XXXXXXXX', size: 12, required: true },
+        {
+          name: 'wa_message',
+          label: 'Message',
+          placeholder: 'Halo . . . .',
+          required: true,
+          multiline: true,
+          rows: 3,
+          size: 12
+        }
+      ]
+    }),
     []
   )
 
   useEffect(() => {
     const fetchSettings = async () => {
+      setLoading(true)
+
       try {
-        const slugs = Object.keys(defaultData)
-        const results = await Promise.all(slugs.map(slug => getSettingBySlug(slug)))
-        const newData = {}
+        const results = await Promise.all(ALL_SLUGS.map(slug => getSettingBySlug(slug)))
 
-        results.forEach((res, idx) => {
-          const slug = slugs[idx]
+        const newData = results.reduce((acc, res, idx) => {
+          const slug = ALL_SLUGS[idx]
 
-          newData[slug] = res?.data?.value || ''
-        })
-        setData(newData)
+          acc[slug] = res?.data?.value || ''
+
+          return acc
+        }, {})
+
+        setSettings(newData)
       } catch (err) {
         error('Gagal memuat data settings')
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchSettings()
+  }, [error])
+
+  const handleChange = useCallback(e => {
+    const { name, value } = e.target
+
+    setSettings(prev => ({ ...prev, [name]: value }))
   }, [])
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    setLoading(true)
-
-    const slugs = Object.keys(data)
-
-    const combinedRequest = async () => {
-      const results = []
+  const createCombinedRequest = useCallback(
+    async (slugsToUpdate, setIsEditing) => {
       const errors = []
+      const results = []
 
-      for (const slug of slugs) {
+      const updatePromises = slugsToUpdate.map(async slug => {
         const payload = {
           label: slug.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          value: data[slug] || '',
+          value: settings[slug] || '',
           description: `Setting for ${slug}`,
           is_active: true
         }
@@ -115,19 +136,21 @@ const SettingsForm = () => {
             message: res?.message || 'Unknown error'
           })
         }
-      }
+
+        return res.success
+      })
+
+      await Promise.all(updatePromises)
 
       if (errors.length > 0) {
         const errorItems = errors
-          .map(item => {
-            return (
-              '- ' +
-              item.slug
+          .map(
+            item =>
+              `- ${item.slug
                 .split('_')
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')
-            )
-          })
+                .join(' ')}`
+          )
           .join('\n')
 
         return {
@@ -145,13 +168,19 @@ const SettingsForm = () => {
         message: 'All settings updated successfully',
         data: results
       }
-    }
+    },
+    [settings]
+  )
 
-    await handleApiResponse(combinedRequest, {
+  const handleFormSubmit = async (e, slugsToUpdate, setIsEditing) => {
+    e.preventDefault()
+    setLoading(true)
+
+    await handleApiResponse(() => createCombinedRequest(slugsToUpdate), {
       success: () => success('All settings updated successfully'),
       error: msg => error(<span className='whitespace-pre-wrap'>{msg}</span>),
       onSuccess: () => {
-        setIsEdit(false)
+        setIsEditing(false)
         setLoading(false)
       },
       onError: () => {
@@ -160,50 +189,32 @@ const SettingsForm = () => {
     })
   }
 
-  const handleChange = e => {
-    const { name, value } = e.target
-
-    setData(prev => ({ ...prev, [name]: value }))
-  }
-
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <Card>
-          <CardHeader title='General Settings' />
-          <Divider />
-          <CardContent>
-            <Grid container spacing={5} className='mbe-5'>
-              {fields.map(field => (
-                <CustomTextField
-                  key={field.name}
-                  {...field}
-                  disabled={!isEdit}
-                  value={data[field.name] || ''}
-                  onChange={handleChange}
-                />
-              ))}
-            </Grid>
-          </CardContent>
-          <Divider />
-          {!isEdit ? (
-            <Box className={`flex justify-between p-4`}>
-              <Button
-                variant='contained'
-                color='info'
-                size='small'
-                className='w-1/6'
-                onClick={() => setIsEdit(true)}
-                startIcon={<i className='ri-pencil-line text-lg' />}
-              >
-                Edit
-              </Button>
-            </Box>
-          ) : (
-            <FormActions onCancel={() => setIsEdit(false)} isEdit={isEdit} />
-          )}
-        </Card>
-      </form>
+      {/* General Settings Form */}
+      <RenderFormSection
+        title='General Settings'
+        fields={fields.general}
+        slugs={GENERAL_SLUGS}
+        isEditing={isGeneralEditing}
+        setIsEditing={setIsGeneralEditing}
+        onFormSubmit={handleFormSubmit}
+        onChange={handleChange}
+        settings={settings}
+      />
+
+      {/* WA Settings Form */}
+      <RenderFormSection
+        title='WA Setting'
+        fields={fields.wa}
+        slugs={WA_SLUGS}
+        isEditing={isWaEditing}
+        setIsEditing={setIsWaEditing}
+        onFormSubmit={handleFormSubmit}
+        onChange={handleChange}
+        settings={settings}
+      />
+
       {SnackbarComponent}
       <BackdropLoading open={loading} />
     </>
