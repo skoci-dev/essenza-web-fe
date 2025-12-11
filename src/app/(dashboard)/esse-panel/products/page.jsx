@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -14,15 +14,7 @@ import TablePagination from '@mui/material/TablePagination'
 import Typography from '@mui/material/Typography'
 
 // Third-party Imports
-import { rankItem } from '@tanstack/match-sorter-utils'
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  useReactTable,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel
-} from '@tanstack/react-table'
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 // Components
 import Link from '@/components/Link'
@@ -30,97 +22,134 @@ import ActionMenu from '@/@core/components/option-menu/ActionMenu'
 import TableGeneric from '@/@core/components/table/Generic'
 import CustomInputsDebounced from '@/@core/components/custom-inputs/Debounced'
 
+import useSnackbar from '@/@core/hooks/useSnackbar'
 import DialogBasic from '@/components/DialogBasic'
 import BackdropLoading from '@/components/BackdropLoading'
-
-// Fuzzy filter untuk search
-const fuzzyFilter = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  addMeta({ itemRank })
-
-  return itemRank.passed
-}
-
-// Dummy data produk
-const defaultProductData = [
-  {
-    id: 1,
-    name: 'Keramik Lantai Motif Kayu',
-    lang: 'id',
-    model: 'KMK-001',
-    size: '60x60',
-    description: 'Keramik lantai dengan motif kayu alami.',
-    type: 'lantai',
-    image: '/images/products/keramik1.jpg',
-    gallery: ['/images/products/keramik1a.jpg', '/images/products/keramik1b.jpg'],
-    brochure_id: 2,
-    meta_title: 'Keramik Lantai Motif Kayu - Global',
-    meta_description: 'Keramik lantai kayu terbaik untuk rumah Anda.',
-    meta_keywords: 'keramik lantai, motif kayu, global',
-    slug: 'keramik-lantai-motif-kayu',
-    is_active: true,
-    created_at: '2025-01-01 10:00',
-    updated_at: '2025-01-02 12:00'
-  },
-  {
-    id: 2,
-    name: 'Keramik Dinding Putih Glossy',
-    lang: 'id',
-    model: 'KDP-002',
-    size: '30x60',
-    description: 'Keramik dinding dengan permukaan mengkilap.',
-    type: 'dinding',
-    image: '/images/products/keramik2.jpg',
-    gallery: ['/images/products/keramik2a.jpg'],
-    brochure_id: 1,
-    meta_title: 'Keramik Dinding Putih - Global',
-    meta_description: 'Keramik dinding putih glossy untuk tampilan bersih.',
-    meta_keywords: 'keramik dinding, putih, glossy',
-    slug: 'keramik-dinding-putih-glossy',
-    is_active: false,
-    created_at: '2025-01-05 09:00',
-    updated_at: '2025-01-06 11:00'
-  }
-]
+import { handleApiResponse } from '@/utils/handleApiResponse'
+import { deleteProduct, getProducts, toggleProductActiveStatus } from '@/services/products'
 
 const columnHelper = createColumnHelper()
 
 const ProductPage = () => {
-  const [data, setData] = useState(defaultProductData)
-  const [filteredData, setFilteredData] = useState(data)
-  const [globalFilter, setGlobalFilter] = useState('')
   const router = useRouter()
+  const { success, error, SnackbarComponent } = useSnackbar()
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [productToDelete, setProductToDelete] = useState(null)
+  const isInitialMount = useRef(true)
 
-  const actionsData = row => [
-    {
-      text: 'View',
-      icon: <i className='ri-eye-line text-blue-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => router.push(`/esse-panel/products/${row.original.id}`)
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 10,
+    total_pages: 0,
+    total_items: 0,
+    has_next: false,
+    has_previous: false
+  })
+
+  const [globalFilter, setGlobalFilter] = useState('')
+
+  const fetchProducts = useCallback(async (page = 1, size = 10, search = '') => {
+    setLoading(true)
+
+    await handleApiResponse(() => getProducts({ page_size: size, page, search }), {
+      onSuccess: ({ data, meta: { pagination } }) => {
+        setData(data)
+        setPagination(pagination)
       }
-    },
-    {
-      text: 'Edit',
-      icon: <i className='ri-edit-box-line text-yellow-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => router.push(`/esse-panel/products/${row.original.id}/edit`)
-      }
-    },
-    {
-      text: 'Delete',
-      icon: <i className='ri-delete-bin-line text-red-500' />,
-      menuItemProps: {
-        className: 'gap-2',
-        onClick: () => deleteProduct(row.original.id)
-      }
+    })
+
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      fetchProducts()
+
+      return
     }
-  ]
 
-  const columns = useMemo(
-    () => [
+    const timer = setTimeout(() => {
+      fetchProducts(1, pagination.per_page, globalFilter)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [globalFilter, pagination.per_page, fetchProducts])
+
+  const toggleActive = useCallback(
+    id => {
+      const product = data.find(item => item.id === id)
+
+      setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
+
+      handleApiResponse(() => toggleProductActiveStatus(id, !product.is_active), {
+        success,
+        error,
+        onSuccess: () => {
+          success(`"${product.name}" has been ${product.is_active ? 'deactivated' : 'activated'} successfully.`)
+        },
+        onError: () => {
+          error(`Failed to update "${product.name}" status. Please try again.`)
+          setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: product.is_active } : item)))
+        }
+      })
+    },
+    [data, success, error]
+  )
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!productToDelete) return
+
+    setData(prev => prev.filter(item => item.id !== productToDelete.id))
+    setProductToDelete(null)
+
+    handleApiResponse(() => deleteProduct(productToDelete.id), {
+      success,
+      error,
+      onSuccess: () => {
+        success(`"${productToDelete.name}" deleted successfully.`)
+      },
+      onError: () => {
+        error(`Failed to delete "${productToDelete.name}". Please try again.`)
+        fetchProducts(pagination.current_page, pagination.per_page, globalFilter)
+      }
+    })
+  }, [productToDelete, success, error, fetchProducts, pagination, globalFilter])
+
+  const columns = useMemo(() => {
+    const actionsData = row => [
+      {
+        text: 'View',
+        icon: <i className='ri-eye-line text-blue-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+          onClick: () => router.push(`/esse-panel/products/${row.original.id}`)
+        }
+      },
+      {
+        text: 'Edit',
+        icon: <i className='ri-edit-box-line text-yellow-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+          onClick: () => router.push(`/esse-panel/products/${row.original.id}/edit`)
+        }
+      },
+      {
+        text: 'Delete',
+        icon: <i className='ri-delete-bin-line text-red-500' />,
+        menuItemProps: {
+          className: 'gap-2',
+          onClick: () =>
+            setProductToDelete({
+              id: row.original.id,
+              name: row.original.name
+            })
+        }
+      }
+    ]
+
+    return [
       columnHelper.accessor('image', {
         header: 'Image',
         cell: info => <img src={info.getValue()} alt='Product' className='w-24 h-12 object-cover rounded' />
@@ -129,12 +158,8 @@ const ProductPage = () => {
         header: 'Product Name',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
-      columnHelper.accessor('model', {
-        header: 'Model',
-        cell: info => <Typography>{info.getValue()}</Typography>
-      }),
-      columnHelper.accessor('size', {
-        header: 'Size',
+      columnHelper.accessor('category', {
+        header: 'Category',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
       columnHelper.accessor('type', {
@@ -155,62 +180,62 @@ const ProductPage = () => {
           </div>
         )
       })
-    ],
-    []
-  )
-
-  const toggleActive = id => {
-    setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
-    setFilteredData(prev => prev.map(item => (item.id === id ? { ...item, is_active: !item.is_active } : item)))
-  }
-
-  const deleteProduct = id => {
-    setData(prev => prev.filter(item => item.id !== id))
-    setFilteredData(prev => prev.filter(item => item.id !== id))
-  }
+    ]
+  }, [toggleActive, router])
 
   const table = useReactTable({
-    data: filteredData,
+    data,
     columns,
-    filterFns: { fuzzy: fuzzyFilter },
-    state: { globalFilter },
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
+    manualPagination: true,
+    pageCount: pagination.total_pages
   })
 
   return (
-    <Card>
-      <CardHeader title='Product Management' className='p-4' />
-      <Divider />
+    <>
+      <Card>
+        <CardHeader title='Product Management' className='p-4' />
+        <Divider />
 
-      <div className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
-        <CustomInputsDebounced
-          value={globalFilter ?? ''}
-          onChange={value => setGlobalFilter(String(value))}
-          placeholder='Search Product'
+        <div className='flex justify-between flex-col sm:flex-row p-4 gap-4'>
+          <CustomInputsDebounced
+            value={globalFilter ?? ''}
+            onChange={value => setGlobalFilter(String(value))}
+            placeholder='Search Product'
+          />
+          <Link href='/esse-panel/products/add'>
+            <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
+              Add Product
+            </Button>
+          </Link>
+        </div>
+
+        <TableGeneric table={table} />
+
+        <TablePagination
+          component='div'
+          count={pagination.total_items}
+          rowsPerPage={pagination.per_page}
+          page={pagination.current_page - 1}
+          onPageChange={(_, page) => fetchProducts(page + 1, pagination.per_page, globalFilter)}
+          onRowsPerPageChange={e => {
+            const newSize = Number(e.target.value)
+
+            fetchProducts(1, newSize, globalFilter)
+          }}
+          rowsPerPageOptions={[5, 10, 20, 25, 50]}
         />
-        <Link href='/esse-panel/products/add'>
-          <Button variant='contained' color='primary' startIcon={<i className='ri-add-line' />}>
-            Add Product
-          </Button>
-        </Link>
-      </div>
-
-      <TableGeneric table={table} />
-
-      <TablePagination
-        component='div'
-        count={table.getFilteredRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize || 10}
-        page={table.getState().pagination.pageIndex || 0}
-        onPageChange={(_, page) => table.setPageIndex(page)}
-        onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
-        rowsPerPageOptions={[5, 10, 25]}
+      </Card>
+      <DialogBasic
+        open={productToDelete !== null}
+        onClose={() => setProductToDelete(null)}
+        onSubmit={handleConfirmDelete}
+        title='Delete Product'
+        description={`Apakah Anda yakin ingin menghapus "${productToDelete?.name}"?`}
       />
-    </Card>
+      {SnackbarComponent}
+      <BackdropLoading open={loading} />
+    </>
   )
 }
 

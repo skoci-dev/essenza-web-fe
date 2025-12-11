@@ -158,7 +158,7 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
                 {productChunk.map((product, productIndex) => (
                   <Grid item xs={6} sm={3} key={productIndex}>
                     <Link
-                      href={`/${locale}/product/${product.id || '123'}`}
+                      href={`/${locale}/product/${product.slug}`}
                       sx={{
                         textDecoration: 'none',
                         color: 'inherit',
@@ -171,13 +171,13 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
                         {/* Gambar Produk */}
                         <Box
                           component='img'
-                          src={product.src}
-                          alt={`Banner ${product.title}`}
+                          src={product.image}
+                          alt={`Banner ${product.name}`}
                           sx={styles.bannerImage}
                         />
 
                         {/* Detail Produk */}
-                        <Typography sx={styles.titleProduct}>{product.title}</Typography>
+                        <Typography sx={styles.titleProduct}>{product.name}</Typography>
                         <Typography sx={styles.descProduct}>{product.category}</Typography>
                       </Box>
                     </Link>
