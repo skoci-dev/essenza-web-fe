@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+export const INSUFFICIENT_ROLE_CODE = 'auth_insufficient_role'
+
 const handleUnauthorized = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token')
@@ -36,8 +38,9 @@ apiClient.interceptors.response.use(
   error => {
     const errRes = error.response || {}
     const status = errRes.status
+    const errorCode = errRes.data?.meta?.error_code || null
 
-    if (status === 401 || status === 403) {
+    if (status === 401 || (status === 403 && !errorCode === INSUFFICIENT_ROLE_CODE)) {
       console.warn(`Unauthorized/Forbidden response received (Status: ${status}). Logging out...`)
 
       handleUnauthorized()
@@ -52,7 +55,8 @@ apiClient.interceptors.response.use(
     return Promise.resolve({
       success: false,
       status: status || 500,
-      message: errRes.data?.message || error.message || 'An error occurred, please try again.'
+      message: errRes.data?.message || error.message || 'An error occurred, please try again.',
+      errorCode
     })
   }
 )

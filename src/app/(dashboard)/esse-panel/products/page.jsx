@@ -86,11 +86,7 @@ const ProductPage = () => {
       handleApiResponse(() => toggleProductActiveStatus(id, !product.is_active), {
         success,
         error,
-        onSuccess: () => {
-          success(`"${product.name}" has been ${product.is_active ? 'deactivated' : 'activated'} successfully.`)
-        },
         onError: () => {
-          error(`Failed to update "${product.name}" status. Please try again.`)
           setData(prev => prev.map(item => (item.id === id ? { ...item, is_active: product.is_active } : item)))
         }
       })
@@ -107,13 +103,7 @@ const ProductPage = () => {
     handleApiResponse(() => deleteProduct(productToDelete.id), {
       success,
       error,
-      onSuccess: () => {
-        success(`"${productToDelete.name}" deleted successfully.`)
-      },
-      onError: () => {
-        error(`Failed to delete "${productToDelete.name}". Please try again.`)
-        fetchProducts(pagination.current_page, pagination.per_page, globalFilter)
-      }
+      onError: () => fetchProducts(pagination.current_page, pagination.per_page, globalFilter)
     })
   }, [productToDelete, success, error, fetchProducts, pagination, globalFilter])
 

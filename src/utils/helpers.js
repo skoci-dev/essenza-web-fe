@@ -29,8 +29,8 @@ export const formatDateToFullMonth = isoString => {
   // Menggunakan locale 'en-US' untuk format standar Amerika (Month Day, Year)
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric', // 2025
-    month: 'long',   // December
-    day: 'numeric'   // 13
+    month: 'long', // December
+    day: 'numeric' // 13
   }).format(date)
 }
 
@@ -59,4 +59,10 @@ export const convertStringtoArray = rawValue => {
   }
 
   return tags
+}
+
+export const getFilename = (input = '') => {
+  if (!input) return ''
+
+  return input.trim().split('/').pop()
 }

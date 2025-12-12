@@ -1,3 +1,5 @@
+import { INSUFFICIENT_ROLE_CODE } from './apiClient'
+
 export const handleApiResponse = async (apiCall, { success, error, onSuccess, onError } = {}) => {
   try {
     const res = await apiCall()
@@ -10,7 +12,10 @@ export const handleApiResponse = async (apiCall, { success, error, onSuccess, on
 
       return res.data || res
     } else {
-      const msg = res?.message || 'Unexpected API response'
+      const msg =
+        res.errorCode == INSUFFICIENT_ROLE_CODE
+          ? 'You do not have sufficient permissions to perform this action.'
+          : res?.message || 'Unexpected API response'
 
       if (error) error(msg)
       if (onError) onError(res)
