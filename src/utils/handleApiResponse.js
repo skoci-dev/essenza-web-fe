@@ -1,6 +1,6 @@
 import { INSUFFICIENT_ROLE_CODE } from './apiClient'
 
-export const handleApiResponse = async (apiCall, { success, error, onSuccess, onError } = {}) => {
+export const handleApiResponse = async (apiCall, { success, error, onSuccess, onError, onValidationError } = {}) => {
   try {
     const res = await apiCall()
 
@@ -19,6 +19,8 @@ export const handleApiResponse = async (apiCall, { success, error, onSuccess, on
 
       if (error) error(msg)
       if (onError) onError(res)
+
+      if (res?.status === 422 && onValidationError) onValidationError(res.errors || [])
       throw new Error(msg)
     }
   } catch (err) {

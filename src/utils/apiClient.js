@@ -39,6 +39,7 @@ apiClient.interceptors.response.use(
     const errRes = error.response || {}
     const status = errRes.status
     const errorCode = errRes.data?.meta?.error_code || null
+    const errors = errRes.data?.errors || null
 
     if (status === 401 || (status === 403 && !errorCode === INSUFFICIENT_ROLE_CODE)) {
       console.warn(`Unauthorized/Forbidden response received (Status: ${status}). Logging out...`)
@@ -56,7 +57,8 @@ apiClient.interceptors.response.use(
       success: false,
       status: status || 500,
       message: errRes.data?.message || error.message || 'An error occurred, please try again.',
-      errorCode
+      errorCode,
+      errors
     })
   }
 )

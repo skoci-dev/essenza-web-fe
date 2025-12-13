@@ -8,6 +8,7 @@ import ProjectSection from '@/components/section/ProjectSection'
 
 const ProjectPage = () => {
   const isMobile = useMediaQuery('(max-width:768px)')
+
   return (
     <>
       <HeaderPageSection height={isMobile ? '250px' : '360px'} bgImage={'/images/background/bg-header.png'} />

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 
 import { useParams } from 'next/navigation'
-import useMediaQuery from '@/@menu/hooks/useMediaQuery'
+
 import Box from '@mui/material/Box'
+
+import useMediaQuery from '@/@menu/hooks/useMediaQuery'
 
 import { getPubProjects } from '@/services/projects'
 import CardProductCarousel from '../CardProductCarousel'

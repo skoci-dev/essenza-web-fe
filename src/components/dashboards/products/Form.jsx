@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -49,7 +49,7 @@ const defaultProduct = {
   specifications: []
 }
 
-const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
+const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validationErrors }) => {
   const router = useRouter()
   const { success, error, SnackbarComponent } = useSnackbar()
 
@@ -74,98 +74,174 @@ const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
   }, [])
 
   useEffect(() => {
-    if (form.name) {
-      setForm(prev => ({ ...prev, slug: slugify(form.name) }))
+    if (validationErrors && validationErrors.length) {
+      const newErrors = {}
+
+      validationErrors.forEach(err => {
+        newErrors[err.field] = err.message
+      })
+
+      setErrors(newErrors)
     }
+  }, [validationErrors])
+
+  useEffect(() => {
+    setForm(prev => ({ ...prev, slug: slugify(form.name) }))
+    setErrors(prev => ({ ...prev, slug: '' }))
   }, [form.name])
 
-  const handleChange = e => {
-    const { name, value } = e.target
+  const isRequiredMainImage = useMemo(() => initialData.id && initialData.image, [initialData.id, initialData.image])
 
-    setForm(prev => ({ ...prev, [name]: value }))
+  const handleChange = useCallback(
+    e => {
+      const { name, value } = e.target
 
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
-    }
-  }
+      setForm(prev => ({ ...prev, [name]: value }))
 
-  const handleSwitchChange = e => {
-    setForm(prev => ({ ...prev, is_active: e.target.checked }))
-  }
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: '' }))
+      }
+    },
+    [setForm, errors]
+  )
 
-  const handleImageChange = e => {
-    const file = e.target.files[0]
+  const handleSwitchChange = useCallback(
+    e => {
+      setForm(prev => ({ ...prev, is_active: e.target.checked }))
+    },
+    [setForm]
+  )
 
-    if (file) {
-      setPreview(URL.createObjectURL(file))
-      setForm(prev => ({ ...prev, image: file }))
-    }
-  }
+  const handleImageChange = useCallback(
+    e => {
+      const file = e.target.files[0]
 
-  const handleGalleryChange = e => {
-    const files = Array.from(e.target.files || [])
+      if (file) {
+        setPreview(URL.createObjectURL(file))
+        setForm(prev => ({ ...prev, image: file }))
 
-    if (files.length) {
-      const urls = files.map(URL.createObjectURL)
+        if (errors.image) {
+          setErrors(prev => ({ ...prev, image: '' }))
+        }
+      }
+    },
+    [setPreview, setForm, errors.image]
+  )
 
-      setGalleryPreview(prev => [...prev, ...urls])
-      setForm(prev => ({ ...prev, gallery: [...prev.gallery, ...files] }))
-    }
-  }
+  const handleGalleryChange = useCallback(
+    e => {
+      const files = Array.from(e.target.files || [])
 
-  const handleRemoveGalleryImage = index => {
-    setGalleryPreview(prev => prev.filter((_, i) => i !== index))
-    setForm(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }))
-  }
+      if (files.length) {
+        const urls = files.map(URL.createObjectURL)
 
-  const handleAddSpecification = () => {
-    setSelectedSpecs(prev => [...prev, { slug: '', value: '', highlighted: false }])
-  }
+        setGalleryPreview(prev => [...prev, ...urls])
+        setForm(prev => ({ ...prev, gallery: [...prev.gallery, ...files] }))
+      }
+    },
+    [setGalleryPreview, setForm]
+  )
 
-  const handleSpecificationChange = (index, field, value) => {
-    setSelectedSpecs(prev => prev.map((spec, i) => (i === index ? { ...spec, [field]: value } : spec)))
-  }
+  const handleRemoveGalleryImage = useCallback(
+    index => {
+      setGalleryPreview(prev => prev.filter((_, i) => i !== index))
+      setForm(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }))
+    },
+    [setGalleryPreview, setForm]
+  )
 
-  const handleRemoveSpecification = index => {
-    setSelectedSpecs(prev => prev.filter((_, i) => i !== index))
-  }
+  const handleAddSpecification = useCallback(() => {
+    setSelectedSpecs(prev => [...prev, { slug: '', value: '', highlighted: false, deleted: false }])
+  }, [setSelectedSpecs])
 
-  const handleSubmit = async e => {
-    e.preventDefault()
+  const handleSpecificationChange = useCallback(
+    (index, field, value) => {
+      setSelectedSpecs(prev => prev.map((spec, i) => (i === index ? { ...spec, [field]: value } : spec)))
+    },
+    [setSelectedSpecs]
+  )
 
-    // Validate required fields
-    const newErrors = {}
+  const handleRemoveSpecification = useCallback(
+    index => {
+      setSelectedSpecs(prev => prev.map((spec, i) => (i === index ? { ...spec, deleted: true } : spec)))
+    },
+    [setSelectedSpecs]
+  )
 
-    if (!form.name.trim()) newErrors.name = 'Product name is required'
-    if (!form.slug.trim()) newErrors.slug = 'Slug is required'
+  const productCreatedCallback = useCallback(
+    id => {
+      success('Product created successfully!')
+      setTimeout(() => router.replace(`/esse-panel/products/${id}`), 500)
+    },
+    [router, success]
+  )
 
-    if (Object.keys(newErrors).length) {
-      setErrors(newErrors)
-      error('Please fill in all required fields')
+  const handleSubmit = useCallback(
+    async e => {
+      e.preventDefault()
 
-      return
-    }
+      const newErrors = {}
 
-    setLoading(true)
-    const { specifications, ...formData } = form
+      if (!form.name.trim()) newErrors.name = 'Product name is required'
+      if (!form.slug.trim()) newErrors.slug = 'Slug is required'
 
-    await handleApiResponse(() => createProduct(formData), {
+      if (isRequiredMainImage && !form.image && !preview) {
+        newErrors.image = 'Main image is required'
+        error('Please upload a main image')
+      }
+
+      const activeSpecs = selectedSpecs.filter(spec => !spec.deleted)
+      const hasInvalidSpec = activeSpecs.some(spec => !spec.value?.trim())
+
+      if (hasInvalidSpec) {
+        error('All specification values are required')
+
+        return
+      }
+
+      if (Object.keys(newErrors).length) {
+        setErrors(newErrors)
+        error('Please fill in all required fields')
+
+        return
+      }
+
+      if (onSubmit && initialData.id) {
+        return onSubmit({ ...form, specifications: selectedSpecs })
+      }
+
+      setLoading(true)
+      const { specifications, ...formData } = form
+
+      await handleApiResponse(() => createProduct(formData), {
+        success,
+        error,
+        onSuccess: async ({ data: { id } }) => {
+          if (specifications.length === 0) {
+            return productCreatedCallback(id)
+          }
+
+          await handleApiResponse(() => addSpecificationToProduct(id, { specifications: selectedSpecs }), {
+            error,
+            onSuccess: () => productCreatedCallback(id),
+            onError: () => setLoading(false)
+          })
+        },
+        onError: () => setLoading(false)
+      })
+    },
+    [
+      form,
+      isRequiredMainImage,
+      preview,
+      onSubmit,
+      initialData.id,
+      selectedSpecs,
       success,
       error,
-      onSuccess: async ({ data: { id } }) => {
-        await handleApiResponse(() => addSpecificationToProduct(id, { specifications: selectedSpecs }), {
-          success,
-          error,
-          onSuccess: () => {
-            success('Product created successfully!')
-            router.push('/esse-panel/products')
-          },
-          onError: () => setLoading(false)
-        })
-      },
-      onError: () => setLoading(false)
-    })
-  }
+      productCreatedCallback
+    ]
+  )
 
   return (
     <>
@@ -239,6 +315,7 @@ const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
                 >
                   <MenuItem value='lantai'>Lantai</MenuItem>
                   <MenuItem value='dinding'>Dinding</MenuItem>
+                  <MenuItem value='dinding-lantai'>Dinding & Lantai</MenuItem>
                 </TextField>
               </Grid>
 
@@ -258,7 +335,7 @@ const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
 
               <Grid item xs={12}>
                 <Typography variant='subtitle2' className='mb-2'>
-                  Main Image
+                  Main Image {isRequiredMainImage ? '*' : ''}
                 </Typography>
                 {preview ? (
                   <Box className='relative inline-block'>
@@ -270,16 +347,27 @@ const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
                       onClick={() => {
                         setPreview('')
                         setForm(prev => ({ ...prev, image: '' }))
+                        setErrors(prev => ({ ...prev, image: '' }))
                       }}
                     >
                       <i className='ri-delete-bin-line text-red-500 text-lg' />
                     </IconButton>
                   </Box>
                 ) : (
-                  <Button variant='outlined' component='label' startIcon={<i className='ri-upload-2-line text-lg' />}>
+                  <Button
+                    variant='outlined'
+                    component='label'
+                    startIcon={<i className='ri-upload-2-line text-lg' />}
+                    color={errors.image ? 'error' : 'primary'}
+                  >
                     Upload Image
                     <input type='file' hidden accept='image/*' onChange={handleImageChange} />
                   </Button>
+                )}
+                {errors.image && (
+                  <Typography variant='caption' color='error' sx={{ display: 'block', mt: 0.5 }}>
+                    {errors.image}
+                  </Typography>
                 )}
               </Grid>
 
@@ -363,59 +451,63 @@ const ProductForm = ({ initialData = defaultProduct, onCancel }) => {
                 </Typography>
 
                 <Box className='my-4 space-y-3'>
-                  {selectedSpecs.map((spec, index) => (
-                    <Card key={index} variant='outlined' className='p-4'>
-                      <Grid container spacing={4} alignItems='center'>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            select
-                            fullWidth
-                            size='small'
-                            label='Specification'
-                            value={spec.slug}
-                            onChange={e => handleSpecificationChange(index, 'slug', e.target.value)}
-                          >
-                            {specifications.map(s => (
-                              <MenuItem key={s.id} value={s.slug}>
-                                <Box component='img' sx={{ height: '14px', mr: 2 }} src={`/icons/${s.icon}.svg`} />
-                                {s.name}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        </Grid>
-
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            fullWidth
-                            size='small'
-                            label='Value'
-                            value={spec.value}
-                            onChange={e => handleSpecificationChange(index, 'value', e.target.value)}
-                            placeholder='Enter value'
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sm={3}>
-                          <FormControlLabel
-                            control={
-                              <Switch
+                  {selectedSpecs.map(
+                    (spec, index) =>
+                      !spec.deleted && (
+                        <Card key={index} variant='outlined' className='p-4'>
+                          <Grid container spacing={4} alignItems='center'>
+                            <Grid item xs={12} sm={4}>
+                              <TextField
+                                select
+                                fullWidth
                                 size='small'
-                                checked={spec.highlighted}
-                                onChange={e => handleSpecificationChange(index, 'highlighted', e.target.checked)}
-                              />
-                            }
-                            label={spec.highlighted ? 'Highlighted' : 'Technical'}
-                          />
-                        </Grid>
+                                label='Specification'
+                                value={spec.slug}
+                                onChange={e => handleSpecificationChange(index, 'slug', e.target.value)}
+                              >
+                                {specifications.map(s => (
+                                  <MenuItem key={s.id} value={s.slug}>
+                                    <Box component='img' sx={{ height: '14px', mr: 2 }} src={`/icons/${s.icon}.svg`} />
+                                    {s.name}
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            </Grid>
 
-                        <Grid item xs={12} sm={1}>
-                          <IconButton color='error' onClick={() => handleRemoveSpecification(index)} size='small'>
-                            <i className='ri-delete-bin-line' />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    </Card>
-                  ))}
+                            <Grid item xs={12} sm={4}>
+                              <TextField
+                                fullWidth
+                                required
+                                size='small'
+                                label='Value'
+                                value={spec.value}
+                                onChange={e => handleSpecificationChange(index, 'value', e.target.value)}
+                                placeholder='Enter value'
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sm={3}>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    size='small'
+                                    checked={spec.highlighted}
+                                    onChange={e => handleSpecificationChange(index, 'highlighted', e.target.checked)}
+                                  />
+                                }
+                                label={spec.highlighted ? 'Highlighted' : 'Technical'}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sm={1}>
+                              <IconButton color='error' onClick={() => handleRemoveSpecification(index)} size='small'>
+                                <i className='ri-delete-bin-line' />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      )
+                  )}
                 </Box>
 
                 <Button
