@@ -4,6 +4,7 @@
 import { useRef, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 // Next Imports
 
@@ -45,6 +46,12 @@ const UserDropdown = () => {
   const router = useRouter()
   const { settings } = useSettings()
 
+  let user = ''
+
+  if (typeof window !== undefined) {
+    user = JSON.parse(localStorage.getItem('dataUser'))
+  }
+
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
   }
@@ -64,6 +71,7 @@ const UserDropdown = () => {
   const handleUserLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
+    localStorage.removeItem('dataUser')
 
     router.push('/esse-panel/login')
   }
@@ -79,7 +87,7 @@ const UserDropdown = () => {
       >
         <Avatar
           ref={anchorRef}
-          alt='John Doe'
+          alt={user?.name}
           src='/images/avatars/1.png'
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
@@ -104,23 +112,27 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-4 gap-2' tabIndex={-1}>
-                    <Avatar alt='John Doe' src='/images/avatars/1.png' />
+                    <Avatar alt={user?.name} src='/images/avatars/1.png' />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        John Doe
+                        {user?.name}
                       </Typography>
-                      <Typography variant='caption'>admin@Essenza.com</Typography>
+                      <Typography variant='caption'>{user?.email}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  <MenuItem className='gap-3' onClick={e => handleDropdownClose(e)}>
-                    <i className='ri-user-3-line' />
-                    <Typography color='text.primary'>My Profile</Typography>
-                  </MenuItem>
-                  <MenuItem className='gap-3' onClick={e => handleDropdownClose(e)}>
-                    <i className='ri-settings-4-line' />
-                    <Typography color='text.primary'>Settings</Typography>
-                  </MenuItem>
+                  <Link href='/esse-panel/profile'>
+                    <MenuItem className='gap-3' onClick={e => handleDropdownClose(e)}>
+                      <i className='ri-user-3-line' />
+                      <Typography color='text.primary'>My Profile</Typography>
+                    </MenuItem>
+                  </Link>
+                  <Link href='/esse-panel/activity-log'>
+                    <MenuItem className='gap-3' onClick={e => handleDropdownClose(e)}>
+                      <i className='ri-settings-4-line' />
+                      <Typography color='text.primary'>Activity Log</Typography>
+                    </MenuItem>
+                  </Link>
                   <div className='flex items-center plb-2 pli-4'>
                     <Button
                       fullWidth

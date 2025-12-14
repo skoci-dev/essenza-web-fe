@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 
 import { useParams } from 'next/navigation'
 
+import Link from 'next/link'
+
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
@@ -15,7 +16,6 @@ import classnames from 'classnames'
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 import { convertStringtoArray, formatDateToCustomStringNative, formatDateToFullMonth } from '@/utils/helpers'
 import { getPubArticles } from '@/services/article'
-import Link from 'next/link'
 
 const styles = {
   title: {
@@ -99,12 +99,14 @@ const NewsDetailSection = ({ data }) => {
 
   const fetchArticles = async () => {
     const res = await getPubArticles({ page_size: 5 })
+
     if (res?.data.length > 0) {
       const mappingArticles = res?.data.map(item => ({
         ...item,
         href: `/${locale}/news/${item?.slug}`,
         src: item?.thumbnail
       }))
+
       setArticles(mappingArticles)
     }
   }
@@ -136,6 +138,7 @@ const NewsDetailSection = ({ data }) => {
             </Box>
             {articles.map((article, i) => {
               const isLast = i === articles.length - 1
+
               return (
                 <Link key={article.id} href={article.href}>
                   <Box

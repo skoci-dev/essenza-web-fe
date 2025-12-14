@@ -35,7 +35,7 @@ import themeConfig from '@configs/themeConfig'
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
-import { createAuthToken } from '@/services/auth'
+import { createAuthToken, getAuthUser } from '@/services/auth'
 
 const schema = object({
   username: pipe(string(), minLength(1, 'This field is required')),
@@ -85,6 +85,14 @@ const Login = ({ mode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
+  const fetchUser = async () => {
+    const res = await getAuthUser()
+
+    if (res?.data) {
+      localStorage.setItem('dataUser', JSON.stringify(res?.data))
+    }
+  }
+
   const onSubmit = async data => {
     setLoading(true)
     setErrorState(null)
@@ -103,6 +111,7 @@ const Login = ({ mode }) => {
 
     const { token, refresh_token } = res.data
 
+    fetchUser()
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refresh_token)
 

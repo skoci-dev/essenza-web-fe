@@ -16,7 +16,7 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 // Style Imports
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
-import verticalMenuData from '@/data/navigation/verticalMenuData'
+import verticalMenuData from '@/data/navigation/verticalMenuData' // Pastikan ini sudah termasuk properti 'roles'
 
 const RenderExpandIcon = ({ open, transitionDuration }) => (
   <StyledVerticalNavExpandIcon open={open} transitionDuration={transitionDuration}>
@@ -30,13 +30,55 @@ const VerticalMenu = ({ scrollMenu }) => {
   const verticalNavOptions = useVerticalNav()
   const { isBreakpointReached } = useVerticalNav()
 
+  let role = null // Ubah dari '' menjadi null
+
   // Vars
   const { transitionDuration } = verticalNavOptions
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
+  if (typeof window !== 'undefined') {
+    const userDataJSON = localStorage.getItem('dataUser')
+
+    if (userDataJSON) {
+      try {
+        const userData = JSON.parse(userDataJSON)
+
+        role = userData?.role?.name || null
+      } catch (e) {
+        console.error('Failed to parse userData from localStorage', e)
+      }
+    }
+  }
+
+  const filterMenuByRole = (menu, userRole) => {
+    if (!menu || !userRole) return []
+
+    const isAllowed = item => item.roles && item.roles.includes(userRole)
+
+    const filteredMenu = menu
+      .map(item => {
+        if (!item.children) {
+          return isAllowed(item) ? item : null
+        }
+
+        const filteredChildren = item.children.filter(child => isAllowed(child))
+
+        if (filteredChildren.length > 0) {
+          return { ...item, children: filteredChildren }
+        } else if (isAllowed(item)) {
+          return item
+        }
+
+        return null
+      })
+      .filter(Boolean)
+
+    return filteredMenu
+  }
+
+  const filteredMenuData = role ? filterMenuByRole(verticalMenuData(), role) : []
+
   return (
-    // eslint-disable-next-line lines-around-comment
-    /* Custom scrollbar instead of browser scroll, remove if you want browser scroll only */
     <ScrollWrapper
       {...(isBreakpointReached
         ? {
@@ -48,7 +90,6 @@ const VerticalMenu = ({ scrollMenu }) => {
             onScrollY: container => scrollMenu(container, true)
           })}
     >
-      {/* Incase you also want to scroll NavHeader to scroll with Vertical Menu, remove NavHeader from above and paste it below this comment */}
       {/* Vertical Menu */}
       <Menu
         popoutMenuOffset={{ mainAxis: 10 }}
@@ -57,11 +98,13 @@ const VerticalMenu = ({ scrollMenu }) => {
         renderExpandedMenuItemIcon={{ icon: <i className='ri-circle-line' /> }}
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
-        {verticalMenuData().map((menu, index) => {
+        {/* Menggunakan data yang sudah difilter */}
+        {filteredMenuData.map((menu, index) => {
           if (menu?.children?.length > 0) {
             return (
               <SubMenu key={index} label={menu.label} icon={<i className={menu.icon} />}>
-                {menu?.children.map((submenu, subindex) => (
+                {/* Anak-anak sudah terfilter di filteredMenuData */}
+                {menu.children.map((submenu, subindex) => (
                   <MenuItem key={subindex} index={subindex} href={submenu.href}>
                     {submenu.label}
                   </MenuItem>
@@ -77,15 +120,6 @@ const VerticalMenu = ({ scrollMenu }) => {
           }
         })}
       </Menu>
-      {/* <Menu
-          popoutMenuOffset={{ mainAxis: 10 }}
-          menuItemStyles={menuItemStyles(verticalNavOptions, theme)}
-          renderExpandIcon={({ open }) => <RenderExpandIcon open={open} transitionDuration={transitionDuration} />}
-          renderExpandedMenuItemIcon={{ icon: <i className='ri-circle-line' /> }}
-          menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
-        >
-          <GenerateVerticalMenu menuData={menuData(dictionary)} />
-        </Menu> */}
     </ScrollWrapper>
   )
 }
