@@ -199,9 +199,7 @@ const ProductPage = () => {
             </Button>
           </Link>
         </div>
-
         <TableGeneric table={table} />
-
         <TablePagination
           component='div'
           count={pagination.total_items}

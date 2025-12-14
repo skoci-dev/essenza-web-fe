@@ -520,9 +520,7 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
               </Grid>
             </Grid>
           </CardContent>
-
           <Divider />
-
           <Box className='flex justify-between gap-3 p-4'>
             <Button
               variant='outlined'

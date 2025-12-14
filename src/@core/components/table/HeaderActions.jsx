@@ -18,7 +18,8 @@ const TableHeaderActions = ({
   addColor = 'primary',
   addIcon = <i className='ri-add-line' />,
   searchWidth = 'w-1/6',
-  buttonWidth = 'w-1/6'
+  buttonWidth = 'w-1/6',
+  useAddButton = true
 }) => {
   return (
     <Box className='flex justify-between flex-col sm:flex-row items-center p-4 gap-4'>
@@ -29,14 +30,15 @@ const TableHeaderActions = ({
           placeholder={searchPlaceholder}
         />
       </Box>
-
-      <Box className={buttonWidth}>
-        <Link href={addHref}>
-          <Button variant='contained' size='small' className='w-full' color={addColor} startIcon={addIcon}>
-            {addLabel}
-          </Button>
-        </Link>
-      </Box>
+      {useAddButton && (
+        <Box className={buttonWidth}>
+          <Link href={addHref}>
+            <Button variant='contained' size='small' className='w-full' color={addColor} startIcon={addIcon}>
+              {addLabel}
+            </Button>
+          </Link>
+        </Box>
+      )}
     </Box>
   )
 }
