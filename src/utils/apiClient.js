@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export const INSUFFICIENT_ROLE_CODE = 'auth_insufficient_role'
+export const AUTHENTICATION_FAILED_CODE = 'authentication_failed'
 
 const handleUnauthorized = () => {
   if (typeof window !== 'undefined') {
@@ -41,7 +42,10 @@ apiClient.interceptors.response.use(
     const errorCode = errRes.data?.meta?.error_code || null
     const errors = errRes.data?.errors || null
 
-    if (status === 401 || (status === 403 && !errorCode === INSUFFICIENT_ROLE_CODE)) {
+    if (
+      (status === 401 && !errorCode === AUTHENTICATION_FAILED_CODE) ||
+      (status === 403 && !errorCode === INSUFFICIENT_ROLE_CODE)
+    ) {
       console.warn(`Unauthorized/Forbidden response received (Status: ${status}). Logging out...`)
 
       handleUnauthorized()
