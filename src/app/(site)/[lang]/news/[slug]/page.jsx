@@ -6,6 +6,7 @@ async function getData(slug) {
   const url = `https://essenza-backend.warawiri.web.id/pub/v1/articles${slug}`
 
   let res
+
   try {
     res = await fetch(url, {
       cache: 'no-store'
@@ -26,6 +27,7 @@ async function getData(slug) {
   }
 
   const resData = data?.data
+
   return {
     ...resData,
     openGraph: {

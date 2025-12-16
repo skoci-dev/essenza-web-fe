@@ -110,6 +110,7 @@ const Login = ({ mode }) => {
 
     if (authToken) {
       const redirectURL = searchParams.get('redirectTo') ?? '/esse-panel/dashboard'
+
       return router.replace(redirectURL)
     }
 

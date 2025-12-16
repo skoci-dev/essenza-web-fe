@@ -7,7 +7,7 @@ import classnames from 'classnames'
 
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 
-const HeaderNewsSection = () => {
+const HeaderNewsSections = () => {
   const styles = {
     container: {
       width: '100vw',
@@ -98,4 +98,4 @@ const HeaderNewsSection = () => {
   )
 }
 
-export default HeaderNewsSection
+export default HeaderNewsSections
