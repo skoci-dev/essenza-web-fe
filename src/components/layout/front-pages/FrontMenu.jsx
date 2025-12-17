@@ -4,8 +4,7 @@
 import { useEffect, useState } from 'react'
 
 // Next Imports
-import { useParams } from 'next/navigation'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 // MUI Imports
@@ -69,22 +68,21 @@ const styles = {
       left: '24px',
       margin: '0 auto'
     },
-    '& .MuiDrawer-paper a': {
-      padding: '18px 0',
-      borderBottom: '1px solid #2121214D'
-    },
     '& .MuiDrawer-paper .btn-esperianza': {
       marginTop: '18px',
       width: 'fit-content'
     }
   },
-  menu: {},
+  menu: {
+    padding: { xs: '18px 0', sm: '0' },
+    borderBottom: { xs: '1px solid #2121214D', sm: 'unset' }
+  },
   activeMenu: {
-    position: 'relative',
-    bottom: '-0.3rem',
-    paddingBottom: 2,
-    borderBottom: '1.5px solid #BD8100',
-    transition: 'border-bottom 0.3s ease-out, bottom 0.3s ease-out'
+    position: { sm: 'relative' },
+    bottom: { sm: '-0.3rem' },
+    paddingBottom: { sm: 2 },
+    borderBottom: { sm: '1.5px solid #BD8100' },
+    transition: { sm: 'border-bottom 0.3s ease-out, bottom 0.3s ease-out' }
   }
 }
 
@@ -128,6 +126,7 @@ const FrontMenu = props => {
 
   // Hooks
   const isBelowLgScreen = useMediaQuery(theme => theme.breakpoints.down('lg'))
+  const isMobile = useMediaQuery('(max-width:768px)')
   const { lang: locale } = useParams()
 
   useEffect(() => {
@@ -145,7 +144,7 @@ const FrontMenu = props => {
           <SearchBar checked={true} locale={locale} isMobile={true} />
         </Box>
         {staticMenu.map((menu, i) => (
-          <Box key={i} sx={pathname === `/${locale}${menu.href}` ? styles.activeMenu : styles.menu}>
+          <Box key={i} sx={pathname === `/${locale}${menu.href}` && !isMobile ? styles.activeMenu : styles.menu}>
             <Typography component={Link} href={`/${locale}${menu.href}`} className={'text-[#212121]'}>
               {menu.label}
             </Typography>

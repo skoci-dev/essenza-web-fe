@@ -41,7 +41,8 @@ const styles = {
   latestNewsBox: {
     border: '1px solid #D4D4D4',
     borderRadius: '10px',
-    textAlign: 'center'
+    textAlign: 'center',
+    mt: { xs: 4 }
   },
   latestNewsHeader: {
     borderBottom: '1px solid #D4D4D4',
@@ -127,11 +128,11 @@ const NewsDetailSection = ({ data }) => {
         </Box>
       </Box>
       <Divider />
-      <Box sx={{ display: 'flex', gap: 3, margin: '20px 0' }}>
-        <Box sx={{ width: '70%' }}>
+      <Box sx={{ display: { sm: 'flex', xs: 'column' }, gap: 3, margin: '20px 0' }}>
+        <Box sx={{ width: { sm: '70%', xs: '100%' } }}>
           <Box sx={styles.contentBody} dangerouslySetInnerHTML={{ __html: data.content }} />
         </Box>
-        <Box sx={{ width: '30%' }}>
+        <Box sx={{ width: { sm: '30%', xs: '100%' } }}>
           <Box sx={styles.latestNewsBox}>
             <Box sx={styles.latestNewsHeader}>
               <Typography sx={styles.latestNewsTitle}>Latest news</Typography>

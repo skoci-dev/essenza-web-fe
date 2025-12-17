@@ -95,6 +95,7 @@ const styles = {
   titleProduct: {
     fontWeight: 600,
     fontSize: { xs: '12px', md: '16px' },
+    mt: 2,
     mb: 1
   },
   descProduct: {
@@ -158,7 +159,7 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
                 {productChunk.map((product, productIndex) => (
                   <Grid item xs={6} sm={3} key={productIndex}>
                     <Link
-                      href={`/${locale}/product/${product.slug}`}
+                      href={product?.href}
                       sx={{
                         textDecoration: 'none',
                         color: 'inherit',
@@ -169,13 +170,7 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
                     >
                       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                         {/* Gambar Produk */}
-                        <Box
-                          component='img'
-                          src={product.image}
-                          alt={`Banner ${product.name}`}
-                          sx={styles.bannerImage}
-                        />
-
+                        <Box component='img' src={product.image} alt={`${product.name}`} sx={styles.bannerImage} />
                         {/* Detail Produk */}
                         <Typography sx={styles.titleProduct}>{product.name}</Typography>
                         <Typography sx={styles.descProduct}>{product.category}</Typography>
