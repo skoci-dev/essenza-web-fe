@@ -23,67 +23,74 @@ const NotFoundSite = () => {
         <Box
           component={'img'}
           src='/images/background/bg-404-1.png'
-          sx={{ height: '450px', position: 'absolute', right: 0, top: '25vh' }}
+          sx={{
+            height: { xs: 'auto', sm: '450px' },
+            width: { xs: '100%', sm: 'auto' },
+            position: 'absolute',
+            right: 0,
+            top: { xs: '70vh', sm: '25vh' }
+          }}
         />
         <Box className={classnames(frontCommonStyles.layoutSpacing)}>
           <Box component={'img'} src='/images/background/bg-404-2.png' sx={{ height: '100px', mt: '150px' }} />
-          <Typography
-            sx={{
-              fontFamily: '"Roboto", sans-serif',
-              fontWeight: 100,
-              fontStyle: 'normal',
-              fontSize: '317.36px',
-              lineHeight: '371.81px',
-              letterSpacing: '-7.44px',
-              verticalAlign: 'middle',
-              marginTop: '-130px',
-              color: '#FFFFFF'
-            }}
-          >
-            404
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: '"Roboto", sans-serif',
-              fontWeight: 100,
-              fontSize: '30px',
-              color: '#212121',
-              mb: 3
-            }}
-          >
-            Ooops ! Page not found
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: '"Roboto", sans-serif',
-              fontWeight: 400,
-              fontSize: '15px',
-              color: '#212121',
-              mb: 3
-            }}
-          >
-            The page you’re looking for doesn’t exist or has been moved.
-          </Typography>
-          <Typography
-            sx={{
-              fontFamily: '"Roboto", sans-serif',
-              fontWeight: 400,
-              fontSize: '12px',
-              color: '#212121',
-              mb: 3
-            }}
-          >
-            Let’s return to the essence of Essenza.
-          </Typography>
-          <Button
-            sx={{
-              backgroundColor: '#404040',
-              color: '#FFFFFF',
-              padding: '10px 20px'
-            }}
-          >
-            Homepage <Box sx={{ ml: '6px', height: '14px' }} component={'img'} src='/icons/to-homepage.svg' />
-          </Button>
+          <Box sx={{ textAlign: { xs: 'center', sm: 'start' }, mt: 20 }}>
+            <Typography
+              sx={{
+                fontFamily: '"Roboto", sans-serif',
+                fontWeight: 100,
+                fontStyle: 'normal',
+                lineHeight: 1,
+                fontSize: { xs: '200px', sm: '315px' },
+                verticalAlign: 'middle',
+                marginTop: '-150px',
+                color: '#FFFFFF'
+              }}
+            >
+              404
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: '"Roboto", sans-serif',
+                fontWeight: 100,
+                fontSize: '30px',
+                color: '#212121',
+                mb: 3
+              }}
+            >
+              Ooops ! Page not found
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: '"Roboto", sans-serif',
+                fontWeight: 400,
+                fontSize: '15px',
+                color: '#212121',
+                mb: 3
+              }}
+            >
+              The page you’re looking for doesn’t exist or has been moved.
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: '"Roboto", sans-serif',
+                fontWeight: 400,
+                fontSize: '12px',
+                color: '#212121',
+                mb: 3
+              }}
+            >
+              Let’s return to the essence of Essenza.
+            </Typography>
+            <Button
+              sx={{
+                backgroundColor: '#404040',
+                color: '#FFFFFF',
+                padding: '10px 20px'
+              }}
+            >
+              Homepage <Box sx={{ ml: '6px', height: '14px' }} component={'img'} src='/icons/to-homepage.svg' />
+            </Button>
+          </Box>
         </Box>
       </Box>
       <EndSection />
