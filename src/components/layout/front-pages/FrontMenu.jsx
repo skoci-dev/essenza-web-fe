@@ -31,11 +31,6 @@ const staticMenu = [
   },
   {
     id: 1,
-    label: 'Download',
-    href: '/download'
-  },
-  {
-    id: 1,
     label: 'News',
     href: '/news'
   },

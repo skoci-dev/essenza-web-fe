@@ -70,6 +70,8 @@ const Login = ({ mode }) => {
   const { settings } = useSettings()
   const { loaded: recaptchaLoaded, execute, cleanup } = useRecaptcha(null, { version: 'v3', autoLoad: !authToken })
 
+  console.log('recaptchaLoaded', recaptchaLoaded)
+
   const {
     control,
     handleSubmit,
@@ -78,6 +80,7 @@ const Login = ({ mode }) => {
   } = useForm({
     resolver: valibotResolver(schema),
     defaultValues: {
+      captcha_token: '',
       username: savedUsername,
       password: ''
     }
@@ -173,8 +176,10 @@ const Login = ({ mode }) => {
     localStorage.setItem('refreshToken', refresh_token)
 
     // Cleanup reCAPTCHA after successful login
-    cleanup()
-    window.location.reload()
+    setTimeout(() => {
+      cleanup()
+      window.location.reload()
+    }, 2000)
   }
 
   return (
