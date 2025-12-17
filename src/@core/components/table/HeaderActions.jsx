@@ -13,8 +13,8 @@ const TableHeaderActions = ({
   searchPlaceholder = 'Search...',
   searchValue,
   onSearchChange,
-  addLabel = 'Add',
-  addHref = '#',
+  addLabel,
+  addHref,
   addColor = 'primary',
   addIcon = <i className='ri-add-line' />,
   searchWidth = 'w-1/6',
@@ -30,7 +30,8 @@ const TableHeaderActions = ({
           placeholder={searchPlaceholder}
         />
       </Box>
-      {useAddButton && (
+
+      {addLabel && addHref && (
         <Box className={buttonWidth}>
           <Link href={addHref}>
             <Button variant='contained' size='small' className='w-full' color={addColor} startIcon={addIcon}>

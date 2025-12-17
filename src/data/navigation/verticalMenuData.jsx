@@ -89,6 +89,7 @@ const verticalMenuData = () => [
   {
     label: 'Activity Logs',
     icon: 'ri-history-line',
+    href: '/esse-panel/activity-log',
     roles: ['superadmin']
   }
 ]

@@ -158,8 +158,6 @@ const Login = ({ mode }) => {
       ...recaptchaData
     })
 
-    console.log('Login response:', res)
-
     if (!res.success) {
       setCookie('login_error', res.message, 5)
       setCookie('login_username', data.username, 5)

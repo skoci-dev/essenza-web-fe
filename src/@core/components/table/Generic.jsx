@@ -4,6 +4,7 @@ import tableStyles from '@core/styles/table.module.css'
 
 const TableGeneric = ({ table, columns }) => {
   const totalColumns = table.getVisibleFlatColumns().length
+  const onRowClick = table.options?.meta?.onRowClick
 
   return (
     <div className='overflow-x-auto'>
@@ -28,7 +29,12 @@ const TableGeneric = ({ table, columns }) => {
             </tr>
           ) : (
             table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
+              <tr
+                key={row.id}
+                onClick={() => onRowClick?.(row.original)}
+                className={onRowClick ? 'cursor-pointer hover:bg-blue-50/50' : ''}
+                style={onRowClick ? { transition: 'background-color 0.2s' } : {}}
+              >
                 {row.getVisibleCells().map(cell => (
                   <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                 ))}
