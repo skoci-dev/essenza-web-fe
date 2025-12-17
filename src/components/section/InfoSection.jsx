@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
@@ -229,9 +230,17 @@ const InfoSection = () => {
   const [showLocation, setShowLocation] = useState(null)
   const [distributors, setDistributors] = useState([])
   const [stores, setStores] = useState([])
+  const [query, setQuery] = useState('')
   const open = Boolean(showLocation)
 
-  const filteredStores = storeData.find(data => data.city === selectedLocation)?.companies || []
+  const filteredStores =
+    storeData
+      .find(data => data.city === selectedLocation)
+      ?.companies.filter(company => {
+        const lowQuery = query.toLowerCase()
+
+        return company.name.toLowerCase().includes(lowQuery) || company.address.toLowerCase().includes(lowQuery)
+      }) || []
 
   const handleClick = event => {
     setShowLocation(event.currentTarget)
@@ -263,6 +272,10 @@ const InfoSection = () => {
 
       setDistributors(mapoingDistributors)
     }
+  }
+
+  const handleSearchStore = e => {
+    e.preventDefault()
   }
 
   useEffect(() => {
@@ -301,6 +314,35 @@ const InfoSection = () => {
         {selectedInfo === 'store' && (
           <>
             <Grid item xs={12}>
+              <Box
+                sx={{
+                  backgroundColor: 'white',
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: isMobile ? 'unset' : 4,
+                  borderRadius: '7px',
+                  mb: 6
+                }}
+              >
+                <form onSubmit={handleSearchStore} className='w-full flex items-center gap-2'>
+                  <TextField
+                    size='small'
+                    fullWidth
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder='search . . .'
+                  />
+                  <Button
+                    className={'bg-[#C1A658] px-[40px] text-[#ffffff] py-[9px] rounded-[6px]'}
+                    size='small'
+                    type='submit'
+                  >
+                    Search
+                  </Button>
+                </form>
+              </Box>
               <Button
                 aria-controls={open ? 'location-menu' : undefined}
                 aria-haspopup='true'
