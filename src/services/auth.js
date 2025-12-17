@@ -20,4 +20,8 @@ const changeAuthPassword = async data => {
   return await apiClient.put('/int/v1/auth/password', data)
 }
 
-export { createAuthToken, refreshAuthToken, getAuthUser, updateAuthUser, changeAuthPassword }
+const getAccountActivities = async params => {
+  return await apiClient.get('/int/v1/auth/account-activities', { params })
+}
+
+export { createAuthToken, refreshAuthToken, getAuthUser, updateAuthUser, changeAuthPassword, getAccountActivities }

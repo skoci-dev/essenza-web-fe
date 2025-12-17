@@ -127,7 +127,7 @@ const UserDropdown = () => {
                       <Typography color='text.primary'>My Profile</Typography>
                     </MenuItem>
                   </Link>
-                  <Link href='/esse-panel/activity-log'>
+                  <Link href='/esse-panel/profile/activity-log'>
                     <MenuItem className='gap-3' onClick={e => handleDropdownClose(e)}>
                       <i className='ri-settings-4-line' />
                       <Typography color='text.primary'>Activity Log</Typography>

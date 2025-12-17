@@ -13,7 +13,9 @@ export default function Breadcrumbs() {
     'esse-panel': 'Dashboard',
     home: 'Home',
     users: 'Users',
-    settings: 'Settings'
+    settings: 'Settings',
+    profile: 'Profile',
+    'activity-log': 'Activity Log'
   }
 
   const formatLabel = segment =>
