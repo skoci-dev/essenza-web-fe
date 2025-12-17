@@ -19,7 +19,6 @@ import Link from '@components/Link'
 
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 import CustomButton from '@/@core/components/mui/Button'
-import { getPubSocialMedias, getSocialMedias } from '@/services/socialMedia'
 import { subscribeUser } from '@/services/subscribe'
 
 const styles = {
