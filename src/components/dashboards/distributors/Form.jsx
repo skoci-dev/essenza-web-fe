@@ -10,6 +10,8 @@ import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 
+import { MenuItem } from '@mui/material'
+
 import CustomTextField from '@/@core/components/custom-inputs/TextField'
 
 import { createDistributor, updateDistributor, getDistributorById } from '@/services/distributors'
@@ -18,6 +20,8 @@ import useSnackbar from '@/@core/hooks/useSnackbar'
 
 import BackdropLoading from '@/components/BackdropLoading'
 import { handleApiResponse } from '@/utils/handleApiResponse'
+import { getCities } from '@/services/masterData'
+import { ShowElse, ShowIf } from '@/components/ShowIf'
 
 const defaultData = {
   name: '',
@@ -26,7 +30,8 @@ const defaultData = {
   email: '',
   website: '',
   latitude: '',
-  longitude: ''
+  longitude: '',
+  city: 'jakarta'
 }
 
 const DistributorForm = ({ id }) => {
@@ -35,27 +40,39 @@ const DistributorForm = ({ id }) => {
 
   const [data, setData] = useState(defaultData)
   const [loading, setLoading] = useState(false)
+  const [fieldOptions, setFieldOptions] = useState({ city: [['jakarta', 'Jakarta']] })
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
-  const fields = useMemo(() => [
-    { name: 'name', label: 'Name', placeholder: 'Distributor Name', size: 6, required: true },
-    { name: 'phone', label: 'Phone', placeholder: '+6281234567890', size: 6, required: true },
-    { name: 'email', label: 'Email', placeholder: 'distributor@email.com', size: 6, required: true },
-    {
-      name: 'address',
-      label: 'Address',
-      placeholder: 'Distributor Address',
-      size: 12,
-      multiline: true,
-      rows: 3,
-      required: true
-    },
-    { name: 'website', label: 'Website', placeholder: 'distributor.com', size: 6 },
-    { name: 'gmap_link', label: 'Gmaps URL', placeholder: 'maps.google.com', size: 6 },
-    { name: 'latitude', label: 'Latitude', placeholder: '-6.184171439657108106', size: 6 },
-    { name: 'longitude', label: 'Longitude', placeholder: '10.184171439657108', size: 6 }
-  ])
+  const fields = useMemo(
+    () => [
+      { name: 'name', label: 'Name', placeholder: 'Distributor Name', size: 6, required: true },
+      { name: 'phone', label: 'Phone', placeholder: '+6281234567890', size: 6, required: true },
+      { name: 'email', label: 'Email', placeholder: 'distributor@email.com', size: 6, required: true },
+      {
+        name: 'city',
+        label: 'City',
+        placeholder: 'City',
+        size: 6,
+        required: true,
+        options: fieldOptions.city
+      },
+      {
+        name: 'address',
+        label: 'Address',
+        placeholder: 'Distributor Address',
+        size: 12,
+        multiline: true,
+        rows: 3,
+        required: true
+      },
+      { name: 'website', label: 'Website', placeholder: 'distributor.com', size: 6, required: true },
+      { name: 'gmap_link', label: 'Gmaps URL', placeholder: 'maps.google.com', size: 6, required: true },
+      { name: 'latitude', label: 'Latitude', placeholder: '-6.184171439657108106', size: 6 },
+      { name: 'longitude', label: 'Longitude', placeholder: '10.184171439657108', size: 6 }
+    ],
+    [fieldOptions]
+  )
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -68,9 +85,9 @@ const DistributorForm = ({ id }) => {
       setLoading(true)
 
       try {
-        const res = await getDistributorById(id)
+        const { data } = await getDistributorById(id)
 
-        setData(res.data)
+        setData({ ...data, city: data.city?.slug || '' })
       } catch {
         error('Failed to load distributor details.')
       } finally {
@@ -98,8 +115,24 @@ const DistributorForm = ({ id }) => {
   }
 
   useEffect(() => {
+    const fetchCityOptions = async () => {
+      await handleApiResponse(getCities, {
+        error,
+        onSuccess: ({ data }) => {
+          setFieldOptions(prev => ({
+            ...prev,
+            city: data.map(city => [city.slug, city.label])
+          }))
+        }
+      })
+    }
+
     if (id) fetchDistributor(id)
-  }, [id, fetchDistributor])
+
+    if (fieldOptions.city.length === 1) fetchCityOptions()
+  }, [id, fetchDistributor, error, fieldOptions])
+
+  useEffect(() => console.log('fieldOptions:', fieldOptions), [fieldOptions])
 
   return (
     <>
@@ -110,14 +143,35 @@ const DistributorForm = ({ id }) => {
           <CardContent>
             <Grid container spacing={3}>
               {fields.map(field => (
-                <CustomTextField
-                  key={field.name}
-                  {...field}
-                  type={field.type || 'text'}
-                  value={data[field.name] || ''}
-                  onChange={handleChange}
-                  inputProps={field.type === 'number' ? { min: 1 } : {}}
-                />
+                <>
+                  <ShowIf when={field.options?.length}>
+                    <CustomTextField
+                      key={field.name}
+                      {...field}
+                      type={field.type || 'select'}
+                      value={data[field.name] || ''}
+                      onChange={handleChange}
+                      select
+                    >
+                      {field.options?.map(([value, label]) => (
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+
+                    <ShowElse>
+                      <CustomTextField
+                        key={field.name}
+                        {...field}
+                        type={field.type || 'text'}
+                        value={data[field.name] || ''}
+                        onChange={handleChange}
+                        inputProps={field.type === 'number' ? { min: 1 } : {}}
+                      />
+                    </ShowElse>
+                  </ShowIf>
+                </>
               ))}
             </Grid>
           </CardContent>
