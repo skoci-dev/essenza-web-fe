@@ -17,102 +17,103 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
-const styles = {
-  containerBox: bgColor => ({
-    padding: { xs: '12px 0', sm: '24px 0' },
-    background: bgColor || 'white'
-  }),
-  bannerBox: {
-    width: '100%',
-    position: 'relative',
-    overflow: 'visible',
-    '& .banner-swiper': {
-      paddingTop: { xs: 0, sm: '80px' },
-      paddingBottom: { xs: '48px', sm: 0 },
-      marginTop: { xs: '52px', sm: 'unset' }
+const CardProductCarousel = ({ data = [], title, titleColor, bgColor, duration = 1000 }) => {
+  const styles = {
+    containerBox: bgColor => ({
+      padding: { xs: '12px 0', sm: '24px 0' },
+      background: bgColor || 'white'
+    }),
+    bannerBox: {
+      width: '100%',
+      position: 'relative',
+      overflow: 'visible',
+      '& .banner-swiper': {
+        paddingTop: { xs: 0, sm: '80px' },
+        paddingBottom: { xs: '48px', sm: 0 },
+        marginTop: { xs: '52px', sm: 'unset' }
+      },
+      '& .banner-swiper .swiper-pagination': {
+        bottom: { xs: '14px !important', sm: '36px !important' },
+        left: { xs: '-4px !important', sm: '24px !important' },
+        textAlign: 'left !important',
+        width: 'auto !important'
+      },
+      '& .banner-swiper .swiper-pagination .swiper-pagination-bullet': {
+        backgroundColor: 'black',
+        border: '1px solid white'
+      },
+      '& .banner-swiper .swiper-pagination .swiper-pagination-bullet-active': {
+        borderColor: '#BD8100',
+        backgroundColor: '#BD8100'
+      },
+      '& .banner-swiper .swiper-button-next, & .banner-swiper .swiper-button-prev': {
+        width: { xs: '25px', sm: '45px' },
+        height: { xs: '25px', sm: '45px' },
+        background: 'transparent',
+        color: { xs: '#212121', sm: '#FFFFFF' },
+        zIndex: 99,
+        position: 'absolute',
+        top: { xs: 'unset', sm: '30px' },
+        bottom: { xs: '12px', sm: 'unset' }
+      },
+      '& .banner-swiper .swiper-button-next': {
+        borderTop: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        borderBottom: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        borderRight: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        padding: '6px',
+        borderRadius: '0 6px 6px 0'
+      },
+      '& .banner-swiper .swiper-button-prev': {
+        borderTop: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        borderBottom: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        borderLeft: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
+        padding: '6px',
+        borderRadius: '6px 0 0 6px',
+        left: { xs: 'calc(100% - 54px)', sm: 'calc(100% - 94px)' }
+      },
+      '& .banner-swiper .swiper-button-next::before': {
+        content: '""',
+        position: 'absolute',
+        left: '0',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        width: '1px',
+        height: '70%',
+        background: '#FFFFFF'
+      },
+      '& .banner-swiper .swiper-button-next::after, & .banner-swiper .swiper-button-prev::after': {
+        fontSize: '16px'
+      }
     },
-    '& .banner-swiper .swiper-pagination': {
-      bottom: { xs: '14px !important', sm: '36px !important' },
-      left: { xs: '-4px !important', sm: '24px !important' },
-      textAlign: 'left !important',
-      width: 'auto !important'
-    },
-    '& .banner-swiper .swiper-pagination .swiper-pagination-bullet': {
-      backgroundColor: 'black',
-      border: '1px solid white'
-    },
-    '& .banner-swiper .swiper-pagination .swiper-pagination-bullet-active': {
-      borderColor: '#BD8100',
-      backgroundColor: '#BD8100'
-    },
-    '& .banner-swiper .swiper-button-next, & .banner-swiper .swiper-button-prev': {
-      width: { xs: '25px', sm: '35px' },
-      height: { xs: '25px', sm: '35px' },
-      background: 'transparent',
-      color: { xs: '#212121', sm: '#FFFFFF' },
-      zIndex: 99,
+    titleSection: {
+      fontSize: { xs: '14px', md: '24px' },
+      margin: '12px 0',
+      width: '100%',
+      color: titleColor || '#FFFFFF',
       position: 'absolute',
-      top: { xs: 'unset', sm: '30px' },
-      bottom: { xs: '12px', sm: 'unset' }
+      top: { xs: '-50px', sm: 0 }
     },
-    '& .banner-swiper .swiper-button-next': {
-      borderTop: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      borderBottom: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      borderRight: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      padding: '6px',
-      borderRadius: '0 6px 6px 0'
+    titleProduct: {
+      fontWeight: 600,
+      fontSize: { xs: '12px', md: '16px' },
+      mt: 2,
+      mb: 1
     },
-    '& .banner-swiper .swiper-button-prev': {
-      borderTop: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      borderBottom: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      borderLeft: { xs: '1px solid #212121', sm: '1px solid #FFFFFF' },
-      padding: '6px',
-      borderRadius: '6px 0 0 6px',
-      left: { xs: 'calc(100% - 54px)', sm: 'calc(100% - 74px)' }
+    descProduct: {
+      fontWeight: 400,
+      fontSize: { xs: '10px', md: '12px' },
+      mb: 6
     },
-    '& .banner-swiper .swiper-button-next::before': {
-      content: '""',
-      position: 'absolute',
-      left: '0',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: '1px',
-      height: '70%',
-      background: '#FFFFFF'
-    },
-    '& .banner-swiper .swiper-button-next::after, & .banner-swiper .swiper-button-prev::after': {
-      fontSize: '16px'
+    bannerImage: {
+      width: { xs: '100%', md: '100%' },
+      height: { xs: '150px', md: '280px' },
+      objectFit: 'cover',
+      borderRadius: '7px'
     }
-  },
-  titleSection: {
-    fontSize: { xs: '14px', md: '24px' },
-    margin: '12px 0',
-    width: '100%',
-    color: '#FFFFFF',
-    position: 'absolute',
-    top: { xs: '-50px', sm: 0 }
-  },
-  titleProduct: {
-    fontWeight: 600,
-    fontSize: { xs: '12px', md: '16px' },
-    mt: 2,
-    mb: 1
-  },
-  descProduct: {
-    fontWeight: 400,
-    fontSize: { xs: '10px', md: '12px' },
-    mb: 6
-  },
-  bannerImage: {
-    width: { xs: '100%', md: '100%' },
-    height: { xs: '150px', md: '280px' },
-    objectFit: 'cover',
-    borderRadius: '7px'
   }
-}
 
-const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => {
   const isMobile = useMediaQuery('(max-width:768px)')
+
   const { lang: locale } = useParams()
 
   const chunkArray = (arr, size) => {
