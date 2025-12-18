@@ -10,6 +10,8 @@ import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 
+import { MenuItem } from '@mui/material'
+
 import CustomTextField from '@/@core/components/custom-inputs/TextField'
 
 import { getStoreById, updateStore, createStore } from '@/services/stores'
@@ -18,6 +20,8 @@ import useSnackbar from '@/@core/hooks/useSnackbar'
 
 import BackdropLoading from '@/components/BackdropLoading'
 import { handleApiResponse } from '@/utils/handleApiResponse'
+import { getCities } from '@/services/masterData'
+import { ShowElse, ShowIf } from '@/components/ShowIf'
 
 const defaultData = {
   name: '',
@@ -34,31 +38,64 @@ const StoreForm = ({ id }) => {
 
   const [data, setData] = useState(defaultData)
   const [loading, setLoading] = useState(false)
+  const [fieldOptions, setFieldOptions] = useState({ city: [['jakarta', 'Jakarta']] })
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
-  const fields = useMemo(() => [
-    { name: 'name', label: 'Name', placeholder: 'Store Name', size: 6, required: true },
-    { name: 'phone', label: 'Phone', placeholder: '+6281234567890', size: 6, required: true },
-    { name: 'email', label: 'Email', placeholder: 'store@email.com', size: 6, required: true },
-    {
-      name: 'address',
-      label: 'Address',
-      placeholder: 'Store Address',
-      size: 12,
-      multiline: true,
-      rows: 3,
-      required: true
-    },
-    { name: 'latitude', label: 'Latitude', placeholder: '-6.184171439657108106', size: 6 },
-    { name: 'longitude', label: 'Longitude', placeholder: '10.184171439657108', size: 6 }
-  ])
+  const fields = useMemo(
+    () => [
+      { name: 'name', label: 'Name', placeholder: 'Store Name', size: 6, required: true },
+      { name: 'phone', label: 'Phone', placeholder: '+6281234567890', size: 6, required: true },
+      { name: 'email', label: 'Email', placeholder: 'store@email.com', size: 6, required: true },
+      { name: 'city', label: 'City', placeholder: 'Jakarta', size: 6, required: true, options: fieldOptions.city },
+      {
+        name: 'address',
+        label: 'Address',
+        placeholder: 'Store Address',
+        size: 12,
+        multiline: true,
+        rows: 3,
+        required: true
+      },
+      { name: 'gmap_link', label: 'Gmaps URL', placeholder: 'https://maps.google.com/?q=-6.184...', size: 12 },
+      { name: 'latitude', label: 'Latitude', placeholder: '-6.184171439657108106', size: 6 },
+      { name: 'longitude', label: 'Longitude', placeholder: '10.184171439657108', size: 6 }
+    ],
+    [fieldOptions]
+  )
 
   useEffect(() => {
-    if (isEdit) {
-      getStoreById(id).then(data => setData(data))
+    const fetchCityOptions = async () => {
+      await handleApiResponse(getCities, {
+        error,
+        onSuccess: ({ data }) => {
+          setFieldOptions(prev => ({
+            ...prev,
+            city: data.map(city => [city.slug, city.label])
+          }))
+        }
+      })
     }
-  }, [id])
+
+    const fetchStore = async () => {
+      setLoading(true)
+
+      try {
+        await handleApiResponse(() => getStoreById(id), {
+          error,
+          onSuccess: ({ data }) => {
+            setData({ ...data, city: data.city?.slug || '' })
+          }
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (isEdit && id) fetchStore()
+
+    if (fieldOptions.city.length === 1) fetchCityOptions()
+  }, [id, isEdit, error, fieldOptions])
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -113,14 +150,35 @@ const StoreForm = ({ id }) => {
           <CardContent>
             <Grid container spacing={3}>
               {fields.map(field => (
-                <CustomTextField
-                  key={field.name}
-                  {...field}
-                  type={field.type || 'text'}
-                  value={data[field.name] || ''}
-                  onChange={handleChange}
-                  inputProps={field.type === 'number' ? { min: 1 } : {}}
-                />
+                <>
+                  <ShowIf when={field.options?.length}>
+                    <CustomTextField
+                      key={field.name}
+                      {...field}
+                      type={field.type || 'select'}
+                      value={data[field.name] || ''}
+                      onChange={handleChange}
+                      select
+                    >
+                      {field.options?.map(([value, label]) => (
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+
+                    <ShowElse>
+                      <CustomTextField
+                        key={field.name}
+                        {...field}
+                        type={field.type || 'text'}
+                        value={data[field.name] || ''}
+                        onChange={handleChange}
+                        inputProps={field.type === 'number' ? { min: 1 } : {}}
+                      />
+                    </ShowElse>
+                  </ShowIf>
+                </>
               ))}
             </Grid>
           </CardContent>

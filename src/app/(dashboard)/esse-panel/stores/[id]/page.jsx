@@ -75,7 +75,9 @@ const StoreDetailPage = () => {
             <DetailField label='Name' value={store.name} />
             <DetailField label='Phone' value={store.phone} />
             <DetailField label='Email' value={store.email} />
-            <DetailField label='Address' value={store.address} />
+            <DetailField label='City' value={store.city?.label || '-'} />
+            <DetailField label='Address' value={store.address} sx={12} sm={12} />
+            <DetailField label='Gmap URL' value={store.gmap_link} sx={12} sm={12} />
             <DetailField label='Latitude' value={store.latitude} />
             <DetailField label='Longitude' value={store.longitude} />
           </Grid>
