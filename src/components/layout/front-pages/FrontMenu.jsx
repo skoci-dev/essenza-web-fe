@@ -60,12 +60,15 @@ const styles = {
       height: 'fit-content',
       position: 'fixed',
       top: '115px',
-      left: '24px',
+      left: '0',
       margin: '0 auto'
     },
     '& .MuiDrawer-paper .btn-esperianza': {
       marginTop: '18px',
       width: 'fit-content'
+    },
+    '& .MuiBackdrop-invisible': {
+      backgroundColor: 'transparent'
     }
   },
   menu: {
@@ -89,10 +92,9 @@ const Wrapper = props => {
     return (
       <Drawer
         variant='temporary'
-        anchor='left'
+        anchor='top'
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        hideBackdrop
         ModalProps={{
           disablePortal: true,
           keepMounted: true
@@ -140,7 +142,12 @@ const FrontMenu = props => {
         </Box>
         {staticMenu.map((menu, i) => (
           <Box key={i} sx={pathname === `/${locale}${menu.href}` && !isMobile ? styles.activeMenu : styles.menu}>
-            <Typography component={Link} href={`/${locale}${menu.href}`} className={'text-[#212121]'}>
+            <Typography
+              component={Link}
+              href={`/${locale}${menu.href}`}
+              className={'text-[#212121]'}
+              onClick={() => setIsDrawerOpen(false)}
+            >
               {menu.label}
             </Typography>
           </Box>

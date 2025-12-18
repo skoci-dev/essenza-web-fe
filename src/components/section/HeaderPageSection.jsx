@@ -15,6 +15,7 @@ const HeaderPageSection = ({ title = '', subTitle = '', height = '100vh', bgImag
       color: '#FFFFFF',
       textAlign: 'center',
       width: '100%',
+      lineHeight: 1.2,
       position: 'absolute',
       top: '45vh'
     },
@@ -25,7 +26,7 @@ const HeaderPageSection = ({ title = '', subTitle = '', height = '100vh', bgImag
       textAlign: 'center',
       width: '100%',
       position: 'absolute',
-      top: '52vh'
+      top: '65vh'
     },
     image: {
       height: height,

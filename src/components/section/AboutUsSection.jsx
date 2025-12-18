@@ -11,7 +11,7 @@ const AboutUsSection = () => {
     container: {
       background: 'linear-gradient(180deg, #414141, #121212)',
       width: '100vw',
-      padding: '100px 0'
+      padding: { xs: '30px 0', sm: '100px 0' }
     },
     image: {
       width: '100%',
@@ -22,11 +22,13 @@ const AboutUsSection = () => {
       padding: '1rem 2rem !important'
     },
     title: {
-      fontSize: { xs: '18px', md: '24px' },
+      fontSize: { xs: '24px', md: '24px' },
+      textAlign: { xs: 'center', sm: 'left' },
       color: 'white'
     },
     description: {
-      fontSize: '18px',
+      fontSize: { xs: '14px', sm: '18px' },
+      textAlign: { xs: 'center', sm: 'left' },
       color: 'white',
       marginTop: 6
     }
@@ -34,7 +36,12 @@ const AboutUsSection = () => {
 
   return (
     <Box sx={styles.container}>
-      <Grid container className={classnames(frontCommonStyles.layoutSpacing)} sx={styles.bannerBox} spacing={4}>
+      <Grid
+        container
+        className={classnames(frontCommonStyles.layoutSpacing)}
+        sx={styles.bannerBox}
+        spacing={{ xs: 0, sm: 4 }}
+      >
         <Grid item xs={12} md={6}>
           <Box>
             <Box component='img' src={'/images/illustrations/photos/banner-6.jpg'} alt={`about us`} sx={styles.image} />

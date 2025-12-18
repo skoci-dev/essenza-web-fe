@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography'
 
 import classnames from 'classnames'
 
+import borderColor from 'tailwindcss-logical/plugins/borderColor'
+
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 
 const VisionSection = () => {
@@ -12,37 +14,42 @@ const VisionSection = () => {
     container: {
       background: 'linear-gradient(180deg, #EDEDED, #F9F9F9)',
       width: '100vw',
-      padding: '100px 0'
+      padding: { xs: '50px 0', sm: '100px 0' }
     },
     containerNd: {
       background: '#FFFFFF',
       width: '100vw',
-      padding: '50px 0'
+      padding: { xs: '25px 0', sm: '50px 0' }
     },
     image: {
       width: '100%',
-      height: '420px',
+      height: { xs: '220px', sm: '420px' },
       objectFit: 'cover',
       borderRadius: '10px'
     },
     containerText: {
       paddingTop: '0 !important',
-      paddingRight: '2rem !important'
+      paddingRight: { xs: 0, sm: '2rem !important' }
     },
     title: {
       fontSize: { xs: '18px', md: '24px' },
+      fontWeight: 500,
+      textAlign: { xs: 'center', sm: 'left' },
       color: '#000000'
     },
     description: {
       fontSize: '18px',
+      textAlign: { xs: 'center', sm: 'left' },
       color: '#000000',
-      marginTop: 6
+      marginTop: { xs: 3, sm: 6 }
     },
     divider: {
       width: '100%',
       height: '2px',
+      borderBottomWidth: '1px',
+      borderColor: '#000000',
       color: '#000000',
-      margin: '48px 0'
+      margin: { xs: '24px 0', sm: '48px 0' }
     }
   }
 
@@ -55,8 +62,28 @@ const VisionSection = () => {
   return (
     <>
       <Box sx={styles.container}>
-        <Grid container className={classnames(frontCommonStyles.layoutSpacing)} sx={styles.bannerBox} spacing={3}>
-          <Grid item xs={12} md={4.5} sx={styles.containerText}>
+        <Grid container className={classnames(frontCommonStyles.layoutSpacing)} spacing={3}>
+          <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' } }}>
+            <Grid container spacing={2}>
+              <Grid item xs={5}>
+                <Box
+                  component='img'
+                  src={'/images/illustrations/photos/banner-category.jpg'}
+                  alt={`about us`}
+                  sx={styles.image}
+                />
+              </Grid>
+              <Grid item xs={7}>
+                <Box
+                  component='img'
+                  src={'/images/illustrations/photos/category-3.jpg'}
+                  alt={`about us`}
+                  sx={styles.image}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} md={4.5} sx={styles.containerText} mt={5}>
             <Typography sx={styles.title}>Vision</Typography>
             <Typography sx={styles.description}>
               To be the global most admired tile company for products, people, partnership, competitiveness and
@@ -69,7 +96,7 @@ const VisionSection = () => {
               society, and always create the best value to customers and shareholders.
             </Typography>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Box
               component='img'
               src={'/images/illustrations/photos/banner-category.jpg'}
@@ -77,7 +104,7 @@ const VisionSection = () => {
               sx={styles.image}
             />
           </Grid>
-          <Grid item xs={12} md={4.5}>
+          <Grid item xs={12} md={4.5} sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Box
               component='img'
               src={'/images/illustrations/photos/category-3.jpg'}
@@ -88,7 +115,7 @@ const VisionSection = () => {
         </Grid>
       </Box>
       <Box sx={styles.containerNd}>
-        <Grid container className={classnames(frontCommonStyles.layoutSpacing)} sx={styles.bannerBox} spacing={3}>
+        <Grid container className={classnames(frontCommonStyles.layoutSpacing)} spacing={{ xs: 0, sm: 3 }}>
           {contentBottom.map((content, index) => (
             <Grid
               key={content}
@@ -97,8 +124,11 @@ const VisionSection = () => {
               md={4}
               sx={{
                 ...styles.containerText,
-                borderLeft: index >= contentBottom.length - 2 ? '1px solid #000000' : 'none',
-                paddingLeft: index >= contentBottom.length - 2 ? '2.75rem !important' : 0
+                borderLeft: { xs: 'unset', sm: index >= contentBottom.length - 2 ? '1px solid #000000' : 'none' },
+                borderBottom: { xs: '1px solid #000000', sm: 'unset' },
+                paddingLeft: { xs: 'unset', sm: index >= contentBottom.length - 2 ? '2.75rem !important' : 0 },
+                paddingBottom: { xs: '24px', sm: '0' },
+                marginBottom: { xs: '24px', sm: '0' }
               }}
             >
               <Typography sx={styles.title}>{content}</Typography>

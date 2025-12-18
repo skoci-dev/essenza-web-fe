@@ -56,7 +56,7 @@ const Header = ({ mode }) => {
               <IconButton
                 onClick={() => setIsDrawerOpen(!isDrawerOpen)}
                 className='-mis-2'
-                sx={{ border: '1px solid #212121', borderRadius: '6px', zIndex: 9999 }}
+                sx={{ border: isDrawerOpen ? 'unset' : '1px solid #212121', borderRadius: '6px', zIndex: 9999 }}
               >
                 {isDrawerOpen ? (
                   <Box component='img' src='/icons/close.svg' alt='close' />

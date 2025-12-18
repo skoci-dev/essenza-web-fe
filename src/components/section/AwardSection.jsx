@@ -9,19 +9,26 @@ import frontCommonStyles from '@views/front-pages/styles.module.css'
 const AwardSection = () => {
   const styles = {
     container: {
-      padding: '100px 0'
+      padding: { xs: '50px 0', sm: '100px 0' }
     },
     year: {
       fontSize: '28px',
-      color: '#212121'
+      color: '#212121',
+      textAlign: { xs: 'center', sm: 'left' }
     },
     title: {
-      fontSize: '18px',
+      fontSize: { xs: '14px', sm: '18px' },
+      textAlign: { xs: 'center', sm: 'left' },
+      color: '#212121'
+    },
+    yearAward: {
+      fontSize: { xs: '18px', sm: '22px' },
+      textAlign: { xs: 'center', sm: 'left' },
       color: '#212121'
     },
     itemBox: {
-      padding: '40px',
-      height: '100%',
+      padding: { xs: '10px', sm: '40px' },
+      height: { xs: '150px', sm: '100%' },
       borderColor: '#d0d0d0',
       borderStyle: 'solid'
     },
@@ -47,23 +54,37 @@ const AwardSection = () => {
     <Box sx={styles.container}>
       <Grid container className={classnames(frontCommonStyles.layoutSpacing)}>
         {awards.map((award, i) => {
-          const isFirstRow = i < 4
-          const isLastCol = (i + 1) % 4 === 0
+          const totalItems = awards.length
 
           return (
             <Grid item xs={6} md={3} key={i}>
               <Box
                 sx={{
                   ...styles.itemBox,
-                  borderBottomWidth: isFirstRow ? '1px' : 0,
-                  borderRightWidth: !isLastCol ? '1px' : 0,
-                  paddingTop: i < 4 ? 0 : '40px'
+                  borderBottom: {
+                    xs: i < totalItems - 2 ? '1px solid #ccc' : 'none',
+                    md: i < 4 ? '1px solid #ccc' : 'none'
+                  },
+                  borderRight: {
+                    xs: (i + 1) % 2 !== 0 ? '1px solid #ccc' : 'none',
+                    md: (i + 1) % 4 !== 0 ? '1px solid #ccc' : 'none'
+                  },
+                  paddingTop: {
+                    xs: i < 2 ? 0 : '20px',
+                    md: i < 4 ? 0 : '40px'
+                  },
+                  paddingBottom: '20px'
                 }}
               >
                 {award.image ? (
                   <Box mt={3} sx={styles.awardImage}>
-                    <img src={award.image} alt={award.title} style={{ width: '120px' }} />
-                    <Typography>{award.year}</Typography>
+                    <Box
+                      component={'img'}
+                      src={award.image}
+                      alt={award.title}
+                      sx={{ width: { xs: '90px', sm: '120px' } }}
+                    />
+                    <Typography sx={styles.yearAward}>{award.year}</Typography>
                   </Box>
                 ) : (
                   <>
