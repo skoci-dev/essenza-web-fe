@@ -154,12 +154,11 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
         >
           {chunkedData.map((productChunk, chunkIndex) => (
             <SwiperSlide key={chunkIndex}>
-              {/* KUNCI PERBAIKAN: Gunakan GRID MUI di dalam slide */}
               <Grid container spacing={isMobile ? 1 : 2}>
                 {productChunk.map((product, productIndex) => (
                   <Grid item xs={6} sm={3} key={productIndex}>
                     <Link
-                      href={product?.href}
+                      href={product?.href || '#'}
                       sx={{
                         textDecoration: 'none',
                         color: 'inherit',
@@ -169,9 +168,7 @@ const CardProductCarousel = ({ data = [], title, bgColor, duration = 1000 }) => 
                       }}
                     >
                       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                        {/* Gambar Produk */}
                         <Box component='img' src={product.image} alt={`${product.name}`} sx={styles.bannerImage} />
-                        {/* Detail Produk */}
                         <Typography sx={styles.titleProduct}>{product.name}</Typography>
                         <Typography sx={styles.descProduct}>{product.category}</Typography>
                       </Box>

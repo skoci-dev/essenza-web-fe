@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -11,12 +13,21 @@ import { getPubProducts } from '@/services/products'
 
 const ProductSection = () => {
   const [products, setProducts] = useState([])
+
+  const { lang: locale } = useParams()
   const isMobile = useMediaQuery('(max-width:768px)')
 
   useEffect(() => {
     handleApiResponse(() => getPubProducts({ size: 99 }), {
       onSuccess: ({ data }) => {
-        setProducts(data)
+        const mappingData = data.map(item => {
+          return {
+            ...item,
+            href: `/${locale}/product/${item?.slug}`
+          }
+        })
+
+        setProducts(mappingData)
       }
     })
   }, [])

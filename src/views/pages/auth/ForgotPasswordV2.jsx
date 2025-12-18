@@ -14,7 +14,6 @@ import classnames from 'classnames'
 
 // Component Imports
 import DirectionalIcon from '@components/DirectionalIcon'
-import Logo from '@components/layout/shared/Logo'
 import Illustrations from '@components/Illustrations'
 
 // Hook Imports
