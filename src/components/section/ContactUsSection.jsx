@@ -183,6 +183,7 @@ const ContactUsSection = () => {
     const getAllCities = async () => {
       try {
         const response = await getPubIndonesianCities()
+
         setOptions(prev => ({ ...prev, city: response.data }))
       } catch (error) {}
     }
