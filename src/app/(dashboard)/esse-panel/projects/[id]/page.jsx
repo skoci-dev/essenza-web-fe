@@ -18,6 +18,7 @@ import { getProjectById, deleteProject } from '@/services/projects'
 import DetailField from '@/components/DetailField'
 import BackdropLoading from '@/components/BackdropLoading'
 import DetailActions from '@/components/DetailActions'
+import { formatDateToCustomStringNative } from '@/utils/helpers'
 
 const ProjectDetailPage = () => {
   const { id } = useParams()
@@ -91,6 +92,8 @@ const ProjectDetailPage = () => {
             <DetailField label='Meta Title' value={project.meta_title} />
             <DetailField label='Meta Description' value={project.meta_description} xs={12} />
             <DetailField label='Meta Keywords' value={project.meta_keywords} xs={12} />
+            <DetailField label='Created At' value={formatDateToCustomStringNative(project.created_at)} />
+            <DetailField label='Published At' value={formatDateToCustomStringNative(project.published_at)} />
 
             <Grid item xs={12}>
               <Typography variant='subtitle2' sx={{ mb: 1.5 }}>

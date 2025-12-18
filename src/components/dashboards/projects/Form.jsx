@@ -158,7 +158,7 @@ const ProjectForm = ({ id }) => {
   }, [])
 
   const handleSwitchChange = useCallback(e => {
-    setData(prev => ({ ...prev, is_active: e.target.checked }))
+    setData(prev => ({ ...prev, is_active: e.target.checked || false }))
   }, [])
 
   const handleImageChange = useCallback(e => {
@@ -257,7 +257,10 @@ const ProjectForm = ({ id }) => {
 
     const formData = new FormData()
 
-    const dataToSubmit = { ...data }
+    const dataToSubmit = {
+      ...data,
+      is_active: data.is_active ? 'true' : 'false'
+    }
 
     delete dataToSubmit.image
     delete dataToSubmit.gallery
