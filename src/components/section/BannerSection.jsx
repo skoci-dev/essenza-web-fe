@@ -26,25 +26,23 @@ const styles = {
       height: { xs: '65vh', md: '100vh' }
     },
     '& .banner-swiper .swiper-pagination': {
-      bottom: '40px !important',
-      left: '180px !important',
+      bottom: '18px !important',
+      left: '24px !important',
       textAlign: 'left !important',
       width: 'auto !important'
     },
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet': {
       backgroundColor: 'black',
-      height: '10px',
-      width: '10px',
       border: '1px solid white'
     },
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet-active': {
       backgroundColor: 'white'
     },
     '& .banner-swiper .swiper-button-next, & .banner-swiper .swiper-button-prev': {
-      bottom: '50px !important',
+      bottom: '20px !important',
       top: 'auto !important',
-      width: { xs: '25px', sm: '45px' },
-      height: { xs: '25px', sm: '45px' },
+      width: { xs: '25px', sm: '35px' },
+      height: { xs: '25px', sm: '35px' },
       background: 'rgba(0,0,0,0.3)',
       color: '#fff'
     },
@@ -54,7 +52,7 @@ const styles = {
       borderRight: '1px solid #ffffff',
       padding: '6px',
       borderRadius: '0 6px 6px 0',
-      right: '180px'
+      right: '25px'
     },
     '& .banner-swiper .swiper-button-next::before': {
       content: '""',
@@ -72,7 +70,7 @@ const styles = {
       borderLeft: '1px solid #ffffff',
       padding: '6px',
       borderRadius: '6px 0 0 6px',
-      left: { xs: 'calc(100vw - 75px)', sm: 'calc(100vw - 270px)' }
+      left: { xs: 'calc(100vw - 75px)', sm: 'calc(100vw - 95px)' }
     },
     '& .banner-swiper .swiper-button-next::after, & .banner-swiper .swiper-button-prev::after': {
       fontSize: '16px'
@@ -114,14 +112,13 @@ const BannerSection = () => {
           <SwiperSlide key={i}>
             <Link href={img?.link_url}>
               <Box sx={styles.imageWrapper}>
-                <Box
-                  component={'img'}
+                <Image
                   src={img?.image}
                   alt={img?.title}
                   fill
+                  sizes='(max-width: 768px) 100vw, 
+               100vw'
                   style={{
-                    width: '100vw',
-                    height: 'aut0',
                     objectFit: 'cover'
                   }}
                 />

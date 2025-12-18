@@ -42,13 +42,12 @@ const ProjectSection = () => {
   }, [])
 
   return (
-    <Box sx={{ marginTop: isMobile ? -35 : 0 }}>
+    <Box sx={{ marginTop: isMobile ? -35 : -60 }}>
       <CardProductCarousel
         data={projects}
         title='Project'
         bgColor={'linear-gradient(180deg, #EDEDED, #F9F9F9)'}
         duration={2500}
-        titleColor={'#212121'}
       />
     </Box>
   )

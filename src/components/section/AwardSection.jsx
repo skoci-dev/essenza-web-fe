@@ -12,11 +12,11 @@ const AwardSection = () => {
       padding: '100px 0'
     },
     year: {
-      fontSize: '34px',
+      fontSize: '28px',
       color: '#212121'
     },
     title: {
-      fontSize: '22px',
+      fontSize: '18px',
       color: '#212121'
     },
     itemBox: {

@@ -109,7 +109,7 @@ const CategorySection = () => {
     <Box className={classnames('pb-6', frontCommonStyles.layoutSpacing)} sx={styles.sectionBox}>
       <Typography sx={styles.title}>Marble</Typography>
 
-      <Grid container spacing={5}>
+      <Grid container spacing={3}>
         {data.map(item => (
           <Grid key={item.id} item xs={6} sm={6} lg={4}>
             <Card sx={styles.cardWrapper}>
@@ -124,7 +124,7 @@ const CategorySection = () => {
         ))}
       </Grid>
 
-      <Grid container mt={15}>
+      <Grid container mt={8}>
         <Grid item xs={12}>
           <Card sx={styles.bigCard}>
             <img src='/images/illustrations/photos/banner-category.jpg' alt='go' />

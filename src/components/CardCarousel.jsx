@@ -23,7 +23,7 @@ const styles = {
     width: '100%',
     overflow: 'visible',
     '& .banner-swiper': {
-      paddingTop: { xs: 0, sm: '68px' },
+      paddingTop: { xs: 0, sm: '56px' },
       paddingBottom: { xs: '48px', sm: '56px' },
       marginTop: { xs: '52px', sm: 'unset' }
     },
@@ -35,8 +35,6 @@ const styles = {
     },
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet': {
       backgroundColor: '#FFFFFF',
-      height: '10px',
-      width: '10px',
       border: '1.5px solid #ACACAC'
     },
     '& .banner-swiper .swiper-pagination .swiper-pagination-bullet-active': {
@@ -44,8 +42,8 @@ const styles = {
       backgroundColor: '#BD8100'
     },
     '& .banner-swiper .swiper-button-next, & .banner-swiper .swiper-button-prev': {
-      width: { xs: '25px', sm: '45px' },
-      height: { xs: '25px', sm: '45px' },
+      width: { xs: '25px', sm: '35px' },
+      height: { xs: '25px', sm: '35px' },
       background: 'transparent',
       color: '#212121',
       zIndex: 99,
@@ -66,7 +64,7 @@ const styles = {
       borderLeft: '1px solid #212121',
       padding: '6px',
       borderRadius: '6px 0 0 6px',
-      left: { xs: 'calc(100% - 54px)', sm: 'calc(100% - 94px)' }
+      left: { xs: 'calc(100% - 54px)', sm: 'calc(100% - 74px)' }
     },
     '& .banner-swiper .swiper-button-next::before': {
       content: '""',
