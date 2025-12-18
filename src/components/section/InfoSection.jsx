@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import Link from 'next/link'
 
@@ -21,124 +21,6 @@ import CustomButton from '@/@core/components/mui/Button'
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 import { getPubStores } from '@/services/stores'
 import { getPubDistributors } from '@/services/distributors'
-
-const storeData = [
-  {
-    city: 'Jakarta',
-    companies: [
-      {
-        id: 'JKT-001',
-        name: 'PT DIMENSI PROCIPTA INDONESIA (DP HAUS)',
-        address: 'Panglima Polim Raya 107B Jakarta Selatan',
-        phone: '(021) 7399606'
-      },
-      {
-        id: 'JKT-002',
-        name: 'PT. GADING MAS MULTI PRIMA',
-        address: 'Jl. Taman Griya Pratama Blok 7 No. 41 Pegangsaan Dua Kelapa Gading Jakarta Utara',
-        phone: '(021) 22468888'
-      },
-      {
-        id: 'JKT-003',
-        name: 'Alam Jaya',
-        address: 'Daan Mogot KM 12.5 No. 43 Jakarta Barat',
-        phone: '021 544 3467'
-      }
-    ]
-  },
-  {
-    city: 'Bandung',
-    companies: [
-      {
-        id: 'BDG-001',
-        name: 'PT ALAS MULIA',
-        address: 'Jl. Otto Iskandar Dinata No. 357 Bandung',
-        phone: '(022) 4208111'
-      },
-      {
-        id: 'BDG-002',
-        name: 'CV. Makmur Sentosa',
-        address: 'Jl. Asia Afrika No. 100 Bandung',
-        phone: '(022) 7701234'
-      },
-      {
-        id: 'BDG-003',
-        name: 'Toko Granit Utama',
-        address: 'Jl. Cihampelas No. 50 Bandung',
-        phone: '(022) 5432109'
-      }
-    ]
-  },
-  {
-    city: 'Surabaya',
-    companies: [
-      {
-        id: 'SBY-001',
-        name: 'PT BERKAT PUTRA BUANA',
-        address: 'Jalan Baliwerti 55 Surabaya',
-        phone: '(031) 5350519'
-      },
-      {
-        id: 'SBY-002',
-        name: 'Global Keramik SBY',
-        address: 'Jl. Raya Darmo No. 45 Surabaya',
-        phone: '(031) 8877665'
-      },
-      {
-        id: 'SBY-003',
-        name: 'Indah Marmer',
-        address: 'Jl. Kertajaya Indah No. 10 Surabaya',
-        phone: '(031) 5678901'
-      }
-    ]
-  },
-  {
-    city: 'Semarang',
-    companies: [
-      {
-        id: 'SMG-001',
-        name: 'PT GRAHA PELANGI JAYA',
-        address: 'Perkantoran THD Blok A No. 25 Semarang',
-        phone: '(024) -3553001'
-      },
-      {
-        id: 'SMG-002',
-        name: 'Central Bangunan',
-        address: 'Jl. Pemuda No. 10 Semarang',
-        phone: '(024) 4455667'
-      },
-      {
-        id: 'SMG-003',
-        name: 'Toko Jaya Abadi',
-        address: 'Jl. Gajah Mada No. 20 Semarang',
-        phone: '(024) 1122334'
-      }
-    ]
-  },
-  {
-    city: 'Tangerang',
-    companies: [
-      {
-        id: 'TNG-001',
-        name: 'Bintang Keramik',
-        address: 'Jl. Boulevard Raya Blok A No. 1 BSD City Tangerang',
-        phone: '021 199 507'
-      },
-      {
-        id: 'TNG-002',
-        name: 'Mitra Mandiri Granit',
-        address: 'Ruko Golden Road No. 5 Gading Serpong Tangerang',
-        phone: '(021) 9876543'
-      },
-      {
-        id: 'TNG-003',
-        name: 'Depo Material',
-        address: 'Jl. Raya Serpong KM 8 Tangerang',
-        phone: '(021) 1234567'
-      }
-    ]
-  }
-]
 
 const styles = {
   container: {
@@ -208,7 +90,9 @@ const BoxItem = ({ data }) => {
         <Grid item sm={5} xs={12}>
           <Grid container spacing={3}>
             <Grid item sm={6} xs={6}>
-              <CustomButton>View Location</CustomButton>
+              <a href={data?.gmap_link || '#'} target='_blank'>
+                <CustomButton>View Location</CustomButton>
+              </a>
             </Grid>
             <Grid item sm={6} xs={6}>
               <Link href={`tel:${data?.phone}`}>
@@ -229,17 +113,28 @@ const InfoSection = () => {
   const [selectedLocation, setSelectedLocation] = useState('')
   const [showLocation, setShowLocation] = useState(null)
   const [distributors, setDistributors] = useState([])
+  const [stores, setStores] = useState([])
   const [query, setQuery] = useState('')
   const open = Boolean(showLocation)
 
-  const filteredStores =
-    storeData
-      .find(data => data.city === selectedLocation)
-      ?.companies.filter(company => {
-        const lowQuery = query.toLowerCase()
+  const cityList = useMemo(() => {
+    const cities = stores.map(item => item.city)
 
-        return company.name.toLowerCase().includes(lowQuery) || company.address.toLowerCase().includes(lowQuery)
-      }) || []
+    return [...new Set(cities)].sort()
+  }, [stores])
+
+  const filteredStores = useMemo(() => {
+    return stores.filter(item => {
+      const matchesLocation = selectedLocation ? item.city.toLowerCase() === selectedLocation.toLowerCase() : true
+
+      const matchesQuery = query
+        ? item.name.toLowerCase().includes(query.toLowerCase()) ||
+          item.address.toLowerCase().includes(query.toLowerCase())
+        : true
+
+      return matchesLocation && matchesQuery
+    })
+  }, [stores, selectedLocation, query])
 
   const handleClick = event => {
     setShowLocation(event.currentTarget)
@@ -256,6 +151,17 @@ const InfoSection = () => {
 
   const fetchStores = async () => {
     const res = await getPubStores()
+
+    if (res?.data?.length > 0) {
+      const mappingStores = res?.data.map(item => {
+        return {
+          ...item,
+          location: item?.address
+        }
+      })
+
+      setStores(mappingStores)
+    }
   }
 
   const fetchDistributors = async () => {
@@ -369,48 +275,50 @@ const InfoSection = () => {
                 {selectedLocation || 'Select Location'}
               </Button>
               <Menu
-                id='location-menu'
-                slotProps={{
-                  list: {
-                    'aria-labelledby': 'demo-customized-button'
-                  }
-                }}
                 anchorEl={showLocation}
                 open={open}
-                onClose={handleClose}
-                sx={{
-                  '& .MuiPaper-root': { width: showLocation ? showLocation.offsetWidth : 200, marginTop: 1 },
-                  '& .MuiList-root ': { padding: 0 }
-                }}
+                onClose={() => setShowLocation(null)}
+                PaperProps={{ style: { width: showLocation?.offsetWidth } }}
               >
-                {storeData.map(data => (
+                <MenuItem
+                  onClick={() => {
+                    setSelectedLocation('')
+                    setShowLocation(null)
+                  }}
+                >
+                  All Locations
+                </MenuItem>
+                {cityList.map(city => (
                   <MenuItem
+                    key={city}
                     onClick={() => {
-                      setSelectedLocation(data?.city)
-                      handleClose()
+                      setSelectedLocation(city)
+                      setShowLocation(null)
                     }}
-                    disableRipple
-                    key={data?.city}
-                    sx={{ justifyContent: 'center' }}
+                    sx={{ textTransform: 'capitalize' }}
                   >
-                    {data?.city}
+                    {city}
                   </MenuItem>
                 ))}
               </Menu>
             </Grid>
-            {selectedLocation && (
-              <Grid item xs={12}>
-                <Fade in={filteredStores.length > 0} timeout={1000} sx={{ height: 'auto' }}>
-                  <Grid container spacing={3}>
-                    {filteredStores.map(data => (
-                      <Grid item xs={12} key={data?.id}>
-                        <BoxItem data={data} />
+            <Grid item xs={12}>
+              <Fade in={true} timeout={500}>
+                <Grid container spacing={3}>
+                  {filteredStores.length > 0 ? (
+                    filteredStores.map((data, index) => (
+                      <Grid item sm={12} key={index}>
+                        <BoxItem key={index} data={data} />
                       </Grid>
-                    ))}
-                  </Grid>
-                </Fade>
-              </Grid>
-            )}
+                    ))
+                  ) : (
+                    <Typography sx={{ textAlign: 'center', py: 5, color: '#999' }}>
+                      No stores found in this location or search criteria.
+                    </Typography>
+                  )}
+                </Grid>
+              </Fade>
+            </Grid>
           </>
         )}
       </Grid>

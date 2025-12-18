@@ -89,9 +89,9 @@ const StorePage = () => {
         header: 'Phone',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
-      columnHelper.accessor('email', {
-        header: 'Email',
-        cell: info => <Typography>{info.getValue()}</Typography>
+      columnHelper.accessor('city', {
+        header: 'City',
+        cell: info => <Typography>{info.getValue()?.label || '-'}</Typography>
       }),
       columnHelper.accessor('address', {
         header: 'Address',
