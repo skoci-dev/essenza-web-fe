@@ -52,6 +52,7 @@ const DistributorForm = ({ id }) => {
       required: true
     },
     { name: 'website', label: 'Website', placeholder: 'distributor.com', size: 6 },
+    { name: 'gmap_link', label: 'Gmaps URL', placeholder: 'maps.google.com', size: 6 },
     { name: 'latitude', label: 'Latitude', placeholder: '-6.184171439657108106', size: 6 },
     { name: 'longitude', label: 'Longitude', placeholder: '10.184171439657108', size: 6 }
   ])

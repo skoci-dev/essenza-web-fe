@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -10,23 +10,30 @@ import TextField from '@mui/material/TextField'
 const SearchBar = props => {
   const { checked, locale, isMobile = false } = props
   const router = useRouter()
+
+  const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
 
   const handleSubmit = e => {
     e.preventDefault()
-    router.push(`${locale}/search?q=${query}`)
+    router.push(`/${locale}/search?q=${query}`)
+    setOpen(false)
   }
+
+  useEffect(() => {
+    setOpen(checked)
+  }, [checked])
 
   return (
     <>
-      <Slide direction='down' in={checked} mountOnEnter unmountOnExit>
+      <Slide direction='down' in={open} mountOnEnter unmountOnExit>
         <Box
           sx={{
             position: isMobile ? 'relative' : 'absolute',
             top: isMobile ? 'unset' : 124,
-            left: isMobile ? 'unset' : 180,
+            left: isMobile ? 'unset' : 144,
             backgroundColor: 'white',
-            width: isMobile ? '100%' : 'calc(100vw - 360px)',
+            width: isMobile ? '100%' : 'calc(100vw - 288px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',

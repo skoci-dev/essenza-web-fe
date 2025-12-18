@@ -229,7 +229,6 @@ const InfoSection = () => {
   const [selectedLocation, setSelectedLocation] = useState('')
   const [showLocation, setShowLocation] = useState(null)
   const [distributors, setDistributors] = useState([])
-  const [stores, setStores] = useState([])
   const [query, setQuery] = useState('')
   const open = Boolean(showLocation)
 
