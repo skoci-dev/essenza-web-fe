@@ -32,13 +32,13 @@ const VisionSection = () => {
       paddingRight: { xs: 0, sm: '2rem !important' }
     },
     title: {
-      fontSize: { xs: '18px', md: '24px' },
+      fontSize: { xs: '28px', md: '24px' },
       fontWeight: 500,
       textAlign: { xs: 'center', sm: 'left' },
       color: '#000000'
     },
     description: {
-      fontSize: '18px',
+      fontSize: { xs: '14px', sm: '18px' },
       textAlign: { xs: 'center', sm: 'left' },
       color: '#000000',
       marginTop: { xs: 3, sm: 6 }
@@ -131,7 +131,11 @@ const VisionSection = () => {
                 marginBottom: { xs: '24px', sm: '0' }
               }}
             >
-              <Typography sx={styles.title}>{content}</Typography>
+              <Typography
+                sx={{ ...styles.title, fontSize: { xs: '16px', sm: '18px' }, padding: { xs: '0 70px', sm: '0 20px' } }}
+              >
+                {content}
+              </Typography>
             </Grid>
           ))}
         </Grid>

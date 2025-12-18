@@ -85,7 +85,7 @@ const styles = {
     margin: '12px 0',
     width: '100%',
     color: '#212121',
-    marginBottom: '-48px'
+    marginBottom: { xs: '-36px', sm: '-48px' }
   },
   descriptionBanner: {
     fontSize: { xs: '12px', md: '16px' }

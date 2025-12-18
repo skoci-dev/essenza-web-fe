@@ -11,13 +11,13 @@ const HeaderPageSection = ({ title = '', subTitle = '', height = '100vh', bgImag
     },
     title: {
       fontWeight: 500,
-      fontSize: '48px',
+      fontSize: { xs: '24px', sm: '48px' },
       color: '#FFFFFF',
       textAlign: 'center',
       width: '100%',
       lineHeight: 1.2,
       position: 'absolute',
-      top: '45vh'
+      top: { xs: '25vh', sm: '45vh' }
     },
     subTitle: {
       fontSize: { xs: '18px', md: '24px' },
@@ -26,7 +26,7 @@ const HeaderPageSection = ({ title = '', subTitle = '', height = '100vh', bgImag
       textAlign: 'center',
       width: '100%',
       position: 'absolute',
-      top: '65vh'
+      top: { xs: '29vh', sm: '52vh' }
     },
     image: {
       height: height,
