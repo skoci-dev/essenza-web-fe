@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -8,13 +8,15 @@ import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { CircularProgress, TextField } from '@mui/material'
+import { CircularProgress, TextField, MenuItem } from '@mui/material'
 
 import { GoogleReCaptchaProvider, GoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 import frontCommonStyles from '@views/front-pages/styles.module.css'
 import CustomButton from '@/@core/components/mui/Button'
 import { contactMessages } from '@/services/contactMessages'
+import { ShowIf } from '@/components/ShowIf'
+import { getPubIndonesianCities } from '@/services/geo'
 
 const MAP_EMBED_URL =
   'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4031081009557!2d106.58526557549068!3d-6.210445360833821!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69feed267fdf1d%3A0x7e0e5bef2461449d!2sPT%20Internusa%20Ceramic%20Alamasri!5e0!3m2!1sen!2sid!4v1765353831829!5m2!1sen!2sid'
@@ -83,7 +85,16 @@ const styles = {
 
 const CONTACT_FORM_FIELDS = [
   {
-    name: 'firstName',
+    name: 'profile',
+    label: 'Choose Profile :',
+    placeholder: 'Select your profile',
+    multiline: false,
+    rows: 1,
+    type: 'select',
+    options: ['Customer', 'Designer', 'Architech', 'Developer', 'Builder', 'Contractor', 'Press']
+  },
+  {
+    name: 'first_name',
     label: 'First Name :',
     placeholder: 'Enter your First Name',
     multiline: false,
@@ -91,7 +102,7 @@ const CONTACT_FORM_FIELDS = [
     type: 'text'
   },
   {
-    name: 'lastName',
+    name: 'last_name',
     label: 'Last Name :',
     placeholder: 'Enter your Last Name',
     multiline: false,
@@ -107,6 +118,32 @@ const CONTACT_FORM_FIELDS = [
     type: 'text'
   },
   {
+    name: 'country',
+    label: 'Country :',
+    placeholder: 'Select your Country',
+    multiline: false,
+    rows: 1,
+    type: 'select',
+    options: ['Indonesia']
+  },
+  {
+    name: 'city',
+    label: 'City :',
+    placeholder: 'Select your City',
+    multiline: false,
+    rows: 1,
+    type: 'select',
+    options: ['Jakarta']
+  },
+  {
+    name: 'regency',
+    label: 'Regency :',
+    placeholder: 'Enter your Regency',
+    multiline: false,
+    rows: 1,
+    type: 'text'
+  },
+  {
     name: 'phone',
     label: 'Phone :',
     placeholder: 'Enter your Phone Number',
@@ -116,7 +153,7 @@ const CONTACT_FORM_FIELDS = [
   },
   {
     name: 'project',
-    label: 'Project :',
+    label: 'Project Name :',
     placeholder: 'Enter your Project Name',
     multiline: false,
     rows: 1,
@@ -135,11 +172,23 @@ const CONTACT_FORM_FIELDS = [
 const ContactUsSection = () => {
   const isMobile = useMediaQuery('(max-width:768px)')
 
-  const [formData, setFormData] = useState({})
+  const [formData, setFormData] = useState({ profile: 'Customer', country: 'Indonesia', city: 'Jakarta' })
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState()
   const [refreshReCaptcha, setRefreshReCaptcha] = useState(false)
+  const [options, setOptions] = useState({})
+
+  useEffect(() => {
+    const getAllCities = async () => {
+      try {
+        const response = await getPubIndonesianCities()
+        setOptions(prev => ({ ...prev, city: response.data }))
+      } catch (error) {}
+    }
+
+    getAllCities()
+  }, [])
 
   const resetForm = () => {
     setFormData({})
@@ -159,13 +208,10 @@ const ContactUsSection = () => {
     setSuccess(false) // Reset status sukses saat mulai submit baru
 
     const payloadData = {
-      captcha_token: token,
-      captcha_version: 'v3',
-      name: `${formData?.firstName || ''} ${formData?.lastName || ''}`,
-      email: formData?.email,
-      phone: formData?.phone,
+      ...formData,
       subject: `Project: ${formData?.project || 'General Inquiry'}`,
-      message: formData?.message
+      captcha_token: token,
+      captcha_version: 'v3'
     }
 
     try {
@@ -186,6 +232,8 @@ const ContactUsSection = () => {
   const onVerify = useCallback(token => {
     setToken(token)
   }, [])
+
+  const getOptions = useCallback(field => options[field.name] || field.options || null, [options])
 
   return (
     <GoogleReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}>
@@ -240,18 +288,39 @@ const ContactUsSection = () => {
             {CONTACT_FORM_FIELDS.map(field => (
               <Box sx={styles.formFieldBox} key={field.name}>
                 <Typography sx={styles.formFieldLabel}>{field.label}</Typography>
-                <TextField
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  size='small'
-                  fullWidth
-                  multiline={field.multiline}
-                  rows={field.rows}
-                  type={field.type}
-                  value={formData[field.name] || ''}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
+                <ShowIf when={field.type === 'text'}>
+                  <TextField
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    size='small'
+                    fullWidth
+                    multiline={field.multiline}
+                    rows={field.rows}
+                    type={field.type}
+                    value={formData[field.name] || ''}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                </ShowIf>
+
+                <ShowIf when={field.type === 'select'}>
+                  <TextField
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    size='small'
+                    fullWidth
+                    select
+                    value={formData[field.name] || ''}
+                    onChange={handleChange}
+                    disabled={loading}
+                  >
+                    {getOptions(field)?.map(option => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </ShowIf>
               </Box>
             ))}
             {success && (

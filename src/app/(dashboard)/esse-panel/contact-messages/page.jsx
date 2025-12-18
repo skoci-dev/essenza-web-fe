@@ -228,10 +228,14 @@ const ContactMessagesPage = () => {
           }}
         >
           <Grid container spacing={3}>
+            <DetailItem label='Profile' value={dataDetail?.profile} />
             <DetailItem label='Full Name' value={dataDetail?.name} />
             <DetailItem label='Email' value={dataDetail?.email} />
             <DetailItem label='Phone Number' value={dataDetail?.phone} />
             <DetailItem label='Subject' value={dataDetail?.subject} />
+            <DetailItem label='Country' value={dataDetail?.country} />
+            <DetailItem label='City' value={dataDetail?.city} />
+            <DetailItem label='Regency' value={dataDetail?.regency} />
             <DetailItem label='Message' value={dataDetail?.message} fullWidth />
             <DetailItem
               label='Sent Date'
