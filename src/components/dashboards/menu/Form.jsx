@@ -16,7 +16,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import BackdropLoading from '@/components/BackdropLoading'
 import useSnackbar from '@/@core/hooks/useSnackbar'
-import { createMenuItem, deleteMenuItem, getMenus, updateMenuItem } from '@/services/menu'
+import { createMenuItem, deleteMenuItem, getMenus, updateMenuItem, updateMenuItemsOrder } from '@/services/menu'
 
 import CustomTextField from '@/@core/components/custom-inputs/TextField'
 import DialogBasic from '@/components/DialogBasic'
@@ -234,7 +234,7 @@ const MenuForm = () => {
       setEditingIndex(null)
       setOriginalMenuData(null)
     },
-    [menu, originalMenuData, success]
+    [menu, originalMenuData, success, info]
   )
 
   const handleSave = useCallback(
@@ -345,7 +345,7 @@ const MenuForm = () => {
   )
 
   const handleDragEnd = useCallback(
-    result => {
+    async result => {
       const { source, destination } = result
 
       if (!destination) {
@@ -361,6 +361,8 @@ const MenuForm = () => {
         return
       }
 
+      const oldMenu = [...menu]
+
       const menuItems = menu[menuIndex].items
       const reorderedItems = reorder(menuItems, sourceIndex, destinationIndex)
 
@@ -370,65 +372,22 @@ const MenuForm = () => {
 
       setMenu(updatedMenu)
       setOrderChanged(true)
-    },
-    [menu]
-  )
 
-  const handleUpdateOrder = useCallback(async () => {
-    if (editingIndex !== null) {
-      error('Please finish editing the current item before updating the order.')
-
-      return
-    }
-
-    if (!orderChanged) {
-      info('No order changes to save.')
-
-      return
-    }
-
-    const orderUpdates = []
-
-    menu.forEach(menuItem => {
-      menuItem.items.forEach(item => {
-        if (!item.isNew && item.id) {
-          orderUpdates.push({
-            id: item.id,
-            order_no: item.order_no
-          })
+      await handleApiResponse(
+        () => updateMenuItemsOrder(updatedMenu[menuIndex].id, { new_order: reorderedItems.map(item => item.id) }),
+        {
+          error,
+          success,
+          onError: () => {
+            setMenu(oldMenu)
+            setOrderChanged(false)
+            error('Failed to update order. Changes have been reverted.')
+          }
         }
-      })
-    })
-
-    if (orderUpdates.length === 0) {
-      info('No existing menu items found to update order.')
-      setOrderChanged(false)
-
-      return
-    }
-
-    setLoading(true)
-
-    const updatePromises = orderUpdates.map(update => {
-      const data = { order_no: update.order_no }
-
-      return updateMenuItem(update.id, data)
-    })
-
-    handleApiResponse(() => Promise.all(updatePromises), {
-      success: msg => success(msg || 'Menu order updated successfully!'),
-      error: msg => error(msg || 'Failed to update menu order.'),
-      onSuccess: () => {
-        setLoading(false)
-        setOrderChanged(false)
-        success('Order updated successfully.')
-        fetchMenu()
-      },
-      onError: () => {
-        setLoading(false)
-      }
-    })
-  }, [editingIndex, menu, orderChanged, success, error, info, setLoading, fetchMenu])
+      )
+    },
+    [menu, error, success]
+  )
 
   return (
     <>
@@ -506,20 +465,6 @@ const MenuForm = () => {
           </DragDropContext>
         </CardContent>
         <Divider />
-        {/* Tinggal memperbaiki ini untuk auto save order dan handleResponse yg terlalu banyak jadi bingung */}
-        <Box className='p-4'>
-          <Button
-            startIcon={<i className='ri-save-line' />}
-            variant='contained'
-            color='success'
-            size='small'
-            onClick={handleUpdateOrder}
-
-            // disabled={true}
-          >
-            Update Order (Auto Save)
-          </Button>
-        </Box>
       </Card>
       <DialogBasic
         open={deleteIndex !== null}
