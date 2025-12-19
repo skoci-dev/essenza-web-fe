@@ -43,8 +43,8 @@ apiClient.interceptors.response.use(
     const errors = errRes.data?.errors || null
 
     if (
-      (status === 401 && !errorCode === AUTHENTICATION_FAILED_CODE) ||
-      (status === 403 && !errorCode === INSUFFICIENT_ROLE_CODE)
+      (status === 401 && errorCode !== AUTHENTICATION_FAILED_CODE) ||
+      (status === 403 && errorCode !== INSUFFICIENT_ROLE_CODE)
     ) {
       console.warn(`Unauthorized/Forbidden response received (Status: ${status}). Logging out...`)
 
