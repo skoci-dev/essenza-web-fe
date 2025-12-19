@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // Next Imports
 import { useParams, usePathname } from 'next/navigation'
@@ -20,34 +20,40 @@ import SearchBar from './SearchBar'
 
 const staticMenu = [
   {
-    id: 1,
     label: 'About Us',
-    href: '/about-us'
+    link: '/about-us',
+    children: [],
+    order_no: 1
   },
   {
-    id: 1,
     label: 'Product',
-    href: '/product'
+    link: '/product',
+    children: [],
+    order_no: 2
   },
   {
-    id: 1,
     label: 'News',
-    href: '/news'
+    link: '/news',
+    children: [],
+    order_no: 3
   },
   {
-    id: 1,
     label: 'Project',
-    href: '/project'
+    link: '/project',
+    children: [],
+    order_no: 4
   },
   {
-    id: 1,
     label: 'Contact Us',
-    href: '/contact-us'
+    link: '/contact-us',
+    children: [],
+    order_no: 5
   },
   {
-    id: 1,
     label: 'Info',
-    href: '/info'
+    link: '/info',
+    children: [],
+    order_no: 6
   }
 ]
 
@@ -134,17 +140,24 @@ const FrontMenu = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBelowLgScreen])
 
+  const navigationMenus = useMemo(() => {
+    return props.menuItems || staticMenu
+  }, [props.menuItems])
+
   return (
     <>
       <Wrapper isBelowLgScreen={isBelowLgScreen} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen}>
         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
           <SearchBar checked={true} locale={locale} isMobile={true} />
         </Box>
-        {staticMenu.map((menu, i) => (
-          <Box key={i} sx={pathname === `/${locale}${menu.href}` && !isMobile ? styles.activeMenu : styles.menu}>
+        {navigationMenus.map((menu, i) => (
+          <Box
+            key={'headerMenu' + i}
+            sx={pathname === `/${locale}${menu.link}` && !isMobile ? styles.activeMenu : styles.menu}
+          >
             <Typography
               component={Link}
-              href={`/${locale}${menu.href}`}
+              href={`/${locale}${menu.link}`}
               className={'text-[#212121]'}
               onClick={() => setIsDrawerOpen(false)}
             >

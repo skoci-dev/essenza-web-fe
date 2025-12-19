@@ -44,6 +44,10 @@ const getMenuItemsByMenuId = async menuId => {
   return await apiClient.get(`/int/v1/menus/${menuId}/items`)
 }
 
+const getPubMenus = async () => {
+  return await apiClient.get('/pub/v1/menus')
+}
+
 export {
   createMenu,
   getMenus,
@@ -55,5 +59,6 @@ export {
   getMenusItem,
   getMenuByIdItem,
   updateMenuItem,
-  deleteMenuItem
+  deleteMenuItem,
+  getPubMenus
 }

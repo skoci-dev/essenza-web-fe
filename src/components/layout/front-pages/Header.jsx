@@ -24,7 +24,7 @@ import { frontLayoutClasses } from '@layouts/utils/layoutClasses'
 // Styles Imports
 import styles from './styles.module.css'
 
-const Header = ({ mode }) => {
+const Header = ({ mode, headerMenus }) => {
   // States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
@@ -64,14 +64,24 @@ const Header = ({ mode }) => {
                   <Box component='img' src='/icons/menu.svg' alt='menu' />
                 )}
               </IconButton>
-              <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
+              <FrontMenu
+                mode={mode}
+                isDrawerOpen={isDrawerOpen}
+                setIsDrawerOpen={setIsDrawerOpen}
+                menuItems={headerMenus}
+              />
             </div>
           ) : (
             <div className='contents items-center gap-10 relative'>
               <Link href='/'>
                 <img className='h-[74px] flex' src={'/logo.svg'} />
               </Link>
-              <FrontMenu mode={mode} isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
+              <FrontMenu
+                mode={mode}
+                isDrawerOpen={isDrawerOpen}
+                setIsDrawerOpen={setIsDrawerOpen}
+                menuItems={headerMenus}
+              />
             </div>
           )}
         </div>
