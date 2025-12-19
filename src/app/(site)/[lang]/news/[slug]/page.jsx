@@ -1,43 +1,43 @@
 import EndSection from '@/components/section/EndSection'
 import HeaderNewsDetailSection from '@/components/section/HeaderNewsDetailSection'
 import NewsDetailSection from '@/components/section/NewsDetailSection'
+import { getPubArticleBySlug } from '@/services/article'
 
 async function getData(slug) {
-  const url = `https://essenza-backend.warawiri.web.id/pub/v1/articles${slug}`
-
-  let res
-
   try {
-    res = await fetch(url, {
-      cache: 'no-store'
-    })
-  } catch (networkError) {
-    console.error('NETWORK FETCH ERROR:', networkError.message)
-    throw new Error('Failed to connect to the server.')
+    const { success, message, data } = await getPubArticleBySlug(slug)
+
+    if (!success) {
+      throw new Error(message || 'Failed to fetch footer menus')
+    }
+
+    return {
+      ...data,
+      openGraph: {
+        title: data.meta_title || data.title,
+        description: data.meta_description,
+        type: 'article',
+        images: [
+          {
+            url: data.thumbnail || '/default-thumbnail.jpg',
+            alt: data.title
+          }
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching article:', error)
   }
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch data. Status: ${res.status}`)
-  }
-
-  const data = await res.json()
-
-  if (!data.success) {
-    throw new Error(data.message || 'API reported failure.')
-  }
-
-  const resData = data?.data
 
   return {
-    ...resData,
     openGraph: {
-      title: resData.meta_title || resData.title,
-      description: resData.meta_description,
+      title: 'Not Found',
+      description: '',
       type: 'article',
       images: [
         {
-          url: resData.thumbnail || '/default-thumbnail.jpg',
-          alt: resData.title
+          url: '/default-thumbnail.jpg',
+          alt: 'Not Found'
         }
       ]
     }
