@@ -29,7 +29,7 @@ const getPubArticles = async (params = {}) => {
 }
 
 const getPubArticleBySlug = async slug => {
-  return await apiClient.get(`/int/v1/articles/${slug}`)
+  return await apiClient.get(`/pub/v1/articles/${slug}`)
 }
 
 export { getArticles, getArticleById, createArticle, updateArticle, deleteArticle, getPubArticles, getPubArticleBySlug }
