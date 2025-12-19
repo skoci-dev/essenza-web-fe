@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -10,97 +10,159 @@ import { useParams } from 'next/navigation'
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
-import Checkbox from '@mui/material/Checkbox'
 import TablePagination from '@mui/material/TablePagination'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 // Third-party Imports
 import classnames from 'classnames'
-import { rankItem } from '@tanstack/match-sorter-utils'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFacetedMinMaxValues,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 
-// Components Imports
-import CustomAvatar from '@core/components/mui/Avatar'
-import OptionMenu from '@core/components/option-menu'
-
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import { handleApiResponse } from '@/utils/handleApiResponse'
+import { getArticles } from '@/services/article'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 
-const chipColor = {
-  Published: { color: 'success' },
-  Draft: { color: 'default' },
-  Archived: { color: 'warning' }
+// Helper functions
+const truncateText = (text, maxLength = 60) => {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
 }
 
-const fuzzyFilter = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
+const formatDate = dateString => {
+  return new Date(dateString).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
+}
 
-  addMeta({ itemRank })
+const getArticleStatus = (isActive, hasPublishedDate) => {
+  if (isActive && hasPublishedDate) {
+    return { status: 'Published', color: 'success' }
+  }
 
-  return itemRank.passed
+  return { status: 'Draft', color: 'default' }
 }
 
 const columnHelper = createColumnHelper()
 
-const OverviewTable = ({ postData }) => {
+const OverviewTable = () => {
   const [rowSelection, setRowSelection] = useState({})
-  const [data] = useState(postData || [])
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 5,
+    total_pages: 0,
+    total_items: 0,
+    has_next: false,
+    has_previous: false
+  })
 
   const { lang: locale } = useParams()
+
+  const fetchArticles = useCallback(async (page = 1, perPage = 5) => {
+    setLoading(true)
+
+    try {
+      const params = {
+        page,
+        page_size: perPage
+      }
+
+      await handleApiResponse(() => getArticles(params), {
+        onSuccess: ({ data, meta: { pagination: paginationData } }) => {
+          setData(data)
+          setPagination(paginationData)
+        }
+      })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchArticles()
+  }, [fetchArticles])
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('title', {
         header: 'Judul',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-3'>
+        cell: ({ row }) => {
+          const { title, slug } = row.original
+
+          return (
             <Typography
               component={Link}
-              href={getLocalizedUrl(`/cms/blog/${row.original.id}`, locale)}
+              target='_blank'
+              href={getLocalizedUrl(`/news/${slug}`, locale)}
               className='font-medium hover:text-primary'
               color='text.primary'
+              title={title}
             >
-              {row.original.title}
+              {truncateText(title)}
             </Typography>
-          </div>
-        )
+          )
+        }
       }),
-      columnHelper.accessor('category', {
-        header: 'Kategori',
-        cell: ({ row }) => <Typography>{row.original.category}</Typography>
-      }),
-      columnHelper.accessor('author', {
-        header: 'Penulis',
-        cell: ({ row }) => <Typography>{row.original.author}</Typography>
-      }),
-      columnHelper.accessor('date', {
-        header: 'Tanggal',
-        cell: ({ row }) => <Typography>{row.original.date}</Typography>
-      }),
-      columnHelper.accessor('status', {
+        columnHelper.accessor('author', {
+          header: 'Penulis',
+          cell: ({ row }) => <Typography className='text-sm'>{row.original.author || '-'}</Typography>
+        }),
+        columnHelper.accessor('tags', {
+          header: 'Tags',
+          cell: ({ row }) => {
+            const tags =
+              row.original.tags
+                ?.split(',')
+                .map(t => t.trim())
+                .filter(t => t)
+                .slice(0, 2) || []
+
+            return (
+              <div className='flex gap-1 flex-wrap'>
+                {tags.length > 0 ? (
+                  tags.map((tag, index) => <Chip key={index} label={tag} size='small' variant='outlined' />)
+                ) : (
+                  <Typography className='text-sm text-textSecondary'>-</Typography>
+                )}
+              </div>
+            )
+          }
+        }),
+        columnHelper.accessor('published_at', {
+          header: 'Tanggal Publikasi',
+          cell: ({ row }) => {
+            const { is_active, published_at } = row.original
+
+            if (!is_active || !published_at) {
+              return <Typography className='text-sm text-textSecondary'>-</Typography>
+            }
+
+            return <Typography className='text-sm'>{formatDate(published_at)}</Typography>
+          }
+        }),
+      columnHelper.accessor('is_active', {
         header: 'Status',
-        cell: ({ row }) => (
-          <Chip
-            variant='tonal'
-            label={row.original.status}
-            size='small'
-            color={chipColor[row.original.status]?.color || 'default'}
-          />
-        )
+        cell: ({ row }) => {
+          const { is_active, published_at } = row.original
+          const { status, color } = getArticleStatus(is_active, published_at)
+
+          return <Chip variant='tonal' label={status} size='small' color={color} />
+        }
       })
     ],
     [locale]
@@ -109,85 +171,86 @@ const OverviewTable = ({ postData }) => {
   const table = useReactTable({
     data,
     columns,
-    filterFns: { fuzzy: fuzzyFilter },
     state: { rowSelection },
-    initialState: { pagination: { pageSize: 5 } },
     enableRowSelection: true,
+    manualPagination: true,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues()
+    getSortedRowModel: getSortedRowModel()
   })
 
   return (
     <Card>
-      <CardHeader
-        title='Daftar Artikel'
-        action={<OptionMenu iconClassName='text-textPrimary' options={['Refresh', 'Tambah Baru', 'Export']} />}
-      />
+      <CardHeader title='Daftar Artikel' />
       <div className='overflow-x-auto'>
-        <table className={tableStyles.table}>
-          <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={classnames({
-                          'flex items-center': header.column.getIsSorted(),
-                          'cursor-pointer select-none': header.column.getCanSort()
-                        })}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: <i className='ri-arrow-up-s-line text-xl' />,
-                          desc: <i className='ri-arrow-down-s-line text-xl' />
-                        }[header.column.getIsSorted()] ?? null}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          {table.getFilteredRowModel().rows.length === 0 ? (
-            <tbody>
-              <tr>
-                <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                  Tidak ada data
-                </td>
-              </tr>
-            </tbody>
-          ) : (
-            <tbody>
-              {table
-                .getRowModel()
-                .rows.slice(0, table.getState().pagination.pageSize)
-                .map(row => (
+        {loading ? (
+          <Box className='flex items-center justify-center p-10'>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <table className={tableStyles.table}>
+            <thead>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={classnames({
+                            'flex items-center': header.column.getIsSorted(),
+                            'cursor-pointer select-none': header.column.getCanSort()
+                          })}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <i className='ri-arrow-up-s-line text-xl' />,
+                            desc: <i className='ri-arrow-down-s-line text-xl' />
+                          }[header.column.getIsSorted()] ?? null}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            {table.getFilteredRowModel().rows.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                    Tidak ada data
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              <tbody>
+                {table.getRowModel().rows.map(row => (
                   <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                     {row.getVisibleCells().map(cell => (
                       <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                     ))}
                   </tr>
                 ))}
-            </tbody>
-          )}
-        </table>
+              </tbody>
+            )}
+          </table>
+        )}
       </div>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         component='div'
         className='border-bs'
-        count={table.getExpandedRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize}
-        page={table.getState().pagination.pageIndex}
-        onPageChange={(_, page) => table.setPageIndex(page)}
-        onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
+        count={pagination.total_items}
+        rowsPerPage={pagination.per_page}
+        page={pagination.current_page - 1}
+        onPageChange={(_, page) => {
+          fetchArticles(page + 1, pagination.per_page)
+        }}
+        onRowsPerPageChange={e => {
+          const newPerPage = Number(e.target.value)
+
+          fetchArticles(1, newPerPage)
+        }}
       />
     </Card>
   )

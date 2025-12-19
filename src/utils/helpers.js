@@ -66,3 +66,15 @@ export const getFilename = (input = '') => {
 
   return input.trim().split('/').pop()
 }
+
+export const formatReadableDate = (isoString = '') => {
+  if (!isoString) return '-'
+
+  return new Date(isoString).toLocaleString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
