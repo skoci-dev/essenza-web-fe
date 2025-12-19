@@ -33,9 +33,7 @@ const Layout = ({ children, params }) => {
       <body className='flex is-full min-bs-full flex-auto flex-col'>
         <Providers direction='ltr'>
           <BlankLayout systemMode={systemMode}>
-            <IntersectionProvider>
-              <FrontLayout>{children}</FrontLayout>
-            </IntersectionProvider>
+            <IntersectionProvider>{children}</IntersectionProvider>
           </BlankLayout>
         </Providers>
       </body>
