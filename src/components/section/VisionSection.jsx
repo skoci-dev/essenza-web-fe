@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
@@ -5,11 +9,13 @@ import Typography from '@mui/material/Typography'
 
 import classnames from 'classnames'
 
-import borderColor from 'tailwindcss-logical/plugins/borderColor'
-
 import frontCommonStyles from '@views/front-pages/styles.module.css'
+import { getPubSettingBySlug } from '@/services/setting'
 
 const VisionSection = () => {
+  const [visionContent, setVisionContent] = useState('')
+  const [missionContent, setMissionContent] = useState('')
+
   const styles = {
     container: {
       background: 'linear-gradient(180deg, #EDEDED, #F9F9F9)',
@@ -41,7 +47,8 @@ const VisionSection = () => {
       fontSize: { xs: '14px', sm: '18px' },
       textAlign: { xs: 'center', sm: 'left' },
       color: '#000000',
-      marginTop: { xs: 3, sm: 6 }
+      marginTop: { xs: 3, sm: 6 },
+      whiteSpace: 'pre-line'
     },
     divider: {
       width: '100%',
@@ -52,6 +59,32 @@ const VisionSection = () => {
       margin: { xs: '24px 0', sm: '48px 0' }
     }
   }
+
+  const fetchData = async () => {
+    const cachedVision = localStorage.getItem('cache_vision')
+    const cachedMission = localStorage.getItem('cache_mission')
+
+    if (cachedVision) setVisionContent(cachedVision)
+    if (cachedMission) setMissionContent(cachedMission)
+
+    try {
+      const [resVision, resMission] = await Promise.all([getPubSettingBySlug('vision'), getPubSettingBySlug('mission')])
+
+      const newVision = resVision?.data?.value || ''
+      const newMission = resMission?.data?.value || ''
+
+      setVisionContent(newVision)
+      setMissionContent(newMission)
+      localStorage.setItem('cache_vision', newVision)
+      localStorage.setItem('cache_mission', newMission)
+    } catch (error) {
+      console.error('Failed to fetch Vision/Mission:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const contentBottom = [
     'The pioneer porcelain tile manufacturer in Indonesia',
@@ -66,51 +99,25 @@ const VisionSection = () => {
           <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' } }}>
             <Grid container spacing={2}>
               <Grid item xs={5}>
-                <Box
-                  component='img'
-                  src={'/images/illustrations/photos/banner-category.jpg'}
-                  alt={`about us`}
-                  sx={styles.image}
-                />
+                <Box component='img' src={'/images/illustrations/photos/banner-category.jpg'} sx={styles.image} />
               </Grid>
               <Grid item xs={7}>
-                <Box
-                  component='img'
-                  src={'/images/illustrations/photos/category-3.jpg'}
-                  alt={`about us`}
-                  sx={styles.image}
-                />
+                <Box component='img' src={'/images/illustrations/photos/category-3.jpg'} sx={styles.image} />
               </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12} md={4.5} sx={styles.containerText} mt={5}>
             <Typography sx={styles.title}>Vision</Typography>
-            <Typography sx={styles.description}>
-              To be the global most admired tile company for products, people, partnership, competitiveness and
-              performance.
-            </Typography>
+            <Typography sx={styles.description}>{visionContent}</Typography>
             <Divider sx={styles.divider} />
-            <Typography sx={styles.title}>Mision</Typography>
-            <Typography sx={styles.description}>
-              Our company continuously innovate products and services that offer leading revolutionary solution to
-              society, and always create the best value to customers and shareholders.
-            </Typography>
+            <Typography sx={styles.title}>Mission</Typography>
+            <Typography sx={styles.description}>{missionContent}</Typography>
           </Grid>
           <Grid item xs={12} md={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
-            <Box
-              component='img'
-              src={'/images/illustrations/photos/banner-category.jpg'}
-              alt={`about us`}
-              sx={styles.image}
-            />
+            <Box component='img' src={'/images/illustrations/photos/banner-category.jpg'} sx={styles.image} />
           </Grid>
           <Grid item xs={12} md={4.5} sx={{ display: { xs: 'none', sm: 'block' } }}>
-            <Box
-              component='img'
-              src={'/images/illustrations/photos/category-3.jpg'}
-              alt={`about us`}
-              sx={styles.image}
-            />
+            <Box component='img' src={'/images/illustrations/photos/category-3.jpg'} sx={styles.image} />
           </Grid>
         </Grid>
       </Box>

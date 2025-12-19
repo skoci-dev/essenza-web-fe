@@ -101,6 +101,14 @@ const StorePage = () => {
           </Tooltip>
         )
       }),
+      columnHelper.accessor('gmap_link', {
+        header: 'Gmaps Link',
+        cell: info => (
+          <a href={info.getValue()} target='_blank'>
+            <Typography className='truncate w-48'>{info.getValue()}</Typography>
+          </a>
+        )
+      }),
       columnHelper.accessor('actions', {
         header: 'Actions',
         cell: ({ row }) => (

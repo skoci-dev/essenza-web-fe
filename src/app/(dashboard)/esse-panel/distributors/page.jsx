@@ -84,14 +84,6 @@ const DistributorsPage = () => {
         header: 'Distributor Name',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
-      columnHelper.accessor('address', {
-        header: 'Address',
-        cell: info => (
-          <Tooltip title={info.getValue()}>
-            <Typography className='truncate w-24'>{info.getValue()}</Typography>
-          </Tooltip>
-        )
-      }),
       columnHelper.accessor('phone', {
         header: 'Phone',
         cell: info => <Typography>{info.getValue()}</Typography>
@@ -100,11 +92,19 @@ const DistributorsPage = () => {
         header: 'Email',
         cell: info => <Typography className='text-blue-500'>{info.getValue()}</Typography>
       }),
-      columnHelper.accessor('website', {
-        header: 'Website',
+      columnHelper.accessor('address', {
+        header: 'Address',
         cell: info => (
-          <a href={info.getValue()} target='_blank' rel='noopener noreferrer' className='text-primary underline'>
-            {info.getValue().replace('https://', '')}
+          <Tooltip title={info.getValue()}>
+            <Typography className='truncate w-48'>{info.getValue()}</Typography>
+          </Tooltip>
+        )
+      }),
+      columnHelper.accessor('gmap_link', {
+        header: 'Gmaps Link',
+        cell: info => (
+          <a href={info.getValue()} target='_blank'>
+            <Typography className='truncate w-24'>{info.getValue()}</Typography>
           </a>
         )
       }),

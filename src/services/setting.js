@@ -20,4 +20,20 @@ const deleteSetting = async slug => {
   return await apiClient.delete(`/int/v1/settings/${slug}`)
 }
 
-export { createSetting, getSettings, getSettingBySlug, updateSetting, deleteSetting }
+const getPubSettings = async (params = {}) => {
+  return await apiClient.get('/int/v1/settings', { params })
+}
+
+const getPubSettingBySlug = async slug => {
+  return await apiClient.get(`/int/v1/settings/${slug}`)
+}
+
+export {
+  createSetting,
+  getSettings,
+  getSettingBySlug,
+  updateSetting,
+  deleteSetting,
+  getPubSettings,
+  getPubSettingBySlug
+}

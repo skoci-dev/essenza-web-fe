@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -5,8 +9,11 @@ import Typography from '@mui/material/Typography'
 import classnames from 'classnames'
 
 import frontCommonStyles from '@views/front-pages/styles.module.css'
+import { getPubSettingBySlug } from '@/services/setting'
 
 const AboutUsSection = () => {
+  const [stringContent, setStringContent] = useState('')
+
   const styles = {
     container: {
       background: 'linear-gradient(180deg, #414141, #121212)',
@@ -30,9 +37,34 @@ const AboutUsSection = () => {
       fontSize: { xs: '14px', sm: '18px' },
       textAlign: { xs: 'center', sm: 'left' },
       color: 'white',
-      marginTop: 6
+      marginTop: 6,
+      whiteSpace: 'pre-line'
     }
   }
+
+  const fetchStringContent = async () => {
+    const cachedData = localStorage.getItem('about_us_content')
+
+    if (cachedData) {
+      setStringContent(cachedData)
+    }
+
+    try {
+      const res = await getPubSettingBySlug('about_us')
+      const newValue = res?.data?.value || ''
+
+      if (newValue !== cachedData) {
+        setStringContent(newValue)
+        localStorage.setItem('about_us_content', newValue)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    fetchStringContent()
+  }, [])
 
   return (
     <Box sx={styles.container}>
@@ -49,16 +81,7 @@ const AboutUsSection = () => {
         </Grid>
         <Grid item xs={12} md={6} sx={styles.containerText}>
           <Typography sx={styles.title}>About Us</Typography>
-          <Typography sx={styles.description}>
-            Essenza, locally and internationally well known as the leader of Indonesian Tile Manufacturer (Porcelain
-            Tile). Since 1994 the Essenza brand has successfully established as a leading brand in the Indonesian
-            starting Tile Market. In early 1994, we have entered the international market starting in Singapore.
-            <br />
-            <br />
-            The success of Essenza in penetrating the world market is rooted in the commitment of the management and
-            staff of Internusa Keramik Alamasri to provide high quality products and services to the market. Essenza is
-            continuously being appreciated by public with many awards,
-          </Typography>
+          <Typography sx={styles.description}>{stringContent}</Typography>
         </Grid>
       </Grid>
     </Box>

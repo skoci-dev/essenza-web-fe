@@ -12,6 +12,7 @@ import CustomButton from '@/@core/components/mui/Button'
 import { handleApiResponse } from '@/utils/handleApiResponse'
 import { getPubProductBySlug } from '@/services/products'
 import { ShowIf, ShowElse } from '@components/ShowIf'
+import { getPubSettingBySlug } from '@/services/setting'
 
 const styles = {
   gridContainer: {
@@ -100,6 +101,8 @@ const FeatureItem = ({ data }) => (
 
 const ProductDetailSection = ({ slug }) => {
   const [dataDetail, setDataDetail] = useState(null)
+  const [waNumber, setWaNumber] = useState('')
+  const [waMessage, setWaMessage] = useState('')
   const isMobile = useMediaQuery('(max-width:768px)')
 
   useEffect(() => {
@@ -133,6 +136,23 @@ const ProductDetailSection = ({ slug }) => {
     }
   }, [dataDetail])
 
+  useEffect(() => {
+    const fetchWaNumber = async () => {
+      const res = await getPubSettingBySlug('wa_number')
+
+      if (res?.data?.value) setWaNumber(res?.data?.value)
+    }
+
+    const fetchWaMessage = async () => {
+      const res = await getPubSettingBySlug('wa_message')
+
+      if (res?.data?.value) setWaMessage(res?.data?.value)
+    }
+
+    fetchWaNumber()
+    fetchWaMessage()
+  }, [])
+
   return (
     <Container maxWidth='lg'>
       <ShowIf when={dataDetail !== null}>
@@ -149,10 +169,7 @@ const ProductDetailSection = ({ slug }) => {
                 <Box mt={8} />
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, gap: { xs: 2, sm: 2 } }}>
                   <Box sx={styles.boxButton}>
-                    <a
-                      href='https://wa.me/+6282295228745?text=Halo%Essenza%20Team%2C%20saya%20melihat%20produk-produk%Essenza%20dan%20sangat%20tertarik.%20Boleh%20dibantu%20info%20lebih%20lengkapnya%3F%20Terima%20kasih%20😊'
-                      target='_blank'
-                    >
+                    <a href={`https://wa.me/${waNumber}?text=${waMessage}`} target='_blank'>
                       <CustomButton borderColor='#BB8B05'>Request a Sample</CustomButton>
                     </a>
                   </Box>

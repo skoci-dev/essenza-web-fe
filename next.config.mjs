@@ -3,6 +3,7 @@
 const nextConfig = {
   basePath: process.env.BASEPATH,
 
+  // if using multiple language
   redirects: async () => {
     return [
       {
@@ -13,6 +14,7 @@ const nextConfig = {
       }
     ]
   },
+
   async rewrites() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
 

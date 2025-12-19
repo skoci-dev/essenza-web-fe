@@ -18,7 +18,8 @@ const GENERAL_SLUGS = [
 ]
 
 const WA_SLUGS = ['wa_number', 'wa_message']
-const ALL_SLUGS = [...GENERAL_SLUGS, ...WA_SLUGS]
+const ABOUT_US_SLUGS = ['about_us', 'vision', 'mision']
+const ALL_SLUGS = [...GENERAL_SLUGS, ...WA_SLUGS, ...ABOUT_US_SLUGS]
 
 const initialSettingsState = ALL_SLUGS.reduce((acc, slug) => {
   acc[slug] = ''
@@ -31,6 +32,7 @@ const SettingsForm = () => {
   const [loading, setLoading] = useState(false)
   const [isGeneralEditing, setIsGeneralEditing] = useState(false)
   const [isWaEditing, setIsWaEditing] = useState(false)
+  const [isAboutUsEditing, setIsAboutUsEditing] = useState(false)
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
@@ -76,6 +78,11 @@ const SettingsForm = () => {
           rows: 3,
           size: 12
         }
+      ],
+      aboutUs: [
+        { name: 'about_us', label: 'About Us', placeholder: '', size: 12, multiline: true, rows: 3, required: true },
+        { name: 'vision', label: 'Vision', placeholder: '', size: 12, multiline: true, rows: 3, required: true },
+        { name: 'mision', label: 'Mision', placeholder: '', size: 12, multiline: true, rows: 3, required: true }
       ]
     }),
     []
@@ -210,6 +217,18 @@ const SettingsForm = () => {
         slugs={WA_SLUGS}
         isEditing={isWaEditing}
         setIsEditing={setIsWaEditing}
+        onFormSubmit={handleFormSubmit}
+        onChange={handleChange}
+        settings={settings}
+      />
+
+      {/* About Us Page Settings Form */}
+      <RenderFormSection
+        title='About Us Page Setting'
+        fields={fields.aboutUs}
+        slugs={ABOUT_US_SLUGS}
+        isEditing={isAboutUsEditing}
+        setIsEditing={setIsAboutUsEditing}
         onFormSubmit={handleFormSubmit}
         onChange={handleChange}
         settings={settings}

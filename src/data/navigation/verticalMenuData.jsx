@@ -75,10 +75,7 @@ const verticalMenuData = () => [
     label: 'Contact',
     icon: 'ri-inbox-line',
     roles: ['superadmin', 'admin'],
-    children: [
-      { label: 'Contact Messages', href: '/esse-panel/contact-messages', roles: ['superadmin', 'admin'] },
-      { label: 'Contact Info', href: '/esse-panel/contact-infos', roles: ['superadmin', 'admin'] }
-    ]
+    children: [{ label: 'Contact Messages', href: '/esse-panel/contact-messages', roles: ['superadmin', 'admin'] }]
   },
   {
     label: 'Users & Roles',
