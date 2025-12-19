@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
@@ -81,40 +83,6 @@ const styles = {
   }
 }
 
-const footerSections = [
-  {
-    sectionId: 'about-essenza',
-    title: 'About Essenza',
-    links: [
-      { id: 'about-essenza', label: 'About Essenza', href: '/about' },
-      { id: 'find-a-store', label: 'Find a Store', href: '/store' },
-      { id: 'news-event', label: 'News & Event', href: '/news' }
-    ]
-  },
-  {
-    sectionId: 'customer-care',
-    title: 'Customer Care',
-    links: [
-      { id: 'customer-care', label: 'Customer Care', href: '/customer-care' },
-      { id: 'download', label: 'Download', href: '/download' },
-      { id: 'esprienza', label: 'Esprienza', href: '/esprienza' }
-    ]
-  },
-  {
-    sectionId: 'get-in-touch',
-    title: 'Get in Touch',
-    links: [
-      { id: 'get-it-touch', label: 'Get in Touch', href: '/get-in-touch' },
-      { id: 'contact-us', label: 'Contact Us', href: '/contact-us' }
-    ]
-  },
-  {
-    sectionId: 'info',
-    title: 'Info',
-    links: [{ id: 'info', label: 'Info', href: '/info' }]
-  }
-]
-
 const SubcribesFooter = ({ socialMedia }) => {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -156,14 +124,14 @@ const SubcribesFooter = ({ socialMedia }) => {
       setLoading(false)
       setRefreshReCaptcha(r => !r)
     }
-  }, [email])
+  }, [email, token])
 
   return (
     <>
       <GoogleReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}>
         <Typography sx={styles.textSubcribe}>Enter your email to receive news, information about essenza</Typography>
         <Grid container spacing={2} mt={2}>
-          <Grid item xs={9}>
+          <Grid item xs={9} key='subscribe-email-input'>
             <TextField
               className='w-full rounded-[6px]'
               size='small'
@@ -175,7 +143,7 @@ const SubcribesFooter = ({ socialMedia }) => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} key='subscribe-submit-button'>
             <GoogleReCaptcha onVerify={onVerify} refreshReCaptcha={refreshReCaptcha} />
             <Button
               sx={styles.buttonSubcribe}
@@ -192,13 +160,13 @@ const SubcribesFooter = ({ socialMedia }) => {
         </Grid>
         <Divider sx={styles.dividerMobileOnly} className='border-t border-[#212121]' />
         <Grid container spacing={2}>
-          <Grid item>
+          <Grid item key='follow-us-label'>
             <Typography className='text-[#212121] font-weigth-400 text-md'>Follow Us :</Typography>
           </Grid>
-          {socialMedia.map(social => (
-            <Grid item key={social.href}>
-              <a href={social?.href || '#'} target='_blank'>
-                <img className='h-[26px]' src={social.icon} />
+          {socialMedia?.map((social, index) => (
+            <Grid item key={social.id || `social-${index}`}>
+              <a href={social?.href || '#'} target='_blank' rel='noopener noreferrer'>
+                <img className='h-[26px]' src={social.icon} alt={social.name || 'social media'} />
               </a>
             </Grid>
           ))}
@@ -212,13 +180,15 @@ const SubcribesFooter = ({ socialMedia }) => {
   )
 }
 
-const Footer = ({ initialSocialMedia }) => {
+const Footer = ({ initialSocialMedia, footerMenus }) => {
+  const { lang: locale } = useParams()
+
   return (
     <footer className='bg-white border-t border-[#D1D1D1]'>
       <div className={classnames('pb-6', frontCommonStyles.layoutSpacing)}>
         <Grid container rowSpacing={10} columnSpacing={12}>
           {/* Left Section */}
-          <Grid item xs={12} sm={6} lg={8}>
+          <Grid item xs={12} sm={6} lg={8} key='footer-left-section'>
             <div className='flex flex-col items-start gap-1'>
               <Box sx={styles.logoWrapper}>
                 <Link href='/'>
@@ -232,10 +202,10 @@ const Footer = ({ initialSocialMedia }) => {
 
                 {/* Mobile Buttons */}
                 <Grid container className='py-5' spacing={2} sx={styles.mobileButtonGroup}>
-                  <Grid item xs={6} className='w-full'>
+                  <Grid item xs={6} className='w-full' key='mobile-esperianza'>
                     <CustomButton>Esperianza</CustomButton>
                   </Grid>
-                  <Grid item xs={6} className='w-full'>
+                  <Grid item xs={6} className='w-full' key='mobile-tokopedia'>
                     <CustomButton>Tokopedia</CustomButton>
                   </Grid>
                 </Grid>
@@ -250,12 +220,14 @@ const Footer = ({ initialSocialMedia }) => {
 
               {/* Footer Links */}
               <Grid container>
-                {footerSections.map(section => (
-                  <Grid key={section.sectionId} item xs={6} sm={6} lg={2.5}>
-                    {section.links.map(link => (
-                      <a key={link.href} href={link.href} className='text-sm hover:underline'>
-                        <Typography className='text-[#212121] mt-3 font-weigth-400 text-xs'>{link.label}</Typography>
-                      </a>
+                {footerMenus?.map((section, sectionIndex) => (
+                  <Grid key={section.sectionId || `section-${sectionIndex}`} item xs={6} sm={6} lg={2.5}>
+                    {section.items?.map((item, itemIndex) => (
+                      <Box key={item.link || `item-${sectionIndex}-${itemIndex}`}>
+                        <a href={'/' + locale + item.link} className='text-sm hover:underline'>
+                          <Typography className='text-[#212121] mt-3 font-weigth-400 text-xs'>{item.label}</Typography>
+                        </a>
+                      </Box>
                     ))}
                   </Grid>
                 ))}
@@ -264,12 +236,12 @@ const Footer = ({ initialSocialMedia }) => {
           </Grid>
 
           {/* Right Section */}
-          <Grid item xs={12} sm={6} lg={4}>
+          <Grid item xs={12} sm={6} lg={4} key='footer-right-section'>
             <Grid container className='items-center py-5' spacing={2} sx={styles.rightButtonGroup}>
-              <Grid item xs={6}>
+              <Grid item xs={6} key='desktop-esperianza'>
                 <CustomButton>Esperianza</CustomButton>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={6} key='desktop-tokopedia'>
                 <CustomButton>Tokopedia</CustomButton>
               </Grid>
             </Grid>
