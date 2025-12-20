@@ -205,7 +205,6 @@ const SocialMediaForm = () => {
       icon: socialMedia[index]?.platform.toLowerCase()
     }
 
-    console.log('item save', item)
     setLoading(true)
 
     try {

@@ -21,8 +21,6 @@ const ProjectSection = () => {
     const res = await getPubProjects()
 
     if (res?.data?.length > 0) {
-      console.log('res?.data', res?.data)
-
       const mappingData = res.data.map(item => {
         return {
           ...item,

@@ -93,7 +93,6 @@ const TagItem = ({ text }) => {
 }
 
 const ProjectsDetailSection = ({ dataDetail }) => {
-  console.log('data', dataDetail)
   const Tags = dataDetail?.tags ? convertStringtoArray(dataDetail?.tags) : []
   const { lang: locale } = useParams()
 

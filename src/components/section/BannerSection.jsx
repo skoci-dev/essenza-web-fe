@@ -113,7 +113,7 @@ const BannerSection = () => {
             <Link href={img?.link_url}>
               <Box sx={styles.imageWrapper}>
                 <Image
-                  src={img?.image}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}${img?.image}`}
                   alt={img?.title}
                   fill
                   sizes='(max-width: 768px) 100vw, 

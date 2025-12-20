@@ -70,8 +70,6 @@ const Login = ({ mode }) => {
   const { settings } = useSettings()
   const { loaded: recaptchaLoaded, execute, cleanup } = useRecaptcha(null, { version: 'v3', autoLoad: !authToken })
 
-  console.log('recaptchaLoaded', recaptchaLoaded)
-
   const {
     control,
     handleSubmit,

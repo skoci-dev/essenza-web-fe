@@ -2,6 +2,22 @@
 
 const nextConfig = {
   basePath: process.env.BASEPATH,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'essenza-backend.jajal.dev',
+        port: '',
+        pathname: '/media/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'essenza-backend.warawiri.web.id',
+        port: '',
+        pathname: '/**'
+      }
+    ]
+  },
 
   // if using multiple language
   redirects: async () => {

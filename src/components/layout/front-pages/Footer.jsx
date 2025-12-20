@@ -109,8 +109,6 @@ const SubcribesFooter = ({ socialMedia }) => {
 
       const result = await subscribeUser(data)
 
-      console.log('result', result)
-
       if (result.success) {
         alert('Terima kasih! Langganan berhasil.')
         setEmail('')
