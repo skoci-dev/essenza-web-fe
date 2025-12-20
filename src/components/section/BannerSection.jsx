@@ -112,15 +112,17 @@ const BannerSection = () => {
           <SwiperSlide key={i}>
             <Link href={img?.link_url}>
               <Box sx={styles.imageWrapper}>
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}${img?.image}`}
+                <Box
+                  component={'img'}
+                  src={`${img?.image}`}
                   alt={img?.title}
-                  fill
-                  sizes='(max-width: 768px) 100vw, 
-               100vw'
-                  style={{
-                    objectFit: 'cover'
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
                   }}
+                  sizes='(max-width: 768px) 100vw, 100vw'
                 />
               </Box>
             </Link>
