@@ -114,7 +114,7 @@ const BannerSection = () => {
               <Box sx={styles.imageWrapper}>
                 <Box
                   component={'img'}
-                  src={`${img?.image}`}
+                  src={`${img?.file}`}
                   alt={img?.title}
                   sx={{
                     width: '100%',

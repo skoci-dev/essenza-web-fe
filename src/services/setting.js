@@ -25,7 +25,7 @@ const getPubSettings = async (params = {}) => {
 }
 
 const getPubSettingBySlug = async slug => {
-  return await apiClient.get(`/int/v1/settings/${slug}`)
+  return await apiClient.get(`/pub/v1/settings/${slug}`)
 }
 
 export {

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 
 import { Box, Typography, Grid, Card } from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
@@ -13,6 +14,7 @@ import frontCommonStyles from '@views/front-pages/styles.module.css'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import { getTruncateText } from '@/utils/string'
 
 const styles = {
   containerBox: bgColor => ({
@@ -88,6 +90,10 @@ const styles = {
     marginBottom: { xs: '-36px', sm: '-48px' }
   },
   descriptionBanner: {
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     fontSize: { xs: '12px', md: '16px' }
   },
   bannerImage: {
@@ -141,6 +147,10 @@ const styles = {
     color: '#FFFFFF',
     fontFamily: 'Maison Neue',
     fontWeight: 600,
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     '& span': {
       fontWeight: 100
     }
@@ -149,6 +159,8 @@ const styles = {
 
 const CardCarousel = props => {
   const { data = [], title, bgColor, duration = 1000, isCategory = false, slidesPerView = 3 } = props
+
+  const isMobile = useMediaQuery('(max-width:768px)')
 
   return (
     <Box sx={styles.containerBox(bgColor)}>
@@ -205,7 +217,9 @@ const CardCarousel = props => {
                       alt={img.title}
                       sx={slidesPerView === 3 ? styles.bannerImage : styles.bannerImageSquare}
                     />
-                    <Typography sx={styles.descriptionBanner}>{img.title}</Typography>
+                    <Typography sx={styles.descriptionBanner}>
+                      {getTruncateText(img.title, isMobile ? 35 : 100)}
+                    </Typography>
                   </Link>
                 </SwiperSlide>
               ))}

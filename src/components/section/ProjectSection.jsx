@@ -9,7 +9,7 @@ import Box from '@mui/material/Box'
 import useMediaQuery from '@/@menu/hooks/useMediaQuery'
 
 import { getPubProjects } from '@/services/projects'
-import CardProductCarousel from '../CardProductCarousel'
+import CardProjectCarousel from '../CardProjectCarousel'
 
 const ProjectSection = () => {
   const { lang: locale } = useParams()
@@ -40,13 +40,12 @@ const ProjectSection = () => {
   }, [])
 
   return (
-    <Box sx={{ marginTop: 0 }}>
-      <CardProductCarousel
+    <Box sx={{ marginTop: { xs: '-115px', sm: '-250px' } }}>
+      <CardProjectCarousel
         data={projects}
-        title='Project'
+        title='Showcase of our completed collaborations'
         bgColor={'linear-gradient(180deg, #EDEDED, #F9F9F9)'}
         duration={2500}
-        titleColor={'#212121'}
       />
     </Box>
   )

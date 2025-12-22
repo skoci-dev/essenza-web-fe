@@ -91,12 +91,12 @@ const BoxItem = ({ data }) => {
           <Grid container spacing={3}>
             <Grid item sm={6} xs={6}>
               <a href={data?.gmap_link || '#'} target='_blank'>
-                <CustomButton>View Location</CustomButton>
+                <CustomButton sx={{ fontSize: { xs: '12px', sm: '1rem' } }}>View Location</CustomButton>
               </a>
             </Grid>
             <Grid item sm={6} xs={6}>
               <Link href={`tel:${data?.phone}`}>
-                <CustomButton>Contact Us</CustomButton>
+                <CustomButton sx={{ fontSize: { xs: '12px', sm: '1rem' } }}>Contact Us</CustomButton>
               </Link>
             </Grid>
           </Grid>

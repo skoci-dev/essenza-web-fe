@@ -78,15 +78,15 @@ const styles = {
     }
   },
   menu: {
-    padding: { xs: '18px 0', sm: '0' },
-    borderBottom: { xs: '1px solid #2121214D', sm: 'unset' }
+    padding: { xs: '18px 0', md: '0' },
+    borderBottom: { xs: '1px solid #2121214D', md: 'unset' }
   },
   activeMenu: {
-    position: { sm: 'relative' },
-    bottom: { sm: '-0.3rem' },
-    paddingBottom: { sm: 2 },
-    borderBottom: { sm: '1.5px solid #BD8100' },
-    transition: { sm: 'border-bottom 0.3s ease-out, bottom 0.3s ease-out' }
+    position: { md: 'relative' },
+    bottom: { md: '-0.3rem' },
+    padding: { xs: '18px 0', md: '0 0.5rem 0.5rem 0.5rem' },
+    borderBottom: { xs: '1px solid #2121214D', md: '1.5px solid #BD8100' },
+    transition: { md: 'border-bottom 0.3s ease-out, bottom 0.3s ease-out' }
   }
 }
 
@@ -178,7 +178,7 @@ const FrontMenu = props => {
           src='/icons/search.svg'
           alt='search'
           className='cursor-pointer'
-          sx={{ display: { xs: 'none', sm: 'block' } }}
+          sx={{ display: { xs: 'none', md: 'block' } }}
           onClick={handleClickSearch}
         />
       </Wrapper>

@@ -15,7 +15,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
-const CardProductCarousel = ({ data = [], title, titleColor, bgColor, duration = 1000, useMultipleView = false }) => {
+const CardProjectCarousel = ({ data = [], title, titleColor, bgColor, duration = 1000, useMultipleView = false }) => {
   const isMobile = useMediaQuery('(max-width:768px)')
 
   const styles = {
@@ -181,4 +181,4 @@ const CardProductCarousel = ({ data = [], title, titleColor, bgColor, duration =
   )
 }
 
-export default CardProductCarousel
+export default CardProjectCarousel
