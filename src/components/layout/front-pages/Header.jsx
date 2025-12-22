@@ -3,6 +3,8 @@
 // React Imports
 import { useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 // Next Imports
 import Link from 'next/link'
 
@@ -23,10 +25,14 @@ import { frontLayoutClasses } from '@layouts/utils/layoutClasses'
 
 // Styles Imports
 import styles from './styles.module.css'
+import SearchBar from './SearchBar'
 
 const Header = ({ mode, headerMenus }) => {
   // States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isSearchOpen, setIsSearctOpen] = useState(false)
+
+  const { lang: locale } = useParams()
 
   // Hooks
   const isBelowLgScreen = useMediaQuery(theme => theme.breakpoints.down('lg'))
@@ -47,7 +53,10 @@ const Header = ({ mode, headerMenus }) => {
           'bg-white mt-[40px] rounded-[10px] py-0 pl-1 pr-3'
         )}
       >
-        <div className={classnames(frontLayoutClasses.navbarContent, styles.navbarContent)}>
+        <div
+          className={classnames(frontLayoutClasses.navbarContent, styles.navbarContent)}
+          style={{ position: 'relative !important' }}
+        >
           {isBelowLgScreen ? (
             <div className='contents items-center gap-1 sm:gap-4 relative'>
               <Link href='/'>
@@ -81,10 +90,14 @@ const Header = ({ mode, headerMenus }) => {
                 isDrawerOpen={isDrawerOpen}
                 setIsDrawerOpen={setIsDrawerOpen}
                 menuItems={headerMenus}
+                handleClickSearch={() => setIsSearctOpen(!isSearchOpen)}
               />
             </div>
           )}
         </div>
+        <Box sx={{ width: 'calc(100% + 18px)', position: 'relative', ml: '-5px' }}>
+          <SearchBar checked={isSearchOpen} locale={locale} />
+        </Box>
       </div>
     </header>
   )

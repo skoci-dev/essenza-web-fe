@@ -118,14 +118,15 @@ const Wrapper = props => {
 
 const FrontMenu = props => {
   // Props
-  const { isDrawerOpen, setIsDrawerOpen } = props
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const { isDrawerOpen, setIsDrawerOpen, handleClickSearch } = props
+
+  // const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   const pathname = usePathname()
 
-  const handleClickSearch = () => {
-    setIsSearchOpen(!isSearchOpen)
-  }
+  // const handleClickSearch = () => {
+  //   setIsSearchOpen(!isSearchOpen)
+  // }
 
   // Hooks
   const isBelowLgScreen = useMediaQuery(theme => theme.breakpoints.down('lg'))
@@ -134,7 +135,7 @@ const FrontMenu = props => {
 
   useEffect(() => {
     if (!isBelowLgScreen && isDrawerOpen) {
-      setIsDrawerOpen(false)
+      // setIsDrawerOpen(false)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,7 +183,6 @@ const FrontMenu = props => {
           onClick={handleClickSearch}
         />
       </Wrapper>
-      <SearchBar checked={isSearchOpen} locale={locale} />
     </>
   )
 }

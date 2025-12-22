@@ -4,8 +4,13 @@ import { useRouter } from 'next/navigation'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Fade from '@mui/material/Fade'
 import Slide from '@mui/material/Slide'
 import TextField from '@mui/material/TextField'
+
+import classnames from 'classnames'
+
+import frontCommonStyles from '@views/front-pages/styles.module.css'
 
 const SearchBar = props => {
   const { checked, locale, isMobile = false } = props
@@ -26,19 +31,22 @@ const SearchBar = props => {
 
   return (
     <>
-      <Slide direction='down' in={open} mountOnEnter unmountOnExit>
+      <Fade in={open} timeout={750} mountOnEnter unmountOnExit>
         <Box
           sx={{
             position: isMobile ? 'relative' : 'absolute',
-            top: isMobile ? 'unset' : 124,
-            left: isMobile ? 'unset' : 144,
+            top: isMobile ? 'unset' : 24,
+            left: 0,
+            zIndex: 1000,
+            width: '100%',
             backgroundColor: 'white',
-            width: isMobile ? '100%' : 'calc(100vw - 288px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: isMobile ? 'unset' : 4,
-            borderRadius: '10px'
+            padding: isMobile ? 2 : 4,
+            borderRadius: '10px',
+            boxShadow: '0px 4px 20px rgba(0,0,0,0.05)',
+            transform: open ? 'translateY(0px)' : 'translateY(-30px)'
           }}
         >
           <form onSubmit={handleSubmit} className='w-full flex items-center gap-2'>
@@ -48,9 +56,19 @@ const SearchBar = props => {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder='search . . .'
+              autoFocus
             />
             <Button
-              className={'bg-[#C1A658] px-[40px] text-[#ffffff] py-[9px] rounded-[6px]'}
+              sx={{
+                backgroundColor: '#C1A658',
+                color: '#ffffff',
+                px: 5,
+                py: 1.1,
+                borderRadius: '6px',
+                '&:hover': {
+                  backgroundColor: '#a88f4a'
+                }
+              }}
               size='small'
               type='submit'
             >
@@ -58,7 +76,7 @@ const SearchBar = props => {
             </Button>
           </form>
         </Box>
-      </Slide>
+      </Fade>
     </>
   )
 }
