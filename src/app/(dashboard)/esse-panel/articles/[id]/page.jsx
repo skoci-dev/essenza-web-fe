@@ -22,6 +22,7 @@ import { convertStringtoArray, formatDateToCustomStringNative } from '@/utils/he
 import DetailField from '@/components/DetailField'
 import DetailActions from '@/components/DetailActions'
 import BackdropLoading from '@/components/BackdropLoading'
+import { ShowElse, ShowIf } from '@/components/ShowIf'
 
 const ArticleDetailPage = () => {
   const { id } = useParams()
@@ -133,6 +134,33 @@ const ArticleDetailPage = () => {
                   No thumbnail uploaded
                 </Typography>
               )}
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant='subtitle2' sx={{ mb: 1.5 }}>
+                Gallery
+              </Typography>
+              <ShowIf when={article.gallery?.length > 0}>
+                <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                  {article.gallery?.map((img, i) => (
+                    <Box
+                      key={i}
+                      component='img'
+                      src={img}
+                      alt={`Gallery ${i}`}
+                      sx={{
+                        width: 120,
+                        height: 80,
+                        objectFit: 'cover',
+                        borderRadius: 1,
+                        border: '1px solid #ccc'
+                      }}
+                    />
+                  ))}
+                </Box>
+
+                <ShowElse>-</ShowElse>
+              </ShowIf>
             </Grid>
 
             {/* Content */}

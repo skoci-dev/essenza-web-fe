@@ -100,6 +100,7 @@ const ArticleForm = ({ id }) => {
   const [data, setData] = useState(defaultData)
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState('')
+  const [galleryPreview, setGalleryPreview] = useState([])
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
@@ -172,6 +173,28 @@ const ArticleForm = ({ id }) => {
     setData(prev => ({ ...prev, thumbnail: '' }))
   }, [])
 
+  const handleGalleryChange = useCallback(
+    e => {
+      const files = Array.from(e.target.files || [])
+
+      if (files.length) {
+        const urls = files.map(URL.createObjectURL)
+
+        setGalleryPreview(prev => [...prev, ...urls])
+        setData(prev => ({ ...prev, gallery: [...(prev.gallery || []), ...files] }))
+      }
+    },
+    [setGalleryPreview, setData]
+  )
+
+  const handleRemoveGalleryImage = useCallback(
+    index => {
+      setGalleryPreview(prev => prev.filter((_, i) => i !== index))
+      setData(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }))
+    },
+    [setGalleryPreview, setData]
+  )
+
   const fetchArticle = useCallback(
     async id => {
       setLoading(true)
@@ -180,6 +203,7 @@ const ArticleForm = ({ id }) => {
         const res = await getArticleById(id)
 
         setData(res.data)
+        setGalleryPreview(res.data.gallery || [])
 
         if (res.data?.thumbnail) {
           setPreview(res.data.thumbnail)
@@ -215,8 +239,8 @@ const ArticleForm = ({ id }) => {
 
     if (data.gallery && Array.isArray(data.gallery)) {
       data.gallery.forEach((item, index) => {
-        if (item instanceof File) {
-          formData.append(`gallery[${index}]`, item)
+        if (item instanceof File || typeof item === 'string') {
+          formData.append(`gallery`, item)
         }
       })
     }
@@ -293,6 +317,34 @@ const ArticleForm = ({ id }) => {
                   control={<Switch checked={data.is_active} onChange={handleSwitchChange} />}
                   label={data?.is_active ? 'Active' : 'Inactive'}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant='subtitle2' className='mb-2'>
+                  Gallery Images
+                </Typography>
+                <Box className='flex flex-wrap gap-3'>
+                  {galleryPreview.map((src, index) => (
+                    <Box key={index} className='relative inline-block'>
+                      <img
+                        src={src}
+                        alt={`Gallery ${index}`}
+                        className='w-[120px] h-[80px] object-cover rounded border'
+                      />
+                      <IconButton
+                        color='error'
+                        size='small'
+                        className='absolute top-1 right-1 bg-white shadow'
+                        onClick={() => handleRemoveGalleryImage(index)}
+                      >
+                        <i className='ri-delete-bin-line text-red-500 text-lg' />
+                      </IconButton>
+                    </Box>
+                  ))}
+                  <Button variant='outlined' component='label' startIcon={<i className='ri-upload-2-line text-lg' />}>
+                    Add Images
+                    <input type='file' hidden accept='image/*' multiple onChange={handleGalleryChange} />
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
 
