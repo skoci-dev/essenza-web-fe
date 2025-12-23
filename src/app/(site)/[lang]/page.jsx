@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+
 import BannerSection from '@/components/section/BannerSection'
 import CategorySection from '@/components/section/CategorySection'
 import DiscoverSection from '@/components/section/DiscoverSection'
@@ -10,7 +12,7 @@ const HomePage = () => {
     <>
       <BannerSection />
       <CategorySection />
-      <ProjectSection />
+      <ProjectSection mt={'0 !important'} titleColor={'#212121'} />
       <NewsSection />
       <DiscoverSection />
       <EndSection />

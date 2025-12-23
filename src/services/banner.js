@@ -15,7 +15,7 @@ const createBanner = async data => {
 }
 
 const updateBanner = async (id, data) => {
-  return await apiClient.patch(`/int/v1/banners/${id}`, data, {
+  return await apiClient.post(`/int/v1/banners/${id}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }

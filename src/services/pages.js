@@ -24,4 +24,8 @@ const deletePage = async id => {
   return await apiClient.delete(`/int/v1/pages/${id}`)
 }
 
-export { getPages, getPageById, createPage, updatePage, deletePage }
+const getPubPageBySlug = async slug => {
+  return await apiClient.get(`/pub/v1/pages/${slug}`)
+}
+
+export { getPages, getPageById, createPage, updatePage, deletePage, getPubPageBySlug }

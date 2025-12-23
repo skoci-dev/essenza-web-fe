@@ -276,7 +276,7 @@ const ProjectForm = ({ id }) => {
     if (data.gallery && Array.isArray(data.gallery)) {
       data.gallery.forEach((item, index) => {
         if (item instanceof File || typeof item === 'string') {
-          formData.append('gallery', item)
+          formData.append(`gallery[]`, item)
         }
       })
     }

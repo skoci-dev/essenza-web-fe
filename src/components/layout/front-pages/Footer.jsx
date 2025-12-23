@@ -88,6 +88,7 @@ const SubcribesFooter = ({ socialMedia }) => {
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState()
   const [refreshReCaptcha, setRefreshReCaptcha] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const onVerify = useCallback(token => {
     setToken(token)
@@ -110,7 +111,7 @@ const SubcribesFooter = ({ socialMedia }) => {
       const result = await subscribeUser(data)
 
       if (result.success) {
-        alert('Terima kasih! Langganan berhasil.')
+        setShowSuccess(true)
         setEmail('')
       } else {
         alert(result.message || 'Gagal berlangganan. Coba lagi.')
@@ -121,6 +122,9 @@ const SubcribesFooter = ({ socialMedia }) => {
     } finally {
       setLoading(false)
       setRefreshReCaptcha(r => !r)
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 3000)
     }
   }, [email, token])
 
@@ -138,6 +142,15 @@ const SubcribesFooter = ({ socialMedia }) => {
               sx={styles.subscribePlaceholder}
               value={email}
               onChange={handleEmailChange}
+              helperText={
+                showSuccess ? (
+                  <Typography sx={{ color: '#2e7d32', fontSize: '14px', fontWeight: 500 }}>
+                    Email sent successfully!
+                  </Typography>
+                ) : (
+                  ''
+                )
+              }
               fullWidth
             />
           </Grid>

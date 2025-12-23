@@ -156,7 +156,28 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
 
   const handleSpecificationChange = useCallback(
     (index, field, value) => {
-      setSelectedSpecs(prev => prev.map((spec, i) => (i === index ? { ...spec, [field]: value } : spec)))
+      setSelectedSpecs(prev =>
+        prev.map((spec, i) => {
+          if (i === index) {
+            const updatedSpec = { ...spec, [field]: value }
+            const specialSlugs = ['colors', 'water-absorbtion', 'thickness-specific', 'number-of-face']
+
+            if (specialSlugs.includes(updatedSpec.slug)) {
+              if (updatedSpec.value && updatedSpec.value.trim() !== '') {
+                updatedSpec.highlighted = true
+              } else {
+                updatedSpec.highlighted = false
+              }
+            } else if (field === 'slug') {
+              updatedSpec.highlighted = false
+            }
+
+            return updatedSpec
+          }
+
+          return spec
+        })
+      )
     },
     [setSelectedSpecs]
   )
@@ -175,6 +196,10 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
     },
     [router, success]
   )
+
+  const usedSpecSlugs = useMemo(() => {
+    return selectedSpecs.filter(spec => !spec.deleted).map(spec => spec.slug)
+  }, [selectedSpecs])
 
   const handleSubmit = useCallback(
     async e => {
@@ -456,7 +481,7 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
                       !spec.deleted && (
                         <Card key={index} variant='outlined' className='p-4'>
                           <Grid container spacing={4} alignItems='center'>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={5}>
                               <TextField
                                 select
                                 fullWidth
@@ -465,16 +490,33 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
                                 value={spec.slug}
                                 onChange={e => handleSpecificationChange(index, 'slug', e.target.value)}
                               >
-                                {specifications.map(s => (
-                                  <MenuItem key={s.id} value={s.slug}>
-                                    <Box component='img' sx={{ height: '14px', mr: 2 }} src={`/icons/${s.icon}.svg`} />
-                                    {s.name}
-                                  </MenuItem>
-                                ))}
+                                {specifications.map(s => {
+                                  const isAlreadyUsed = usedSpecSlugs.includes(s.slug) && s.slug !== spec.slug
+
+                                  return (
+                                    <MenuItem key={s.id} value={s.slug} disabled={isAlreadyUsed}>
+                                      <Box
+                                        component='img'
+                                        sx={{
+                                          height: '14px',
+                                          mr: 2,
+                                          filter: isAlreadyUsed ? 'grayscale(1)' : 'none',
+                                          opacity: isAlreadyUsed ? 0.5 : 1
+                                        }}
+                                        src={`/icons/${s.icon}.svg`}
+                                      />
+                                      <Box
+                                        component='span'
+                                        sx={{ color: isAlreadyUsed ? 'text.disabled' : 'text.primary' }}
+                                      >
+                                        {s.name} {isAlreadyUsed && '(Already used)'}
+                                      </Box>
+                                    </MenuItem>
+                                  )
+                                })}
                               </TextField>
                             </Grid>
-
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={5}>
                               <TextField
                                 fullWidth
                                 required
@@ -485,21 +527,7 @@ const ProductForm = ({ initialData = defaultProduct, onCancel, onSubmit, validat
                                 placeholder='Enter value'
                               />
                             </Grid>
-
-                            <Grid item xs={12} sm={3}>
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    size='small'
-                                    checked={spec.highlighted}
-                                    onChange={e => handleSpecificationChange(index, 'highlighted', e.target.checked)}
-                                  />
-                                }
-                                label={spec.highlighted ? 'Highlighted' : 'Technical'}
-                              />
-                            </Grid>
-
-                            <Grid item xs={12} sm={1}>
+                            <Grid item xs={12} sm={2}>
                               <IconButton color='error' onClick={() => handleRemoveSpecification(index)} size='small'>
                                 <i className='ri-delete-bin-line' />
                               </IconButton>

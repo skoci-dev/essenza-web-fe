@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
@@ -93,6 +93,10 @@ const BannerSection = () => {
     if (res?.data.length > 0) setBanners(res?.data)
   }
 
+  const isVideoFile = url => {
+    return url?.match(/\.(mp4|webm|ogg|mov)$/i)
+  }
+
   useEffect(() => {
     fetchBanners()
   }, [])
@@ -104,26 +108,54 @@ const BannerSection = () => {
         modules={[Navigation, Pagination, Autoplay]}
         navigation
         pagination={{ clickable: true }}
-        autoplay={{ delay: 5000 }}
+        autoplay={{ delay: 7000, disableOnInteraction: false }}
         speed={750}
         loop
       >
-        {banners.map((img, i) => (
+        {banners.map((item, i) => (
           <SwiperSlide key={i}>
-            <Link href={img?.link_url}>
+            <Link href={item?.link_url || '#'} style={{ pointerEvents: item?.link_url ? 'auto' : 'none' }}>
               <Box sx={styles.imageWrapper}>
-                <Box
-                  component={'img'}
-                  src={`${img?.file}`}
-                  alt={img?.title}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                  sizes='(max-width: 768px) 100vw, 100vw'
-                />
+                {isVideoFile(item?.file) ? (
+                  <Box
+                    component='video'
+                    src={item?.file}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                ) : (
+                  <Box
+                    component={'img'}
+                    src={`${item?.file}`}
+                    alt={item?.title}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block'
+                    }}
+                  />
+                )}
+                {(item?.title || item?.subtitle) && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: '80px',
+                      left: '24px',
+                      color: 'white',
+                      zIndex: 2,
+                      textShadow: '0px 2px 4px rgba(0,0,0,0.5)'
+                    }}
+                  ></Box>
+                )}
               </Box>
             </Link>
           </SwiperSlide>

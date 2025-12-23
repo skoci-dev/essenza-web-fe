@@ -11,7 +11,8 @@ import useMediaQuery from '@/@menu/hooks/useMediaQuery'
 import { getPubProjects } from '@/services/projects'
 import CardProjectCarousel from '../CardProjectCarousel'
 
-const ProjectSection = () => {
+const ProjectSection = props => {
+  const { mt = '-115px', titleColor } = props
   const { lang: locale } = useParams()
   const isMobile = useMediaQuery('(max-width:768px)')
 
@@ -40,12 +41,13 @@ const ProjectSection = () => {
   }, [])
 
   return (
-    <Box sx={{ marginTop: { xs: '-115px', sm: '-250px' } }}>
+    <Box sx={{ marginTop: { xs: mt ? mt : '-115px', sm: mt ? mt : '-250px' } }}>
       <CardProjectCarousel
         data={projects}
         title='Showcase of our completed collaborations'
         bgColor={'linear-gradient(180deg, #EDEDED, #F9F9F9)'}
         duration={2500}
+        titleColor={titleColor || '#F9F9F9'}
       />
     </Box>
   )

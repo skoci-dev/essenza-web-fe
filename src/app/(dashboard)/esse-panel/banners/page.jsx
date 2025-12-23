@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 // MUI Imports
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -94,9 +95,33 @@ const BannerPage = () => {
         header: 'Subtitle',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
-      columnHelper.accessor('image', {
-        header: 'Image',
-        cell: info => <img src={info.getValue()} alt='Banner' className='w-24 h-12 object-cover rounded' />
+      columnHelper.accessor('file', {
+        header: 'Media',
+        cell: info => {
+          const fileUrl = info.getValue()
+
+          if (!fileUrl)
+            return (
+              <div className='w-24 h-12 bg-gray-100 flex items-center justify-center rounded text-xs text-gray-400'>
+                No Media
+              </div>
+            )
+
+          const isVideo = fileUrl.match(/\.(mp4|webm|ogg|mov)$/i)
+
+          return (
+            <Box className='w-24 h-12 relative rounded overflow-hidden border'>
+              {isVideo ? (
+                <Box className='relative w-full h-full flex items-center justify-center bg-black'>
+                  <video src={fileUrl} className='w-full h-full object-cover' muted />
+                  <i className='ri-play-circle-fill absolute text-white text-xl opacity-80' />
+                </Box>
+              ) : (
+                <img src={fileUrl} alt='Banner' className='w-full h-full object-cover' />
+              )}
+            </Box>
+          )
+        }
       }),
       columnHelper.accessor('link_url', {
         header: 'Link URL',
