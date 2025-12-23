@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -22,6 +22,7 @@ import FormActions from '@/components/FormActions'
 
 import { handleApiResponse } from '@/utils/handleApiResponse'
 import BackdropLoading from '@/components/BackdropLoading'
+import { ShowElse, ShowIf } from '@/components/ShowIf'
 
 const defaultData = {
   title: '',
@@ -31,9 +32,12 @@ const defaultData = {
 const BrochuresForm = ({ id }) => {
   const router = useRouter()
   const isEdit = !!id
+  const [originData, setOriginData] = useState(null)
   const [data, setData] = useState(defaultData)
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState(defaultData.file || '')
+  const [previewImage, setPreviewImage] = useState('')
+  const [errors, setErrors] = useState({})
 
   const { success, error, SnackbarComponent } = useSnackbar()
 
@@ -42,9 +46,29 @@ const BrochuresForm = ({ id }) => {
     []
   )
 
+  const requiredImage = useMemo(() => isEdit && originData?.image, [isEdit, originData])
+  const requiredFile = useMemo(() => isEdit && originData?.file_url, [isEdit, originData])
+
+  const validate = useCallback(() => {
+    const errs = {}
+
+    if (!data.title) errs.title = 'Title is required'
+    if (!data.file && requiredFile) errs.file = 'File is required'
+    if (!data.image && requiredImage) errs.image = 'Image is required'
+
+    setErrors(errs)
+
+    return Object.keys(errs).length === 0
+  }, [data, requiredFile, requiredImage])
+
   const handleSubmit = async e => {
-    setLoading(true)
     e.preventDefault()
+
+    if (!validate()) {
+      return
+    }
+
+    setLoading(true)
 
     await handleApiResponse(() => (isEdit ? updateBrochure(id, data) : createBrochure(data)), {
       success: msg => success(msg),
@@ -62,6 +86,7 @@ const BrochuresForm = ({ id }) => {
   const handleChange = e => {
     const { name, value } = e.target
 
+    setErrors(prev => ({ ...prev, [name]: '' }))
     setData(prev => ({ ...prev, [name]: value }))
   }
 
@@ -69,6 +94,7 @@ const BrochuresForm = ({ id }) => {
     const file = e.target.files[0]
 
     if (file) {
+      setErrors(prev => ({ ...prev, file: '' }))
       setData(prev => ({ ...prev, file }))
       setPreview(file.name)
     }
@@ -79,11 +105,28 @@ const BrochuresForm = ({ id }) => {
     setPreview('')
   }
 
+  const handleImageChange = e => {
+    const image = e.target.files[0]
+
+    if (image) {
+      setErrors(prev => ({ ...prev, image: '' }))
+      setData(prev => ({ ...prev, image }))
+      setPreviewImage(image ? URL.createObjectURL(image) : '')
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setData(prev => ({ ...prev, image: null }))
+    setPreviewImage('')
+  }
+
   const fetchBrochure = async id => {
     try {
       const res = await getBrochureById(id)
 
-      setData(res.data)
+      setData({ ...res.data, image: null, file: null })
+      setOriginData(res.data)
+      setPreviewImage(res.data.image || '')
 
       if (res.data?.file_url) {
         const fileName = res.data.file_url.split('/').pop() || res.data.file_url
@@ -123,12 +166,11 @@ const BrochuresForm = ({ id }) => {
               {/* File Upload */}
               <Grid item xs={12}>
                 <Typography variant='subtitle2' className='mb-2'>
-                  File PDF
+                  File PDF {requiredFile ? '*' : ''}
                 </Typography>
-
-                {preview ? (
+                <ShowIf when={preview}>
                   <Box className='flex items-center justify-between border rounded p-3'>
-                    {isEdit ? (
+                    <ShowIf when={isEdit}>
                       <a
                         href={data.file_url}
                         target='_blank'
@@ -137,19 +179,69 @@ const BrochuresForm = ({ id }) => {
                       >
                         <Typography variant='body2'>{preview}</Typography>
                       </a>
-                    ) : (
-                      <Typography variant='body2'>{preview}</Typography>
-                    )}
+
+                      <ShowElse>
+                        <Typography variant='body2'>{preview}</Typography>
+                      </ShowElse>
+                    </ShowIf>
                     <IconButton color='error' size='small' onClick={handleRemoveFile} className='bg-white shadow'>
                       <i className='ri-delete-bin-line text-red-500 text-lg' />
                     </IconButton>
                   </Box>
-                ) : (
-                  <Button variant='outlined' component='label' startIcon={<i className='ri-upload-2-line text-lg' />}>
-                    Upload PDF
-                    <input type='file' hidden accept='application/pdf' onChange={handleFileChange} />
-                  </Button>
-                )}
+
+                  <ShowElse>
+                    <Button
+                      variant='outlined'
+                      component='label'
+                      startIcon={<i className='ri-upload-2-line text-lg' />}
+                      color={errors.file ? 'error' : 'primary'}
+                    >
+                      Upload PDF
+                      <input type='file' hidden accept='application/pdf' onChange={handleFileChange} />
+                    </Button>
+                    <ShowIf when={errors.file}>
+                      <Typography variant='caption' color='error' sx={{ display: 'block', mt: 0.5 }}>
+                        {errors.file}
+                      </Typography>
+                    </ShowIf>
+                  </ShowElse>
+                </ShowIf>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant='subtitle2' className='mb-2'>
+                  Image {requiredImage ? '*' : ''}
+                </Typography>
+                <ShowIf when={previewImage}>
+                  <Box className='relative inline-block'>
+                    <img src={previewImage} alt='Preview' className='w-[220px] h-[120px] object-cover rounded border' />
+                    <IconButton
+                      color='error'
+                      size='small'
+                      className='absolute top-1 right-1 bg-white shadow'
+                      onClick={handleRemoveImage}
+                    >
+                      <i className='ri-delete-bin-line text-red-500 text-lg' />
+                    </IconButton>
+                  </Box>
+
+                  <ShowElse>
+                    <Button
+                      variant='outlined'
+                      component='label'
+                      startIcon={<i className='ri-upload-2-line text-lg' />}
+                      color={errors.image ? 'error' : 'primary'}
+                    >
+                      Upload Image
+                      <input type='file' hidden accept='image/*' onChange={handleImageChange} />
+                    </Button>
+                    <ShowIf when={errors.image}>
+                      <Typography variant='caption' color='error' sx={{ display: 'block', mt: 0.5 }}>
+                        {errors.image}
+                      </Typography>
+                    </ShowIf>
+                  </ShowElse>
+                </ShowIf>
               </Grid>
             </Grid>
           </CardContent>

@@ -78,6 +78,10 @@ const BrochurePage = () => {
         header: 'Title',
         cell: info => <Typography>{info.getValue()}</Typography>
       }),
+      columnHelper.accessor('image', {
+        header: 'Image',
+        cell: info => <img src={info.getValue()} alt='Brochure' className='w-24 h-12 object-cover rounded' />
+      }),
       columnHelper.accessor('file_url', {
         header: 'File',
         cell: info => (
