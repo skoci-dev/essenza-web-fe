@@ -29,7 +29,6 @@
     "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-color": "^2.4.0",
-    "@tiptap/extension-image": "^3.14.0",
     "@tiptap/extension-list-item": "^2.4.0",
     "@tiptap/extension-placeholder": "^2.4.0",
     "@tiptap/extension-text-align": "^2.4.0",

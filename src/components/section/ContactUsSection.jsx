@@ -174,6 +174,7 @@ const ContactUsSection = () => {
 
   const [formData, setFormData] = useState({ profile: 'Customer', country: 'Indonesia', city: 'Jakarta' })
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
   const [token, setToken] = useState()
   const [refreshReCaptcha, setRefreshReCaptcha] = useState(false)
@@ -206,7 +207,7 @@ const ContactUsSection = () => {
   const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
-    setSuccess(false) // Reset status sukses saat mulai submit baru
+    setSuccess(false)
 
     const payloadData = {
       ...formData,
@@ -218,15 +219,18 @@ const ContactUsSection = () => {
     try {
       const res = await contactMessages(payloadData)
 
-      if (res) {
+      if (res?.success) {
         setSuccess(true)
         resetForm()
+      } else {
+        setError(true)
       }
     } catch (e) {
       console.error(e)
     } finally {
       setLoading(false)
       setRefreshReCaptcha(r => !r)
+      setTimeout(() => setError(false), 3000)
     }
   }
 
@@ -329,9 +333,12 @@ const ContactUsSection = () => {
                 Message sent successfully!
               </Typography>
             )}
+            {error && (
+              <Typography sx={{ color: 'red', fontSize: '14px', fontWeight: 500 }}>Ooops ! Something wrong</Typography>
+            )}
             <Box sx={styles.submitBox}>
               <Box sx={styles.submitButtonBox}>
-                <GoogleReCaptcha onVerify={onVerify} refreshReCaptcha={refreshReCaptcha} />
+                <GoogleReCaptcha onVerify={onVerify} refreshReCaptcha={refreshReCaptcha} action='contact_form' />
                 <CustomButton type='submit' disabled={loading}>
                   {loading ? <CircularProgress size={20} /> : 'Submit'}
                 </CustomButton>
