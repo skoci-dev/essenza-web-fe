@@ -32,6 +32,7 @@ const defaultData = {
 const BrochuresForm = ({ id }) => {
   const router = useRouter()
   const isEdit = !!id
+
   const [originData, setOriginData] = useState(null)
   const [data, setData] = useState(defaultData)
   const [loading, setLoading] = useState(false)
@@ -46,40 +47,54 @@ const BrochuresForm = ({ id }) => {
     []
   )
 
-  const requiredImage = useMemo(() => isEdit && originData?.image, [isEdit, originData])
-  const requiredFile = useMemo(() => isEdit && originData?.file_url, [isEdit, originData])
-
   const validate = useCallback(() => {
     const errs = {}
 
     if (!data.title) errs.title = 'Title is required'
-    if (!data.file && requiredFile) errs.file = 'File is required'
-    if (!data.image && requiredImage) errs.image = 'Image is required'
+
+    if (!isEdit) {
+      if (!data.file) errs.file = 'File is required'
+    } else {
+      if (!data.file && !data.file_url) errs.file = 'File is required'
+    }
+
+    if (!isEdit) {
+      if (!data.image) errs.image = 'Image is required'
+    } else {
+      if (!data.image && !previewImage) errs.image = 'Image is required'
+    }
 
     setErrors(errs)
 
     return Object.keys(errs).length === 0
-  }, [data, requiredFile, requiredImage])
+  }, [data, isEdit, previewImage])
 
   const handleSubmit = async e => {
     e.preventDefault()
 
-    if (!validate()) {
-      return
-    }
+    if (!validate()) return
 
     setLoading(true)
 
-    await handleApiResponse(() => (isEdit ? updateBrochure(id, data) : createBrochure(data)), {
+    const formData = new FormData()
+
+    formData.append('title', data.title)
+
+    if (data.file) formData.append('file', data.file)
+    if (data.image) formData.append('image', data.image)
+
+    if (isEdit) {
+      formData.append('_method', 'PUT')
+    }
+
+    await handleApiResponse(() => (isEdit ? updateBrochure(id, formData) : createBrochure(formData)), {
       success: msg => success(msg),
       error: msg => error(msg),
       onSuccess: () =>
         setTimeout(() => {
           router.push('/esse-panel/brochures')
         }, 1000),
-      onError: () => {
-        setLoading(false)
-      }
+      onError: () => setLoading(false)
     })
   }
 
@@ -166,7 +181,7 @@ const BrochuresForm = ({ id }) => {
               {/* File Upload */}
               <Grid item xs={12}>
                 <Typography variant='subtitle2' className='mb-2'>
-                  File PDF {requiredFile ? '*' : ''}
+                  File PDF *
                 </Typography>
                 <ShowIf when={preview}>
                   <Box className='flex items-center justify-between border rounded p-3'>
@@ -210,7 +225,7 @@ const BrochuresForm = ({ id }) => {
 
               <Grid item xs={12}>
                 <Typography variant='subtitle2' className='mb-2'>
-                  Image {requiredImage ? '*' : ''}
+                  Image *
                 </Typography>
                 <ShowIf when={previewImage}>
                   <Box className='relative inline-block'>
