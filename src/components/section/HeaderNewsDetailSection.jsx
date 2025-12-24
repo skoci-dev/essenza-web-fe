@@ -101,7 +101,7 @@ const HeaderNewsDetailSection = ({ image = [] }) => {
           >
             {image.map((item, i) => (
               <SwiperSlide key={i}>
-                <Box component={'img'} src={item} sx={styles.thumbnail} />
+                <Box component={'img'} src={item !== null ? item : '/images/broken-image.png'} sx={styles.thumbnail} />
               </SwiperSlide>
             ))}
           </Swiper>

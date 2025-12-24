@@ -106,7 +106,7 @@ const HeaderNewsSections = ({ articles }) => {
                     </Typography>
                   </Grid>
                   <Grid item sm={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
-                    <Link href={`/${articles?.href}`}>
+                    <Link href={`${articles?.href}`}>
                       <Button
                         variant='outlined'
                         fullWidth
@@ -142,7 +142,7 @@ const HeaderNewsSections = ({ articles }) => {
               </Grid>
             </Grid>
             <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' } }}>
-              <Link href={`/${locale}/news/ngopi-kongsi-bersama-aristek-arsitek-bandung`}>
+              <Link href={`${articles?.href}`}>
                 <Button
                   variant='outlined'
                   fullWidth

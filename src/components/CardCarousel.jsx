@@ -194,7 +194,7 @@ const CardCarousel = props => {
                       <Link href={item?.href || '#'}>
                         <Card sx={styles.cardWrapper}>
                           <Box sx={styles.imageWrapper}>
-                            <img src={item.src} alt={item.title} />
+                            <img src={item.src !== null ? item.src : '/images/broken-image.png'} alt={item.title} />
                           </Box>
                           <Typography sx={styles.cardLabel}>
                             {item.title} <span>Series</span>
@@ -213,7 +213,7 @@ const CardCarousel = props => {
                   <Link href={img?.href || '#'}>
                     <Box
                       component='img'
-                      src={img.src}
+                      src={img.src !== null ? img.src : '/images/broken-image.png'}
                       alt={img.title}
                       sx={slidesPerView === 3 ? styles.bannerImage : styles.bannerImageSquare}
                     />

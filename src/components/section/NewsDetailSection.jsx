@@ -36,7 +36,11 @@ const styles = {
   },
   contentBody: {
     fontSize: '18px',
-    color: '#212121'
+    color: '#212121',
+    '& img': {
+      width: '100% !important',
+      height: 'auto'
+    }
   },
   latestNewsBox: {
     border: '1px solid #D4D4D4',
@@ -105,7 +109,7 @@ const NewsDetailSection = ({ data }) => {
       const mappingArticles = res?.data.map(item => ({
         ...item,
         href: `/${locale}/news/${item?.slug}`,
-        src: item?.thumbnail
+        src: item?.thumbnail !== null ? item?.thumbnail : '/images/broken-image.png'
       }))
 
       setArticles(mappingArticles)
