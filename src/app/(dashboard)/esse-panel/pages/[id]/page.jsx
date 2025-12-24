@@ -87,11 +87,12 @@ const PageDetail = () => {
             <Grid container spacing={5}>
               <Grid item sm={12}>
                 <Box
+                  className='prose max-w-none border p-4 rounded'
                   dangerouslySetInnerHTML={{ __html: page.content }}
                   sx={{
                     p: 3,
                     mt: 5,
-                    '& img': { maxWidth: '100%', height: 'auto' },
+                    '& img': { width: '100%', height: 'auto' },
                     '& ul, & ol': { paddingLeft: 3 }
                   }}
                 />

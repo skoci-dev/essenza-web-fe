@@ -181,6 +181,7 @@ const ArticleDetailPage = () => {
               {article.content ? (
                 <Box
                   className='prose max-w-none border p-4 rounded'
+                  sx={{ '& img': { width: '100%', height: 'auto' } }}
                   dangerouslySetInnerHTML={{ __html: article.content }}
                 />
               ) : (
