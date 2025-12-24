@@ -15,6 +15,7 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
+import Tooltip from '@mui/material/Tooltip'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
@@ -152,7 +153,7 @@ const ArticleForm = ({ id }) => {
   }, [])
 
   const handleSwitchChange = useCallback(e => {
-    setData(prev => ({ ...prev, is_active: e.target.checked }))
+    setData(prev => ({ ...prev, [e.target.name]: e.target.checked }))
   }, [])
 
   const handleImageChange = useCallback(e => {
@@ -314,8 +315,33 @@ const ArticleForm = ({ id }) => {
                   Status
                 </Typography>
                 <FormControlLabel
-                  control={<Switch checked={data.is_active} onChange={handleSwitchChange} />}
+                  control={<Switch name='is_active' checked={data.is_active} onChange={handleSwitchChange} />}
                   label={data?.is_active ? 'Active' : 'Inactive'}
+                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Typography variant='subtitle2' sx={{ mb: 0 }}>
+                    Highlight
+                  </Typography>
+                  <Tooltip
+                    title='If enabled, this article will be featured at the very top of the news page.'
+                    arrow
+                    placement='top'
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <i
+                        className='ri-error-warning-line'
+                        style={{
+                          fontSize: '16px',
+                          color: 'var(--mui-palette-text-secondary)',
+                          cursor: 'help'
+                        }}
+                      />
+                    </Box>
+                  </Tooltip>
+                </Box>
+                <FormControlLabel
+                  control={<Switch name='is_highlighted' checked={data.is_highlighted} onChange={handleSwitchChange} />}
+                  label={data?.is_highlighted ? 'True' : 'False'}
                 />
               </Grid>
               <Grid item xs={12}>

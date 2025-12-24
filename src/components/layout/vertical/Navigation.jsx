@@ -103,7 +103,7 @@ const Navigation = props => {
     >
       {/* Nav Header including Logo & nav toggle icons  */}
       <NavHeader>
-        <Link href='/' className='flex items-center'>
+        <Link href='/esse-panel/dashboard' className='flex items-center'>
           <img className='h-[22px]' src={'/logo.svg'} />
           <h2 className='ml-2'>Esse Panel</h2>
         </Link>

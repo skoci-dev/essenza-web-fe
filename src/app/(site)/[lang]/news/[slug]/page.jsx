@@ -1,7 +1,7 @@
-import EndSection from '@/components/section/EndSection'
 import HeaderNewsDetailSection from '@/components/section/HeaderNewsDetailSection'
 import NewsDetailSection from '@/components/section/NewsDetailSection'
 import { getPubArticleBySlug } from '@/services/article'
+import NotFoundPage from '../../[...not-found]/page'
 
 async function getData(slug) {
   try {
@@ -49,10 +49,17 @@ export default async function NewsDetailPage({ params }) {
 
   const newsItem = await getData(slug)
 
-  return (
-    <>
-      <HeaderNewsDetailSection thumbnail={newsItem?.thumbnail ?? '/images/illustrations/photos/banner-1.png'} />
-      <NewsDetailSection data={newsItem} />
-    </>
-  )
+  const gallery = newsItem?.gallery?.length > 0 ? newsItem?.gallery : []
+  const listImage = [newsItem?.thumbnail, ...gallery]
+
+  if (newsItem) {
+    return (
+      <>
+        <HeaderNewsDetailSection image={listImage} />
+        <NewsDetailSection data={newsItem} />
+      </>
+    )
+  } else {
+    return <NotFoundPage />
+  }
 }

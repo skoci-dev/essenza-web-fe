@@ -90,6 +90,16 @@ const ArticleDetailPage = () => {
                 )
               }
             />
+            <DetailField
+              label='Highlight'
+              value={
+                article.is_highlighted ? (
+                  <Chip label='True' size='small' color='success' variant='tonal' className='self-start rounded' />
+                ) : (
+                  <Chip label='False' size='small' color='error' variant='tonal' className='self-start rounded' />
+                )
+              }
+            />
             <DetailField label='Published At' value={formatDateToCustomStringNative(article.published_at)} />
             <DetailField label='Created At' value={formatDateToCustomStringNative(article.created_at)} />
             <DetailField label='Updated At' value={formatDateToCustomStringNative(article.updated_at)} />

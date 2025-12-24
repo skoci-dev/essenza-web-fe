@@ -139,6 +139,7 @@ const ArticlePage = () => {
           const thumbnail = data.thumbnail
           const title = data.title || '-'
           const slug = data.slug || ''
+          const isHighlight = data.is_highlighted || data.is_highlighted
 
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -152,18 +153,34 @@ const ArticlePage = () => {
                 sx={{ width: 96, height: 48, objectFit: 'cover', borderRadius: 1 }}
               />
               <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                <Typography
-                  variant='body2'
-                  sx={{
-                    fontWeight: 600,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 200
-                  }}
-                >
-                  {title}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      fontWeight: 600,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: isHighlight ? 120 : 200
+                    }}
+                  >
+                    {title}
+                  </Typography>
+                  {isHighlight && (
+                    <Chip
+                      label='Highlight'
+                      color='primary'
+                      size='small'
+                      variant='filled'
+                      sx={{
+                        height: 20,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                      }}
+                    />
+                  )}
+                </Box>
                 <Typography
                   variant='caption'
                   color='text.secondary'

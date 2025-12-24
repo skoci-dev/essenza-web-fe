@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react'
 
-import Image from 'next/image'
 import Link from 'next/link'
 
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
