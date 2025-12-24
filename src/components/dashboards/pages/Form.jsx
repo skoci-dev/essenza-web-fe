@@ -59,10 +59,9 @@ const PageForm = ({ id }) => {
 
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(defaultData)
-  const [editorView, setEditorView] = useState('visual') // 'visual' | 'html'
+  const [editorView, setEditorView] = useState('visual')
   const [previewOpen, setPreviewOpen] = useState(false)
 
-  // -- Editor Setup --
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -78,7 +77,6 @@ const PageForm = ({ id }) => {
     }
   })
 
-  // -- Fetch Data --
   const fetchPage = useCallback(
     async id => {
       setLoading(true)
@@ -104,20 +102,17 @@ const PageForm = ({ id }) => {
     if (id) fetchPage(id)
   }, [id, fetchPage])
 
-  // -- Slug Auto-generate --
   useEffect(() => {
     if (!id && data?.title) {
       setData(prev => ({ ...prev, slug: slugify(data.title) }))
     }
   }, [data?.title, id])
 
-  // -- Handlers --
   const handleChange = e => {
     const { name, value } = e.target
 
     setData(prev => ({ ...prev, [name]: value }))
 
-    // Sinkronisasi jika edit manual di mode HTML
     if (name === 'content' && editorView === 'html') {
       editor?.commands.setContent(value, false)
     }
@@ -181,7 +176,6 @@ const PageForm = ({ id }) => {
                 />
               </Grid>
 
-              {/* EDITOR SECTION */}
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
@@ -283,7 +277,6 @@ const PageForm = ({ id }) => {
         </form>
       </Card>
 
-      {/* MODAL PREVIEW */}
       <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} fullWidth maxWidth='lg' scroll='paper'>
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           Page Preview

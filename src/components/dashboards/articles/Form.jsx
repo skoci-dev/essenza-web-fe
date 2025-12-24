@@ -7,6 +7,11 @@ import { useRouter } from 'next/navigation'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -16,6 +21,8 @@ import IconButton from '@mui/material/IconButton'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
@@ -99,8 +106,10 @@ const ArticleForm = ({ id }) => {
   const isEdit = !!id
 
   const [data, setData] = useState(defaultData)
+  const [editorView, setEditorView] = useState('visual')
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState('')
+  const [previewOpen, setPreviewOpen] = useState('')
   const [galleryPreview, setGalleryPreview] = useState([])
 
   const { success, error, SnackbarComponent } = useSnackbar()
@@ -195,6 +204,10 @@ const ArticleForm = ({ id }) => {
     },
     [setGalleryPreview, setData]
   )
+
+  const handleEditorViewChange = (event, nextView) => {
+    if (nextView !== null) setEditorView(nextView)
+  }
 
   const fetchArticle = useCallback(
     async id => {
@@ -294,7 +307,14 @@ const ArticleForm = ({ id }) => {
     <>
       <Card className='shadow'>
         <form onSubmit={handleSubmit} className='space-y-4'>
-          <CardHeader title={isEdit ? 'Edit Article' : 'Add Article'} />
+          <CardHeader
+            title={isEdit ? 'Edit Article' : 'Add Article'}
+            action={
+              <Button variant='outlined' startIcon={<i className='ri-eye-line' />} onClick={() => setPreviewOpen(true)}>
+                Preview
+              </Button>
+            }
+          />
           <Divider />
           <CardContent>
             <Grid container spacing={5}>
@@ -375,18 +395,76 @@ const ArticleForm = ({ id }) => {
             </Grid>
 
             <Typography className='mt-6 mb-2'>Content</Typography>
+            <ToggleButtonGroup
+              value={editorView}
+              exclusive
+              onChange={handleEditorViewChange}
+              size='small'
+              color='primary'
+            >
+              <ToggleButton value='visual'>Visual</ToggleButton>
+              <ToggleButton value='html'>HTML Text</ToggleButton>
+            </ToggleButtonGroup>
             <Card className='p-0 border shadow-none'>
-              <CardContent className='p-0'>
-                <EditorToolbar editor={editor} />
-                <Divider className='my-2' />
-                <EditorContent editor={editor} className='min-h-[50vh]' />
-              </CardContent>
+              {editorView === 'visual' ? (
+                <CardContent className='p-0'>
+                  <EditorToolbar editor={editor} />
+                  <Divider />
+                  <EditorContent editor={editor} className='min-h-[400px] p-4' />
+                </CardContent>
+              ) : (
+                <CardContent className='p-0'>
+                  <Box sx={{ p: 2, bgcolor: '#f8f9fa' }}>
+                    <Typography variant='caption'>Raw HTML Editor</Typography>
+                  </Box>
+                  <Divider />
+                  <TextField
+                    multiline
+                    rows={16}
+                    fullWidth
+                    name='content'
+                    value={data?.content}
+                    onChange={handleChange}
+                    sx={{
+                      '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: '14px', borderRadius: 0 },
+                      '& fieldset': { border: 'none' }
+                    }}
+                  />
+                </CardContent>
+              )}
             </Card>
           </CardContent>
           <Divider />
           <FormActions onCancel={() => router.push('/esse-panel/articles')} isEdit={isEdit} />
         </form>
       </Card>
+      <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} fullWidth maxWidth='lg' scroll='paper'>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          Page Preview
+          <IconButton onClick={() => setPreviewOpen(false)}>
+            <i className='ri-close-line' />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent sx={{ minHeight: '500px' }}>
+          <Typography variant='h3' gutterBottom>
+            {data?.title || 'Untitled Page'}
+          </Typography>
+          <Box
+            className='preview-content-area'
+            dangerouslySetInnerHTML={{ __html: data?.content || '<p>No content to preview.</p>' }}
+            sx={{
+              '& img': { maxWidth: '100%', height: 'auto' },
+              '& ul, & ol': { pl: 4 }
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 4 }}>
+          <Button variant='contained' onClick={() => setPreviewOpen(false)}>
+            Close Preview
+          </Button>
+        </DialogActions>
+      </Dialog>
       {SnackbarComponent}
       <BackdropLoading open={loading} />
     </>
