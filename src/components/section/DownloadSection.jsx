@@ -24,7 +24,7 @@ const DownloadSection = props => {
           ...item,
           id: item?.slug,
           name: item?.title,
-          href: `/${locale}/download/${item?.slug}`,
+          href: `${item?.file_url}`,
           src: item?.image
         }
       })

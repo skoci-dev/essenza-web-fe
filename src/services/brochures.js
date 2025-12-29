@@ -25,7 +25,7 @@ const deleteBrochure = async id => {
 }
 
 const getPubBrochures = async (params = {}) => {
-  return await apiClient.get(`/pub/v1/brochures`, { params })
+  return await apiClient.get(`/pub/v1/products/brochures`, { params })
 }
 
 export { getBrochures, getBrochureById, createBrochure, updateBrochure, deleteBrochure, getPubBrochures }
